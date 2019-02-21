@@ -1,0 +1,12 @@
+/**** Reset Password Page ****/
+.reset-box{
+  border:1px solid #ccc;
+  padding:20px;
+}
+.margin-top-70{
+  margin-top:70px;
+  margin-bottom: 10px;
+}
+.dt-buttons{
+  display:none;
+}

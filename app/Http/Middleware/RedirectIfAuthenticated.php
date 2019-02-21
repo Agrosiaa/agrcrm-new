@@ -1,0 +1,50 @@
+<?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Support\Facades\Route;
+
+class RedirectIfAuthenticated
+{
+    /**
+     * The Guard implementation.
+     *
+     * @var Guard
+     */
+    protected $auth;
+
+    /**
+     * Create a new filter instance.
+     *
+     * @param  Guard  $auth
+     * @return void
+     */
+    public function __construct(Guard $auth)
+    {
+        $this->auth = $auth;
+    }
+
+    /**
+     * Handle an incoming request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Closure  $next
+     * @return mixed
+     */
+    public function handle($request, Closure $next)
+    {
+        if ($this->auth->check()) {
+            $url_array = explode('.', parse_url($request->url(), PHP_URL_HOST));
+            $subdomain = $url_array[0];
+            if($subdomain==env('SELLER_SUB_DOMAIN_NAME') || $subdomain==env('ADMIN_SUB_DOMAIN_NAME')){
+                return redirect('dashboard');
+            }else{
+                return redirect('/');
+            }
+        }
+
+        return $next($request);
+    }
+}
