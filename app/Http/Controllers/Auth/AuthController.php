@@ -69,14 +69,6 @@ class AuthController extends Controller
             'password' => bcrypt($data['password']),
         ]);
     }
-    public function viewTemp(){
-        return view('temp');
-    }
-    public function postTemp(TempRequest $request){
-        $request->session()->flash('xxx','yyy');
-        return redirect('temp');
-    }
-
     public function viewLogin(){
         return view('backend.login');
     }
@@ -91,7 +83,6 @@ class AuthController extends Controller
                 return back()->withInput();//->with('error',$message);
             } else{
                 if (Auth::attempt(['email' => $request->email,'password' => $request->password])) {
-//                            $users = (Auth::user()->first());
                     return redirect('dashboard');
                 } else{
                     $message="The email address or password is invalid";
@@ -112,42 +103,6 @@ class AuthController extends Controller
         Auth::logout();
         $message="Logout Successful";
         $request->session()->flash('error', $message);
-        if ($request->session()->has('cart')) {
-            $request->session()->forget('cart');
-        }
         return redirect('/');
-    }
-
-    public function confirm($confirmation,\Illuminate\Http\Request $request)
-    {
-        $user = User::where('remember_token', $confirmation)->first();
-        $currentUrl = (explode('/',Request::url()));
-        $domain = explode('.',$currentUrl[2]);
-        if(count($domain) > 2){
-            $redirectUrl = '/';
-        }else{
-            $redirectUrl = 'user/login';
-        }
-        if ($user == null) { // no record found
-            $message= "Sorry!! No User found";
-        } else {
-            if ($user->is_email) { // already confirmed
-                $message="Your email is already verified";
-            } else {
-                User::where('remember_token', $confirmation)->update(array('is_email' => 1));
-                $message="Your email is confirmed, you can now login to your account";
-            }
-        }
-        $request->session()->flash('success', $message);
-        return redirect($redirectUrl);
-    }
-    public function viewShipmentAdminLogin(){
-        return view('backend.shipmentAdmin.login');
-    }
-    public function viewFinanceAdminLogin(){
-        return view('backend.financeAdmin.login');
-    }
-    public function viewAccountAdminLogin(){
-        return view('backend.accountAdmin.login');
     }
 }

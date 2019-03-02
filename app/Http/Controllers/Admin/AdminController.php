@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\WorkOrderStatusDetail;
 use Illuminate\Http\Request;
+use Ixudra\Curl\Facades\Curl;
 
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -41,7 +41,19 @@ class AdminController extends Controller
             Log::critical(json_encode($data));
         }
     }
-    public function home(){
-        return view('backend.admin.home');
+    public function home(Request $request){
+        try{
+            $response = Curl::to(env('BASE_URL')."/order-detail")
+                ->asJson()->get();
+            return view('backend.admin.home')->with(compact('response'));
+        }catch(\Exception $e){
+            $data = [
+                'action' => 'validate mobile from cart',
+                'request'=> $request->all(),
+                'exception' => $e->getMessage()
+            ];
+            Log::critical(json_encode($data));
+        }
+
     }
 }

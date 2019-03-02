@@ -32,7 +32,6 @@
     <link href="/assets/layouts/layout/css/custom.css" rel="stylesheet" type="text/css" />
     <!-- END THEME LAYOUT STYLES -->
     @yield('css')
-    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" /> </head>
 <!-- END HEAD -->
 <body class="page-container-bg-solid page-boxed">
 @yield('content')
