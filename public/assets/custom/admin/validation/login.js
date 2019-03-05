@@ -21,10 +21,6 @@ var FormValidation = function () {
                 }
             },
             rules: {
-                email: {
-                    required: true,
-                    email: true
-                },
                 password: {
                     required: true,
                     minlength: 5

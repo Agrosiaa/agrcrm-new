@@ -19,7 +19,7 @@ License: You must have a valid license purchased only from themeforest(the above
 
 <head>
     <meta charset="utf-8" />
-    <title>Agrosiaa | Vendor Login</title>
+    <title>Agrosiaa | Sales Login</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta content="width=device-width, initial-scale=1" name="viewport" />
     <meta content="" name="description" />
@@ -61,7 +61,7 @@ License: You must have a valid license purchased only from themeforest(the above
         </div>
         <div class="col-md-6 login-container bs-reset">
             <div class="login-content">
-                <h1>Agrosiaa Seller Login</h1>
+                <h1>Agrosiaa Sales Login</h1>
                 @if(Session::has('success'))
                     <div class="alert alert-success">
                         <button class="close" data-close="alert"></button>
@@ -72,7 +72,7 @@ License: You must have a valid license purchased only from themeforest(the above
                     {!! csrf_field() !!}
                     <div class="row">
                         <div class="col-xs-6">
-                            <input value="{{ old('email') }}" class="form-control form-control-solid placeholder-no-fix" type="text" autocomplete="true" placeholder="Email-Address" name="email" required /> </div>
+                            <input class="form-control form-control-solid placeholder-no-fix" type="text" autocomplete="true" placeholder="User Id" name="user_id" required /> </div>
                         <div class="col-xs-6">
                             <input class="form-control form-control-solid placeholder-no-fix" type="password" autocomplete="off" placeholder="Password" name="password" required/> </div>
                     </div>
@@ -178,5 +178,4 @@ License: You must have a valid license purchased only from themeforest(the above
 <!-- BEGIN THEME LAYOUT SCRIPTS -->
 <!-- END THEME LAYOUT SCRIPTS -->
 </body>
-
 </html>

@@ -40,35 +40,6 @@ class AuthController extends Controller
         $this->middleware('guest', ['except' => 'logout']);
     }
 
-    /**
-     * Get a validator for an incoming registration request.
-     *
-     * @param  array  $data
-     * @return \Illuminate\Contracts\Validation\Validator
-     */
-    protected function validator(array $data)
-    {
-        return Validator::make($data, [
-            'name' => 'required|max:255',
-            'email' => 'required|email|max:255|unique:users',
-            'password' => 'required|confirmed|min:6',
-        ]);
-    }
-
-    /**
-     * Create a new user instance after a valid registration.
-     *
-     * @param  array  $data
-     * @return User
-     */
-    protected function create(array $data)
-    {
-        return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => bcrypt($data['password']),
-        ]);
-    }
     public function viewLogin(){
         return view('backend.login');
     }
@@ -76,13 +47,13 @@ class AuthController extends Controller
     //http://stackoverflow.com/questions/29264326/laravel-5-show-blank-page-on-server-error-and-no-laravel-log-running-with-hhv
     protected function authenticate(LoginRequest $request){
         try{
-            $user = User::where('email', $request->email)->first();
+            $user = User::where('user_name', $request->user_id)->first();
             if ($user == NULL || empty($user)) {
                 $message="The email address is invalid";
                 $request->session()->flash('error', $message);
                 return back()->withInput();//->with('error',$message);
             } else{
-                if (Auth::attempt(['email' => $request->email,'password' => $request->password])) {
+                if (Auth::attempt(['user_name' => $request->user_id,'password' => $request->password])) {
                     return redirect('dashboard');
                 } else{
                     $message="The email address or password is invalid";

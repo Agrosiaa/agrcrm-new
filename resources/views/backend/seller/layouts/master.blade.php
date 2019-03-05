@@ -74,7 +74,10 @@
 <!-- END THEME LAYOUT SCRIPTS -->
 @yield('javascript')
 <script>
-
+/*$(document).ready(function(){
+    var rememberToken = $('meta[name="csrf_token"]').attr('content');
+    $.ajaxSetup({ headers: { 'X-CSRF-TOKEN' : rememberToken } });
+})*/
 </script>
 </body>
 </html>

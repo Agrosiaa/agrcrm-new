@@ -209,9 +209,9 @@
                                             </label>
 
                                             <div class="col-md-10">
-                                                <input type="text"  class="form-control" value="" id="reply_text" name="reply_text" placeholder="" >
+                                                <input type="text"  class="form-control" value="" id="reply_text" name="reply_text" placeholder="" required="required">
                                             </div>
-                                            <div class="col-md-4" id="chat_message" style="margin-left: 10%">
+                                            <div class="col-md-12" id="chat_message" style="margin-left: 3%">
 
                                             </div>
                                         </div>
@@ -297,20 +297,24 @@
                                     ' <i class="fa fa-shopping-cart"></i>'+
                                     ' </div>'+
                                     ' </div>'+
-                                    '<div class="col-md-6" style="margin-left: -15px;margin-top: -5px">'+
+                                    '<div class="col-md-6" style="margin-left: -15px;margin-top: -3px">'+
                                     'Order Number : <span>'+"AGR0000"+ +data['order_id']+' </span>'+
                                     '<br>'+
                                     '<span style="font-size: 11px"><b>Order timestamp : '+data['created_at']+'</b></span>'+
                                     '</div>'+
-                                    '<div class="col-md-3" style="margin-top: -5px;">'+
-                                    '<div class="date" style="text-align:left;"> '+data['work_order_date']+''+
-                                    '</div>'+
+                                    '<div class="col-md-3" style="margin-top: -3px;">'+
+                                    '<div class="date" style="text-align:left;font-size: 11px"> '+data['work_order_date']+''+
+                                    '<br>';
+                                if(data['consignment_number'] != null){
+                                    str += '<span style="font-size: 10px;"><i>'+data['consignment_number']+'</i></span>';
+                                }
+                                str += '</div>'+
                                     '</div>'+
                                     '<div class="col-md-1" style="margin-left: -20px;">'+
-                                    '<button class="btn blue chat_reply" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply">Chat</button>'+
+                                    '<button class="btn blue rounded fa fa-comments" style="padding-right: 170%;margin-left: 100%;" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply"></button>'+
                                     '</div>'+
                                     '<div class="col-md-1" >'+
-                                    '<button style="margin-left: 20px;" class="btn red order_cancel" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#cancel">X</button>'+
+                                    '<button style="margin-left: 20px;" class="btn red rounded order_cancel" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#cancel">X</button>'+
                                     '</div>'+
                                     '</div>'+
                                     '<br>';
@@ -329,20 +333,24 @@
                                     ' <i class="fa fa-shopping-cart"></i>'+
                                     ' </div>'+
                                     ' </div>'+
-                                    '<div class="col-md-6" style="margin-left: -15px;margin-top: -5px">'+
+                                    '<div class="col-md-6" style="margin-left: -15px;margin-top: -3px">'+
                                     'Order Number : <span>'+"AGR0000"+ +data['order_id']+' </span>'+
                                     '<br>'+
                                     '<span style="font-size: 11px"><b>Order timestamp : '+data['created_at']+'</b></span>'+
                                     '</div>'+
-                                    '<div class="col-md-3" style="margin-top: -5px;">'+
-                                    '<div class="date" style="text-align:left;"> '+data['work_order_date']+''+
-                                    '</div>'+
+                                    '<div class="col-md-3" style="margin-top: -3px;">'+
+                                    '<div class="date" style="text-align:left;font-size: 11px"> '+data['work_order_date']+''+
+                                    '<br>';
+                                if(data['consignment_number'] != null){
+                                    str += '<span style="font-size: 10px;"><i>'+data['consignment_number']+'</i></span>';
+                                }
+                                str += '</div>'+
                                     '</div>'+
                                     '<div class="col-md-1" style="margin-left: -20px;">'+
-                                    '<button class="btn blue chat_reply" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply">Chat</button>'+
+                                    '<button class="btn blue rounded fa fa-comments" style="padding-right: 170%;margin-left: 100%;" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply"></button>'+
                                     '</div>'+
                                     '<div class="col-md-1" >'+
-                                    '<button style="margin-left: 20px;" class="btn red order_cancel" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#cancel">X</button>'+
+                                    '<button style="margin-left: 20px;" class="btn red rounded order_cancel" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#cancel">X</button>'+
                                     '</div>'+
                                     '</div>'+
                                     '<br>';
@@ -362,20 +370,24 @@
                                         ' <i class="fa fa-shopping-cart"></i>'+
                                         ' </div>'+
                                         ' </div>'+
-                                        '<div class="col-md-6" style="margin-left: -15px;margin-top: -5px">'+
+                                        '<div class="col-md-6" style="margin-left: -15px;margin-top: -3px">'+
                                         'Order Number : <span>'+"AGR0000"+ +data['order_id']+' </span>'+
                                         '<br>'+
                                         '<span style="font-size: 11px"><b>Order timestamp : '+data['created_at']+'</b></span>'+
                                         '</div>'+
-                                        '<div class="col-md-3" style="margin-top: -5px;">'+
-                                        '<div class="date" style="text-align:left;"> '+data['work_order_date']+''+
-                                        '</div>'+
+                                        '<div class="col-md-3" style="margin-top: -3px;">'+
+                                        '<div class="date" style="text-align:left;font-size: 11px"> '+data['work_order_date']+''+
+                                            '<br>';
+                                            if(data['consignment_number'] != null){
+                                              str += '<span style="font-size: 10px;"><i>'+data['consignment_number']+'</i></span>';
+                                            }
+                                        str += '</div>'+
                                         '</div>'+
                                         '<div class="col-md-1" style="margin-left: -20px;">'+
-                                        '<button class="btn blue chat_reply" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply">Chat</button>'+
+                                            '<button class="btn blue rounded fa fa-comments" style="padding-right: 170%;margin-left: 100%;" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply"></button>'+
                                         '</div>'+
                                         '<div class="col-md-1" >'+
-                                        '<button style="margin-left: 20px;" class="btn red order_cancel" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#cancel">X</button>'+
+                                        '<button style="margin-left: 20px;" class="btn red rounded order_cancel" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#cancel">X</button>'+
                                         '</div>'+
                                         '</div>'+
                                         '<br>';
@@ -394,20 +406,24 @@
                                     ' <i class="fa fa-shopping-cart"></i>'+
                                     ' </div>'+
                                     ' </div>'+
-                                    '<div class="col-md-6" style="margin-left: -15px;margin-top: -5px">'+
+                                    '<div class="col-md-6" style="margin-left: -15px;margin-top: -3px">'+
                                     'Order Number : <span>'+"AGR0000"+ +data['order_id']+' </span>'+
                                     '<br>'+
                                     '<span style="font-size: 11px"><b>Order timestamp : '+data['created_at']+'</b></span>'+
                                     '</div>'+
-                                    '<div class="col-md-3" style="margin-top: -5px;">'+
-                                    '<div class="date" style="text-align:left;"> '+data['work_order_date']+''+
-                                    '</div>'+
+                                    '<div class="col-md-3" style="margin-top: -3px;">'+
+                                    '<div class="date" style="text-align:left;font-size: 11px"> '+data['work_order_date']+''+
+                                    '<br>';
+                                if(data['consignment_number'] != null){
+                                    str += '<span style="font-size: 10px;"><i>'+data['consignment_number']+'</i></span>';
+                                }
+                                str += '</div>'+
                                     '</div>'+
                                     '<div class="col-md-1" style="margin-left: -20px;">'+
-                                    '<button class="btn blue chat_reply" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply">Chat</button>'+
+                                    '<button class="btn blue rounded fa fa-comments" style="padding-right: 170%;margin-left: 100%;" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply"></button>'+
                                     '</div>'+
                                     '<div class="col-md-1" >'+
-                                    '<button style="margin-left: 20px;" class="btn red order_cancel" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#cancel">X</button>'+
+                                    '<button style="margin-left: 20px;" class="btn red rounded order_cancel" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#cancel">X</button>'+
                                     '</div>'+
                                     '</div>'+
                                     '<br>';
@@ -426,20 +442,26 @@
                                     ' <i class="fa fa-shopping-cart"></i>'+
                                     ' </div>'+
                                     ' </div>'+
-                                    '<div class="col-md-6" style="margin-left: -15px;margin-top: -5px">'+
+                                    '<div class="col-md-6" style="margin-left: -15px;margin-top: -3px">'+
                                     'Order Number : <span>'+"AGR0000"+ +data['order_id']+' </span>'+
                                     '<br>'+
                                     '<span style="font-size: 11px"><b>Order timestamp : '+data['created_at']+'</b></span>'+
+                                    '<br><br>'+
+                                    '<span class="tag label label-info" style="font-size: 90%;">'+data['name']+'<span data-role="remove"></span></span>'+
                                     '</div>'+
-                                    '<div class="col-md-3" style="margin-top: -5px;">'+
-                                    '<div class="date" style="text-align:left;"> '+data['work_order_date']+''+
+                                    '<div class="col-md-3" style="margin-top: -3px;">'+
+                                    '<div class="date" style="text-align:left;font-size: 11px"> '+data['work_order_date']+''+
+                                    '<br>';
+                                if(data['consignment_number'] != null){
+                                    str += '<span style="font-size: 10px;"><i>'+data['consignment_number']+'</i></span>';
+                                }
+                                str += '</div>'+
                                     '</div>'+
-                                    '</div>'+
-                                    '<div class="col-md-1" style="margin-left: -20px;">'+
-                                    '<button class="btn blue chat_reply" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply">Chat</button>'+
+                                    '<div class="col-md-1 floating-chat" style="margin-left: -20px;">'+
+                                    '<button class="btn blue rounded fa fa-comments" style="padding-right: 170%;margin-left: 100%;" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply"></button>'+
                                     '</div>'+
                                     '<div class="col-md-1" >'+
-                                    '<button style="margin-left: 20px;" class="btn red order_cancel" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#cancel">X</button>'+
+                                    '<button style="margin-left: 20px;" class="btn red rounded order_cancel" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#cancel">X</button>'+
                                     '</div>'+
                                     '</div>'+
                                     '<br>';
@@ -458,13 +480,13 @@
                                     ' <i class="fa fa-shopping-cart"></i>'+
                                     ' </div>'+
                                     ' </div>'+
-                                    '<div class="col-md-7" style="margin-left: -15px;margin-top: -5px">'+
+                                    '<div class="col-md-7" style="margin-left: -15px;margin-top: -3px">'+
                                     'Order Number : <span>'+"AGR0000"+ +data['order_id']+' </span>'+
                                     '<br>'+
                                     '<span style="font-size: 11px"><b>Order timestamp : '+data['created_at']+'</b></span>'+
                                     '</div>'+
-                                    '<div class="col-md-4" style="margin-top: -5px;">'+
-                                    '<div class="date" style="text-align:left;"> '+data['work_order_date']+''+
+                                    '<div class="col-md-4" style="margin-top: -3px;">'+
+                                    '<div class="date" style="text-align:left;font-size: 11px;"> '+data['work_order_date']+''+
                                     '</div>'+
                                     '</div>'+
                                     '</div>'+
@@ -479,29 +501,38 @@
         });
     </script>
     <script>
-        $(document).on("click", ".chat_reply", function () {
-            var eventId = $(this).val();
-            $('#Order_ID').val(eventId);
-            $.ajax({
-                url: "{{env('BASE_URL')}}/order-chat/"+eventId,
-                type: 'GET',
-                dataType: 'json',
-                success: function (responce) {
-                    var obj = JSON.stringify(responce);
-                    var jsonObj = JSON.parse(obj);
-                    var str = '';
-                    $.each(jsonObj, function(key , data) {
-                        str  += [key+1]+'<span style="margin-left: 20%">'+data['message'] +'</span>'+
+        $(document).ready(function(){
+            $(document).on("click", ".chat_reply", function () {
+                var eventId = $(this).val();
+               /* $("#cancel_modal").validate({
+                    rules: {
+                        reply_text: {
+                            required: true
+                        }
+                    }
+                });*/
+                $('#Order_ID').val(eventId);
+                $.ajax({
+                    url: "{{env('BASE_URL')}}/order-chat/"+eventId,
+                    type: 'get',
+                    dataType: 'json',
+                    success: function (responce) {
+                        var obj = JSON.stringify(responce);
+                        var jsonObj = JSON.parse(obj);
+                        var str = '';
+                        $.each(jsonObj, function(key , data) {
+                            str  += [key+1]+'-'+'<span style="margin-left: 1%">'+data['message'] +'</span>'+
                                 '<br>';
 
-                    });
-                    $('#chat_message').html(str);
-                    console.log(jsonObj);
-                },
-                error: function (responce) {
-                }
-            });
+                        });
+                        $('#chat_message').html(str);
+                        console.log(jsonObj);
+                    },
+                    error: function (responce) {
+                    }
+                });
 
+            });
         });
 
         $(document).on("click",".chat-submit",function (e) {

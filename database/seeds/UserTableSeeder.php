@@ -15,50 +15,50 @@ class UserTableSeeder extends Seeder
         DB::table('users')->insert([
             [
                 'name' => 'Sales Admin',
-                'email' => 'salesadmin@gmail.com',
+                'user_name' => 'AGR0006',
                 'password' => bcrypt('salesadmin@123'),
                 'is_active' => 1,
-                'employ_code' => 6,
+                'employ_code' => 1,
                 'remember_token' => csrf_token(),
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
             [
                 'name' => 'Sales 1',
-                'email' => 'sales1@gmail.com',
+                'user_name' => 'AGR0008',
                 'password' => bcrypt('sales1@111'),
                 'is_active' => 1,
-                'employ_code' => 8,
+                'employ_code' => 2,
                 'remember_token' => csrf_token(),
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
             [
                 'name' => 'Sales 2',
-                'email' => 'sales2@gmail.com',
+                'user_name' => 'AGR0009',
                 'password' => bcrypt('sales2@222'),
                 'is_active' => 1,
-                'employ_code' => 9,
+                'employ_code' => 3,
                 'remember_token' => csrf_token(),
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
             [
                 'name' => 'Sales 3',
-                'email' => 'salesadmin@gmail.com',
+                'user_name' => 'AGR0010',
                 'password' => bcrypt('sales3@333'),
                 'is_active' => 1,
-                'employ_code' => 10,
+                'employ_code' => 4,
                 'remember_token' => csrf_token(),
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
             [
                 'name' => 'Sales 4',
-                'email' => 'salesadmin@gmail.com',
+                'user_name' => 'AGR0014',
                 'password' => bcrypt('sales4@444'),
                 'is_active' => 1,
-                'employ_code' => 14,
+                'employ_code' => 5,
                 'remember_token' => csrf_token(),
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
