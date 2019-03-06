@@ -26,12 +26,12 @@
         <!-- END PAGE HEAD-->
         <!-- BEGIN PAGE CONTENT BODY -->
         <div class="page-content content-min-height">
-            <div class="container">
+            <div class="container" style="width: 90%;">
                 <!-- BEGIN PAGE BREADCRUMBS -->
 
                 <!-- END PAGE BREADCRUMBS -->
                 <!-- BEGIN PAGE CONTENT INNER -->
-                <div class="page-content-inner">
+                {{--<div class="page-content-inner">--}}
                     <div class="row">
                         <div class="col-md-6 col-md-6">
                             <div class="portlet light bordered">
@@ -189,7 +189,7 @@
                                 </div>
                             </div>
                         </div>
-                </div>
+                {{--</div>--}}
                     {{--Model for reply--}}
                     <div id="reply" class="modal" role="dialog">
                         <div class="modal-dialog">
@@ -311,7 +311,7 @@
                                 str += '</div>'+
                                     '</div>'+
                                     '<div class="col-md-1" style="margin-left: -20px;">'+
-                                    '<button class="btn blue rounded fa fa-comments" style="padding-right: 170%;margin-left: 100%;" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply"></button>'+
+                                    '<button class="btn blue rounded fa fa-comments chat_reply" style="padding-right: 120%;margin-left: 100%;" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply"></button>'+
                                     '</div>'+
                                     '<div class="col-md-1" >'+
                                     '<button style="margin-left: 20px;" class="btn red rounded order_cancel" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#cancel">X</button>'+
@@ -347,7 +347,7 @@
                                 str += '</div>'+
                                     '</div>'+
                                     '<div class="col-md-1" style="margin-left: -20px;">'+
-                                    '<button class="btn blue rounded fa fa-comments" style="padding-right: 170%;margin-left: 100%;" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply"></button>'+
+                                    '<button class="btn blue rounded fa fa-comments chat_reply" style="padding-right: 120%;margin-left: 100%;" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply"></button>'+
                                     '</div>'+
                                     '<div class="col-md-1" >'+
                                     '<button style="margin-left: 20px;" class="btn red rounded order_cancel" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#cancel">X</button>'+
@@ -384,7 +384,7 @@
                                         str += '</div>'+
                                         '</div>'+
                                         '<div class="col-md-1" style="margin-left: -20px;">'+
-                                            '<button class="btn blue rounded fa fa-comments" style="padding-right: 170%;margin-left: 100%;" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply"></button>'+
+                                            '<button class="btn blue rounded fa fa-comments chat_reply" style="padding-right: 120%;margin-left: 100%;" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply"></button>'+
                                         '</div>'+
                                         '<div class="col-md-1" >'+
                                         '<button style="margin-left: 20px;" class="btn red rounded order_cancel" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#cancel">X</button>'+
@@ -420,7 +420,7 @@
                                 str += '</div>'+
                                     '</div>'+
                                     '<div class="col-md-1" style="margin-left: -20px;">'+
-                                    '<button class="btn blue rounded fa fa-comments" style="padding-right: 170%;margin-left: 100%;" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply"></button>'+
+                                    '<button class="btn blue rounded fa fa-comments chat_reply" style="padding-right: 120%;margin-left: 100%;" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply"></button>'+
                                     '</div>'+
                                     '<div class="col-md-1" >'+
                                     '<button style="margin-left: 20px;" class="btn red rounded order_cancel" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#cancel">X</button>'+
@@ -457,8 +457,8 @@
                                 }
                                 str += '</div>'+
                                     '</div>'+
-                                    '<div class="col-md-1 floating-chat" style="margin-left: -20px;">'+
-                                    '<button class="btn blue rounded fa fa-comments" style="padding-right: 170%;margin-left: 100%;" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply"></button>'+
+                                    '<div class="col-md-1 " style="margin-left: -20px;">'+
+                                    '<button class="btn blue rounded fa fa-comments chat_reply" style="padding-right: 120%;margin-left: 100%;" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply"></button>'+
                                     '</div>'+
                                     '<div class="col-md-1" >'+
                                     '<button style="margin-left: 20px;" class="btn red rounded order_cancel" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#cancel">X</button>'+
@@ -501,16 +501,8 @@
         });
     </script>
     <script>
-        $(document).ready(function(){
             $(document).on("click", ".chat_reply", function () {
                 var eventId = $(this).val();
-               /* $("#cancel_modal").validate({
-                    rules: {
-                        reply_text: {
-                            required: true
-                        }
-                    }
-                });*/
                 $('#Order_ID').val(eventId);
                 $.ajax({
                     url: "{{env('BASE_URL')}}/order-chat/"+eventId,
@@ -519,21 +511,20 @@
                     success: function (responce) {
                         var obj = JSON.stringify(responce);
                         var jsonObj = JSON.parse(obj);
+                        console.log(jsonObj);
                         var str = '';
                         $.each(jsonObj, function(key , data) {
+                            console.log(data)
                             str  += [key+1]+'-'+'<span style="margin-left: 1%">'+data['message'] +'</span>'+
                                 '<br>';
 
                         });
                         $('#chat_message').html(str);
-                        console.log(jsonObj);
                     },
                     error: function (responce) {
                     }
                 });
-
             });
-        });
 
         $(document).on("click",".chat-submit",function (e) {
             e.stopPropagation();
