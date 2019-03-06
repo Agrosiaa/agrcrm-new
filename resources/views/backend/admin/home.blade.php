@@ -208,13 +208,13 @@
                                                 <span class="required"> * </span>
                                             </label>
 
-                                            <div class="col-md-10">
+                                            <div class="col-md-9">
                                                 <input type="text"  class="form-control" value="" id="reply_text" name="reply_text" placeholder="" required="required">
                                             </div>
                                             <br>
                                             <br>
                                             <br>
-                                            <div class="col-md-12" id="chat_message" style="margin-left: 3%">
+                                            <div class="col-md-10" id="chat_message" style="margin-left: 3%">
 
                                             </div>
                                         </div>
@@ -243,10 +243,10 @@
                                     <form class="form-horizontal" role="form" action="" id="cancel_modal">
                                         <input type="hidden" name="order_id" value="" id="Cancel_Order_ID">
                                     <div class="form-group">
-                                        <label class="col-md-4 control-label"> Reason:
+                                        <label class="col-md-2 control-label"> Reason:
                                             <span class="required"> * </span>
                                         </label>
-                                        <div class="col-md-8">
+                                        <div class="col-md-10">
                                             <input type="text" class="form-control" id="cancel_text" value="" name="cancel_text" placeholder="" >
                                         </div>
                                     </div>
@@ -294,7 +294,7 @@
                             $('#message_pdtv').html(str);
                         }else{
                             $.each(value['pending_due_to_vendor'], function(key , data) {
-                                str = '<div class="row">'+
+                                str += '<div class="row">'+
                                     '<div class="col-md-1">'+
                                     '<div class="label label-sm label-info">'+
                                     ' <i class="fa fa-shopping-cart"></i>'+
