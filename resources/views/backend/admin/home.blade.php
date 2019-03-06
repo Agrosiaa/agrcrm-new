@@ -540,8 +540,10 @@
                 },
                 success: function (responce) {
                     $('#reply').modal('toggle');
+                    location.reload();
                 },
                 error: function (responce) {
+                    location.reload();
                     $('#reply').modal('toggle');
                 }
             })
@@ -565,8 +567,10 @@
                 },
                 success: function (responce) {
                     $('#cancel').modal('toggle');
+                    location.reload();
                 },
                 error: function (responce) {
+                    location.reload();
                     $('#cancel').modal('toggle');
                 }
             })
