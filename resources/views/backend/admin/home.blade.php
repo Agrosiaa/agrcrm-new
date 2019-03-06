@@ -211,6 +211,9 @@
                                             <div class="col-md-10">
                                                 <input type="text"  class="form-control" value="" id="reply_text" name="reply_text" placeholder="" required="required">
                                             </div>
+                                            <br>
+                                            <br>
+                                            <br>
                                             <div class="col-md-12" id="chat_message" style="margin-left: 3%">
 
                                             </div>
@@ -310,11 +313,11 @@
                                 }
                                 str += '</div>'+
                                     '</div>'+
-                                    '<div class="col-md-1" style="margin-left: -20px;">'+
-                                    '<button class="btn blue rounded fa fa-comments chat_reply" style="padding-right: 120%;margin-left: 100%;" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply"></button>'+
+                                    '<div class="col-md-1">'+
+                                    '<button class="btn blue rounded chat_reply" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply"><i class="fa fa-comments"></i></button>'+
                                     '</div>'+
                                     '<div class="col-md-1" >'+
-                                    '<button style="margin-left: 20px;" class="btn red rounded order_cancel" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#cancel">X</button>'+
+                                    '<button  class="btn red rounded order_cancel" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#cancel"><i class="fa fa-close"></i></button>'+
                                     '</div>'+
                                     '</div>'+
                                     '<br>';
@@ -346,11 +349,11 @@
                                 }
                                 str += '</div>'+
                                     '</div>'+
-                                    '<div class="col-md-1" style="margin-left: -20px;">'+
-                                    '<button class="btn blue rounded fa fa-comments chat_reply" style="padding-right: 120%;margin-left: 100%;" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply"></button>'+
+                                    '<div class="col-md-1">'+
+                                    '<button class="btn blue rounded chat_reply" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply"><i class="fa fa-comments"></i></button>'+
                                     '</div>'+
                                     '<div class="col-md-1" >'+
-                                    '<button style="margin-left: 20px;" class="btn red rounded order_cancel" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#cancel">X</button>'+
+                                    '<button  class="btn red rounded order_cancel" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#cancel"><i class="fa fa-close"></i></button>'+
                                     '</div>'+
                                     '</div>'+
                                     '<br>';
@@ -383,12 +386,12 @@
                                             }
                                         str += '</div>'+
                                         '</div>'+
-                                        '<div class="col-md-1" style="margin-left: -20px;">'+
-                                            '<button class="btn blue rounded fa fa-comments chat_reply" style="padding-right: 120%;margin-left: 100%;" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply"></button>'+
-                                        '</div>'+
-                                        '<div class="col-md-1" >'+
-                                        '<button style="margin-left: 20px;" class="btn red rounded order_cancel" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#cancel">X</button>'+
-                                        '</div>'+
+                                            '<div class="col-md-1">'+
+                                            '<button class="btn blue rounded chat_reply" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply"><i class="fa fa-comments"></i></button>'+
+                                            '</div>'+
+                                            '<div class="col-md-1" >'+
+                                            '<button  class="btn red rounded order_cancel" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#cancel"><i class="fa fa-close"></i></button>'+
+                                            '</div>'+
                                         '</div>'+
                                         '<br>';
                                     $('#pfvc_data').append(str);
@@ -419,11 +422,11 @@
                                 }
                                 str += '</div>'+
                                     '</div>'+
-                                    '<div class="col-md-1" style="margin-left: -20px;">'+
-                                    '<button class="btn blue rounded fa fa-comments chat_reply" style="padding-right: 120%;margin-left: 100%;" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply"></button>'+
+                                    '<div class="col-md-1">'+
+                                    '<button class="btn blue rounded chat_reply" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply"><i class="fa fa-comments"></i></button>'+
                                     '</div>'+
                                     '<div class="col-md-1" >'+
-                                    '<button style="margin-left: 20px;" class="btn red rounded order_cancel" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#cancel">X</button>'+
+                                    '<button  class="btn red rounded order_cancel" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#cancel"><i class="fa fa-close"></i></button>'+
                                     '</div>'+
                                     '</div>'+
                                     '<br>';
@@ -457,11 +460,11 @@
                                 }
                                 str += '</div>'+
                                     '</div>'+
-                                    '<div class="col-md-1 " style="margin-left: -20px;">'+
-                                    '<button class="btn blue rounded fa fa-comments chat_reply" style="padding-right: 120%;margin-left: 100%;" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply"></button>'+
+                                    '<div class="col-md-1">'+
+                                    '<button class="btn blue rounded chat_reply" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply"><i class="fa fa-comments"></i></button>'+
                                     '</div>'+
                                     '<div class="col-md-1" >'+
-                                    '<button style="margin-left: 20px;" class="btn red rounded order_cancel" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#cancel">X</button>'+
+                                    '<button  class="btn red rounded order_cancel" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#cancel"><i class="fa fa-close"></i></button>'+
                                     '</div>'+
                                     '</div>'+
                                     '<br>';
@@ -514,8 +517,7 @@
                         console.log(jsonObj);
                         var str = '';
                         $.each(jsonObj, function(key , data) {
-                            console.log(data)
-                            str  += [key+1]+'-'+'<span style="margin-left: 1%">'+data['message'] +'</span>'+
+                            str  += [key+1]+')'+'<span style="margin-left: 1%">'+data['message'] +'</span>'+
                                 '<br>';
 
                         });
