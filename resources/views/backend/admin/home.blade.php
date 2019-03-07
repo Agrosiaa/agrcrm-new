@@ -195,12 +195,11 @@
 
                         <div id="reply" class="modal" role="dialog" data-dismiss="modal">
                             <div class="modal-dialog">
-
                                 <!-- Modal content-->
                                 <div class="modal-content">
                                         <div class="modal-header">
                                             <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                            <h4  class="modal-title">Chat History</h4>
+                                            <h4 class="modal-title reply-title"> </h4>
                                         </div>
                                     <div class="modal-body">
                                         <div class="row">
@@ -217,7 +216,7 @@
                                             </div>
                                         </div>
                                         <div class="row" id="query-form">
-                                            <form action="" method="POST">
+                                            <form action="" role="form">
                                                 <div class="col-md-9">
                                                     <input type="text" name="reply_text" id="reply_text" required="required" maxlength="500" class="form-control" placeholder="reply">
                                                     <input type="hidden" name="order_id" value="" id="Order_ID">
@@ -229,52 +228,11 @@
                                             </form>
                                         </div>
                                     </div>
-
                                 </div>
-
                             </div>
                         </div>
 
                     {{--Model for reply--}}
-                    {{--<div id="reply" class="modal" role="dialog">
-                        <div class="modal-dialog">
-
-                            <!-- Modal content-->
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                    <h4 class="modal-title">Chat</h4>
-                                </div>
-                                <div class="modal-body">
-                                    <form class="form-horizontal" role="form" action="" id="chat_modal">
-                                        <input type="hidden" name="order_id" value="" id="Order_ID">
-                                        <input type="hidden" name="work_status_id" value="" id="work_ID">
-                                        <div class="form-group">
-                                            <label class="col-md-2 control-label"> Reply:
-                                                <span class="required"> * </span>
-                                            </label>
-
-                                            <div class="col-md-9">
-                                                <input type="text"  class="form-control" value="" id="reply_text" name="reply_text" placeholder="" required="required">
-                                            </div>
-                                            <br>
-                                            <br>
-                                            <br>
-                                            <div class="col-md-10" id="chat_message" style="margin-left: 3%">
-
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-3 pull-right">
-                                                <a href="javascript:void(0)" class="btn btn-sm btn-success pull-right chat-submit">Submit</a>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>--}}
-                    {{--End of modal--}}
                     {{--Model for cancle--}}
                     <div id="cancel" class="modal" role="dialog">
                         <div class="modal-dialog">
@@ -556,6 +514,7 @@
                 var sales_id = $('#sales_id').val();
                 $('#Order_ID').val(orderId);
                 $('#work_ID').val(workOrderStatusId);
+                $('.reply-title').text("Order History - AGR0000" +orderId+'');
                 $.ajax({
                     url: "{{env('BASE_URL')}}/order-chat",
                     type: 'get',
@@ -610,7 +569,6 @@
                 },
                 success: function (responce) {
                     $('#reply').modal('toggle');
-                    alert("reply submitted");
                     location.reload();
                 },
                 error: function (responce) {
@@ -640,7 +598,6 @@
                 },
                 success: function (responce) {
                     $('#cancel').modal('toggle');
-                    alert("order has been cancled");
                     location.reload();
                 },
                 error: function (responce) {
