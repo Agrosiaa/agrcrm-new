@@ -514,7 +514,7 @@
                 var sales_id = $('#sales_id').val();
                 $('#Order_ID').val(orderId);
                 $('#work_ID').val(workOrderStatusId);
-                $('.reply-title').text("Order History - AGR0000" +orderId+'');
+                $('.reply-title').text("Chat History - AGR0000" +orderId+'');
                 $.ajax({
                     url: "{{env('BASE_URL')}}/order-chat",
                     type: 'get',
