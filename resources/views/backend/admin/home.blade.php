@@ -32,6 +32,8 @@
                 <!-- END PAGE BREADCRUMBS -->
                 <!-- BEGIN PAGE CONTENT INNER -->
                 {{--<div class="page-content-inner">--}}
+                <?php $user = Auth::user(); ?>
+                <input type="hidden" id="sales_id" value="{{$user['id']}}">
                     <div class="row">
                         <div class="col-md-6 col-md-6">
                             <div class="portlet light bordered">
@@ -190,8 +192,51 @@
                             </div>
                         </div>
                 {{--</div>--}}
+
+                        <div id="reply" class="modal" role="dialog" data-dismiss="modal">
+                            <div class="modal-dialog">
+
+                                <!-- Modal content-->
+                                <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                            <h4  class="modal-title">Chat History</h4>
+                                        </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="portlet light ">
+                                                    <div class="portlet-body">
+                                                        <div class="scroller" style="height: 338px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
+                                                            <div class="general-item-list" id="chat_message">
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row" id="query-form">
+                                            <form action="" method="POST">
+                                                <div class="col-md-9">
+                                                    <input type="text" name="reply_text" id="reply_text" required="required" maxlength="500" class="form-control" placeholder="reply">
+                                                    <input type="hidden" name="order_id" value="" id="Order_ID">
+                                                    <input type="hidden" name="work_status_id" value="" id="work_ID">
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <button class="btn btn-sm btn-success table-group-action-submit chat-submit pull-right">Reply</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+
                     {{--Model for reply--}}
-                    <div id="reply" class="modal" role="dialog">
+                    {{--<div id="reply" class="modal" role="dialog">
                         <div class="modal-dialog">
 
                             <!-- Modal content-->
@@ -203,6 +248,7 @@
                                 <div class="modal-body">
                                     <form class="form-horizontal" role="form" action="" id="chat_modal">
                                         <input type="hidden" name="order_id" value="" id="Order_ID">
+                                        <input type="hidden" name="work_status_id" value="" id="work_ID">
                                         <div class="form-group">
                                             <label class="col-md-2 control-label"> Reply:
                                                 <span class="required"> * </span>
@@ -227,7 +273,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div>--}}
                     {{--End of modal--}}
                     {{--Model for cancle--}}
                     <div id="cancel" class="modal" role="dialog">
@@ -314,7 +360,7 @@
                                 str += '</div>'+
                                     '</div>'+
                                     '<div class="col-md-1">'+
-                                    '<button class="btn blue rounded chat_reply" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply"><i class="fa fa-comments"></i></button>'+
+                                    '<button class="btn blue rounded chat_reply" id="'+data['work_order_status_id']+'" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply"><i class="fa fa-comments"></i></button>'+
                                     '</div>'+
                                     '<div class="col-md-1" >'+
                                     '<button  class="btn red rounded order_cancel" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#cancel"><i class="fa fa-close"></i></button>'+
@@ -350,7 +396,7 @@
                                 str += '</div>'+
                                     '</div>'+
                                     '<div class="col-md-1">'+
-                                    '<button class="btn blue rounded chat_reply" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply"><i class="fa fa-comments"></i></button>'+
+                                    '<button class="btn blue rounded chat_reply" id="'+data['work_order_status_id']+'" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply"><i class="fa fa-comments"></i></button>'+
                                     '</div>'+
                                     '<div class="col-md-1" >'+
                                     '<button  class="btn red rounded order_cancel" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#cancel"><i class="fa fa-close"></i></button>'+
@@ -387,7 +433,7 @@
                                         str += '</div>'+
                                         '</div>'+
                                             '<div class="col-md-1">'+
-                                            '<button class="btn blue rounded chat_reply" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply"><i class="fa fa-comments"></i></button>'+
+                                            '<button class="btn blue rounded chat_reply" id="'+data['work_order_status_id']+'" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply"><i class="fa fa-comments"></i></button>'+
                                             '</div>'+
                                             '<div class="col-md-1" >'+
                                             '<button  class="btn red rounded order_cancel" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#cancel"><i class="fa fa-close"></i></button>'+
@@ -423,7 +469,7 @@
                                 str += '</div>'+
                                     '</div>'+
                                     '<div class="col-md-1">'+
-                                    '<button class="btn blue rounded chat_reply" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply"><i class="fa fa-comments"></i></button>'+
+                                    '<button class="btn blue rounded chat_reply" id="'+data['work_order_status_id']+'" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply"><i class="fa fa-comments"></i></button>'+
                                     '</div>'+
                                     '<div class="col-md-1" >'+
                                     '<button  class="btn red rounded order_cancel" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#cancel"><i class="fa fa-close"></i></button>'+
@@ -461,7 +507,7 @@
                                 str += '</div>'+
                                     '</div>'+
                                     '<div class="col-md-1">'+
-                                    '<button class="btn blue rounded chat_reply" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply"><i class="fa fa-comments"></i></button>'+
+                                    '<button class="btn blue rounded chat_reply" id="'+data['work_order_status_id']+'" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply"><i class="fa fa-comments"></i></button>'+
                                     '</div>'+
                                     '<div class="col-md-1" >'+
                                     '<button  class="btn red rounded order_cancel" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#cancel"><i class="fa fa-close"></i></button>'+
@@ -505,21 +551,39 @@
     </script>
     <script>
             $(document).on("click", ".chat_reply", function () {
-                var eventId = $(this).val();
-                $('#Order_ID').val(eventId);
+                var orderId = $(this).val();
+                var workOrderStatusId = $(this).attr('id');
+                var sales_id = $('#sales_id').val();
+                $('#Order_ID').val(orderId);
+                $('#work_ID').val(workOrderStatusId);
                 $.ajax({
-                    url: "{{env('BASE_URL')}}/order-chat/"+eventId,
+                    url: "{{env('BASE_URL')}}/order-chat",
                     type: 'get',
                     dataType: 'json',
-                    success: function (responce) {
+                    data: {
+                        'order_id' : orderId,
+                        'work_order_status_id' : workOrderStatusId,
+                        'sales_id' : sales_id
+                    },
+                    success: function (responce , xrh){
                         var obj = JSON.stringify(responce);
                         var jsonObj = JSON.parse(obj);
                         console.log(jsonObj);
                         var str = '';
                         $.each(jsonObj, function(key , data) {
-                            str  += [key+1]+')'+'<span style="margin-left: 1%">'+data['message'] +'</span>'+
+                            str  += '<div class="item">'+
+                                '<div class="item-head">'+
+                                '<div class="item-details">'+
+                                    '<img class="item-pic rounded" height="35" width="35" src="/assets/layouts/layout3/img/avatar.png">'+
+                                    '<span>'+data['userName']+'</span>'+
+                                '&nbsp;&nbsp;&nbsp;<span class="item-label">' +data['time']+ ' Ago</span>'+
+                                '</div>'+
+                                '</div>'+
+                                '<div class="item-body">'+
+                                   '<span>'+data['message']+'</span>'+
+                                '</div>'+
+                                '</div>'+
                                 '<br>';
-
                         });
                         $('#chat_message').html(str);
                     },
@@ -532,16 +596,21 @@
             e.stopPropagation();
             var OrderId = $('#Order_ID').val();
             var comment = $('#reply_text').val();
+            var sales_id = $('#sales_id').val();
+            var work_status_id =  $('#work_ID').val();
             $.ajax({
                 url: "{{env('BASE_URL')}}/order-reply",
                 type: 'POST',
                 dataType: 'array',
                 data: {
                     'order_id' : OrderId,
-                    'reply_message' : comment
+                    'reply_message' : comment,
+                    'sales_id' : sales_id,
+                    'work_order_status_id' : work_status_id
                 },
                 success: function (responce) {
                     $('#reply').modal('toggle');
+                    alert("reply submitted");
                     location.reload();
                 },
                 error: function (responce) {
@@ -557,6 +626,7 @@
 
         $(document).on("click",".cancel-submit",function (e) {
             e.stopPropagation();
+            var sales_id = $('#sales_id').val();
             var OrderId = $('#Cancel_Order_ID').val();
             var comment = $('#cancel_text').val();
             $.ajax({
@@ -565,10 +635,12 @@
                 dataType: 'array',
                 data: {
                     'order_id' : OrderId,
-                    'cancel_text' : comment
+                    'cancel_text' : comment,
+                    'sales_id' : sales_id
                 },
                 success: function (responce) {
                     $('#cancel').modal('toggle');
+                    alert("order has been cancled");
                     location.reload();
                 },
                 error: function (responce) {
