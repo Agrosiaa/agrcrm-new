@@ -34,6 +34,7 @@
                 {{--<div class="page-content-inner">--}}
                 <?php $user = Auth::user(); ?>
                 <input type="hidden" id="sales_id" value="{{$user['id']}}">
+                <input type="hidden" id="role_id" value="{{$user['role_id']}}">
                     <div class="row">
                         <div class="col-md-6 col-md-6">
                             <div class="portlet light bordered">
@@ -281,10 +282,16 @@
 <script src="/assets/global/plugins/jquery.min.js" type="text/javascript"></script>
     <script>
         $(document).ready(function() {
+            var sales_id = $('#sales_id').val();
+            var role_id = $('#role_id').val();
             $.ajax({
                 url: "{{env('BASE_URL')}}/order-detail",
                 type: 'get',
                 dataType: 'json',
+                data:{
+                    'sales_id': sales_id,
+                    'role_id' : role_id
+                },
                 success: function (responce) {
                     var obj = JSON.stringify(responce);
                     var jsonObj = JSON.parse(obj);
