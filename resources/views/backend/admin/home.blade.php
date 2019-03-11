@@ -53,7 +53,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                    <li id="pdtv_data">
+                                                    <li id="pdtv_data" style="background-color: white">
                                                     </li>
                                         </ul>
                                     </div>
@@ -79,7 +79,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                                <li id="pfvc_data">
+                                                <li id="pfvc_data" style="background-color: white">
                                                 </li>
                                         </ul>
                                     </div>
@@ -105,7 +105,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                            <li id="pfcc_data">
+                                            <li id="pfcc_data" style="background-color: white">
                                             </li>
                                         </ul>
                                     </div>
@@ -131,7 +131,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                            <li id="pfp_data">
+                                            <li id="pfp_data" style="background-color: white">
                                             </li>
                                         </ul>
                                     </div>
@@ -157,7 +157,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                            <li id="ci_data">
+                                            <li id="ci_data" style="background-color: white">
                                             </li>
                                         </ul>
                                     </div>
@@ -183,7 +183,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                            <li id="do_data">
+                                            <li id="do_data" style="background-color: white">
                                             </li>
                                         </ul>
                                     </div>
