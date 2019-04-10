@@ -54,9 +54,6 @@ class AuthController extends Controller
                 $request->session()->flash('error', $message);
                 return back()->withInput();//->with('error',$message);
             } else{
-                $user->update([
-                    'last_login_date' => Carbon::now()->toDateTimeString(),
-                ]);
                 if (Auth::attempt(['user_name' => $request->user_id,'password' => $request->password])) {
                     return redirect('dashboard');
                 } else{

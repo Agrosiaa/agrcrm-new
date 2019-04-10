@@ -378,7 +378,7 @@
                                     '<button class="btn blue rounded chat_reply" id="'+data['work_order_status_id']+'" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply"><i class="fa fa-comments"></i></button>'+
                                     '</div>'+
                                     '<div class="col-md-1" >'+
-                                    '<button style="width: 40px; height: 35px; border-radius:10px; margin-top: 4px;position: relative;" class="btn red rounded order_cancel" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#cancel"><i class="fa fa-close"></i></button>'+
+                                    '<button class="btn red rounded order_cancel" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#cancel"><i class="fa fa-close"></i></button>'+
                                     '</div>'+
                                     '</div>'+
                                     '<br>';
