@@ -6,32 +6,6 @@
        .feeds li{
            text-align: left;
        }
-       .chat_reply {
-           width: 40px;
-           height: 35px;
-           border-radius: 5px;
-           border: none;
-           margin-top: 4px;
-           position: relative;
-           box-shadow: 0 2px 5px rgba(0,0,0,0.4);
-       }
-
-       .chat_reply:before {
-           content: attr(data-count);
-           width: 18px;
-           height: 18px;
-           line-height: 18px;
-           background-color: red;
-           text-align: center;
-           display: block;
-           border-radius: 50%;
-           border: 1px solid #FFF;
-           box-shadow: 0 1px 3px rgba(0,0,0,0.4);
-           position: absolute;
-           left: auto;
-           right: -7px;
-           top: -5px;
-       }
    </style>
 
 @endsection
@@ -401,7 +375,7 @@
                                 str += '</div>'+
                                     '</div>'+
                                     '<div class="col-md-1">'+
-                                    '<button data-count="1" class="btn blue rounded chat_reply" id="'+data['work_order_status_id']+'" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply"><i class="fa fa-comments"></i></button>'+
+                                    '<button class="btn blue rounded chat_reply" id="'+data['work_order_status_id']+'" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply"><i class="fa fa-comments"></i></button>'+
                                     '</div>'+
                                     '<div class="col-md-1" >'+
                                     '<button style="width: 40px; height: 35px; border-radius:10px; margin-top: 4px;position: relative;" class="btn red rounded order_cancel" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#cancel"><i class="fa fa-close"></i></button>'+
@@ -548,7 +522,7 @@
                                 str += '</div>'+
                                     '</div>'+
                                     '<div class="col-md-1">'+
-                                    '<button data-count="1" class="btn blue rounded chat_reply" id="'+data['work_order_status_id']+'" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply"><i class="fa fa-comments"></i></button>'+
+                                    '<button class="btn blue rounded chat_reply" id="'+data['work_order_status_id']+'" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply"><i class="fa fa-comments"></i></button>'+
                                     '</div>'+
                                     '<div class="col-md-1" >'+
                                     '<button  class="btn red rounded order_cancel" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#cancel"><i class="fa fa-close"></i></button>'+
