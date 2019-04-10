@@ -7,6 +7,7 @@
            text-align: left;
        }
    </style>
+
 @endsection
 @section('content')
 <!-- BEGIN CONTAINER -->
@@ -173,6 +174,13 @@
                                         <i class="icon-share text-success"></i>
                                         <span class="caption-subject text-success bold uppercase">Dispatched orders</span>
                                     </div>
+                                    <div class="pull-right">
+                                        <label class="control-label">
+                                            Search :
+                                        </label>
+                                        <input type="text" name="search" id="order_number" value="">
+                                        <button class="btn btn-success" id="search_orders" value="">search</button>
+                                    </div>
                                 </div>
                                 <div class="portlet-body">
                                     <div class="scroller" style="height: 250px;" data-always-visible="1" data-rail-visible="0">
@@ -184,6 +192,8 @@
                                                     </div>
                                                 </div>
                                             <li id="do_data" style="background-color: white">
+                                            </li>
+                                            <li id="search_do_data" style="background-color: white" hidden>
                                             </li>
                                         </ul>
                                     </div>
@@ -284,6 +294,47 @@
         $(document).ready(function() {
             var sales_id = $('#sales_id').val();
             var role_id = $('#role_id').val();
+            $('#search_orders').on('click', function() {
+                var searchData = ($("#order_number").val()).toLowerCase();
+                $.ajax({
+                    url: "{{env('BASE_URL')}}/order-search",
+                    type: 'get',
+                    dataType: 'json',
+                    data:{
+                        'order': searchData,
+                        'sales_id': sales_id
+                    },
+                    success: function (res){
+                        var obj = JSON.stringify(res);
+                        var jsonObj = JSON.parse(obj);
+                        if(jsonObj['length'] == 1){
+                            $("#do_data").hide();
+                            $("#search_do_data").show();
+                            var str = '';
+                            str = '<div class="row">'+
+                                '<div class="col-md-1">'+
+                                '<div class="label label-sm label-info">'+
+                                ' <i class="fa fa-shopping-cart"></i>'+
+                                ' </div>'+
+                                ' </div>'+
+                                '<div class="col-md-7" style="margin-left: -15px;margin-top: -3px">'+
+                                'Order Number : <span>'+"AGR0000"+ +jsonObj[0]['order_id']+' </span>'+
+                                '<br>'+
+                                '<span style="font-size: 11px"><b>Order timestamp : '+jsonObj[0]['orders']['created_at']+'</b></span>'+
+                                '</div>'+
+                                '<div class="col-md-4" style="margin-top: -3px;">'+
+                                '<div class="date" style="text-align:left;font-size: 11px;"> '+jsonObj[0]['updated_at']+''+
+                                '</div>'+
+                                '</div>'+
+                                '</div>'+
+                                '<br>';
+                            $('#search_do_data').append(str);
+                        }else{
+                            alert("please enter valid order number");
+                        }
+                    }
+                })
+            });
             $.ajax({
                 url: "{{env('BASE_URL')}}/order-detail",
                 type: 'get',
@@ -297,7 +348,6 @@
                     var jsonObj = JSON.parse(obj);
                     var str = '';
                     $.each(jsonObj, function(key , value) {
-                        console.log(value);
                         if (value['pending_due_to_vendor']['length'] == 0){
                             str = '<div class="desc">' +
                                 'No orders are present in Pending Due to vendor' +
@@ -328,7 +378,7 @@
                                     '<button class="btn blue rounded chat_reply" id="'+data['work_order_status_id']+'" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply"><i class="fa fa-comments"></i></button>'+
                                     '</div>'+
                                     '<div class="col-md-1" >'+
-                                    '<button  class="btn red rounded order_cancel" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#cancel"><i class="fa fa-close"></i></button>'+
+                                    '<button class="btn red rounded order_cancel" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#cancel"><i class="fa fa-close"></i></button>'+
                                     '</div>'+
                                     '</div>'+
                                     '<br>';
