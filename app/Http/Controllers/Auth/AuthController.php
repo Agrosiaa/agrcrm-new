@@ -8,6 +8,7 @@ use App\Http\Requests\LoginRequest;
 use App\Http\Requests\TempRequest;
 use App\Role;
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Validator;
@@ -53,6 +54,9 @@ class AuthController extends Controller
                 $request->session()->flash('error', $message);
                 return back()->withInput();//->with('error',$message);
             } else{
+                $user->update([
+                    'last_login_date' => Carbon::now()->toDateTimeString(),
+                ]);
                 if (Auth::attempt(['user_name' => $request->user_id,'password' => $request->password])) {
                     return redirect('dashboard');
                 } else{
