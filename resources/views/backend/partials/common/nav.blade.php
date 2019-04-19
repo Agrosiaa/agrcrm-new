@@ -4,7 +4,7 @@
                 <!-- BEGIN LOGO -->
                 <div class="page-logo">
                     <a href="/">
-                        <img src="assets/pages/img/login/agrosia-logo.png" alt="logo" class="logo-default">
+                        <img src="/assets/pages/img/login/agrosia-logo.png" alt="logo" class="logo-default">
                     </a>
                 </div>
                 <!-- END LOGO -->
@@ -59,10 +59,18 @@
                 <!-- DOC: Remove data-hover="dropdown" and data-close-others="true" attributes below to disable the dropdown opening on mouse hover -->
                 <div class="hor-menu">
                     <ul class="nav navbar-nav">
-                        <li aria-haspopup="true" class="menu-dropdown classic-menu-dropdown">
-                            <a href="/dashboard"> Dashboard
-                                <span class="arrow"></span>
-                            </a>
+                        <li class="menu-dropdown classic-menu-dropdown">
+                            <a href="/dashboard"> Dashboard</a>
+                        </li>
+                        <li class="menu-dropdown classic-menu-dropdown">
+                            <a href="crm/manage"> CRM</a>
+                                <ul class="dropdown-menu pull-left">
+                                    <li class=" ">
+                                        <a href="leads/manage" class="nav-link">
+                                            Leads
+                                        </a>
+                                    </li>
+                                </ul>
                         </li>
                     </ul>
                 </div>

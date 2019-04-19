@@ -26,8 +26,13 @@ Route::post('password/reset', 'Auth\PasswordController@postReset');
 Route::get('city/{id}',array('uses' => 'UserController@getCity'));
 Route::post('password/update', 'Auth\PasswordController@updatePassword');
 Route::get('confirm/{token}', 'Auth\AuthController@confirm');
+Route::group(['prefix' => '/crm'], function () {
+    Route::get('/manage',array('uses' => 'Crm\CrmController@manage'));
+});
+Route::group(['prefix' => '/leads'], function () {
+    Route::get('/manage',array('uses' => 'Lead\LeadController@manage'));
+});
 Route::get('refresh-csrf', function(){
-    /* http://stackoverflow.com/questions/31449434/handling-expired-token-in-laravel*/
     return csrf_token();
 });
 
