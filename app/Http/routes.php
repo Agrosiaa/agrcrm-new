@@ -32,7 +32,7 @@ Route::group(['prefix' => '/crm'], function () {
 Route::group(['prefix' => '/leads'], function () {
     Route::get('/manage',array('uses' => 'Lead\LeadController@manage'));
     Route::get('/export-customer-number',array('uses' => 'Lead\LeadController@exportCustomerView'));
-    Route::post('/export-customer-number',array('uses' => 'Lead\LeadController@exportCustomerSheet'));
+    Route::post('/export-customer-numbers',array('uses' => 'Lead\LeadController@exportCustomerSheet'));
 });
 Route::get('refresh-csrf', function(){
     return csrf_token();

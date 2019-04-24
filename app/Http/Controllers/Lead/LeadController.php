@@ -59,11 +59,11 @@ class LeadController extends Controller
                                 $request->session()->flash('error', $message);
                                 return redirect('leads/export-for-logistic');
                             }else{
-                                $users = User::where();
-                                $customerData['customer_number_status_id'] = CustomerNumberStatus::where('slug','=','new')->pluck('id');
-                                $customerData['user_id'] =
+//                                $users = User::where();
+                                $customerData['customer_number_status_id'] = CustomerNumberStatus::where('slug','new')->pluck('id');
+                                $customerData['user_id'] = 2;
                                 $customerData['number'] = $rows[0];
-                                CustomerNumberStatusDetails::get();
+                                CustomerNumberStatusDetails::create($customerData);
                             }
                         }
                         $rowIndex++;
@@ -74,7 +74,7 @@ class LeadController extends Controller
             $reader->close();
             $message = "File uploaded successfully";
             $request->session()->flash('success', $message);
-            return redirect('operational/logistic/export-for-logistic');
+            return redirect('leads/export-customer-number');
         }catch(\Exception $exception){
             $data =[
                 'action' => 'export excel upload',
