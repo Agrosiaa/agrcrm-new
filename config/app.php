@@ -206,17 +206,9 @@ return [
         'View'      => Illuminate\Support\Facades\View::class,
         /* barryvdh debugger */
         'Debugbar' => Barryvdh\Debugbar\Facade::class,
-        'CategoryHelper' => \App\Helpers\CategoryHelper::class,
-        'SuperAdminHelper' => \App\Helpers\SuperAdminHelper::class,
-        'ProductHelper' => \App\Helpers\ProductHelper::class,
-        'CartHelper' => \App\Helpers\CartHelper::class,
-        'LanguageHelper' => \App\Helpers\LanguageHelper::class,
-        'ImageHelper' => \App\Helpers\ImageHelper::class,
-        'OrderHelper' => \App\Helpers\OrderHelper::class,
+        'CustomerNumberHelper' => \App\Helpers\CustomerNumberHelper::class,
         /* Image Magick */
         'Image' => Intervention\Image\Facades\Image::class,
-        'PDF' => Elibyy\TCPDF\Facades\TCPDF::class,
-        'Curl' => \Ixudra\Curl\Facades\Curl::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class
     ],
 

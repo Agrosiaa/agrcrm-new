@@ -21,8 +21,8 @@
                 <div class="row">
                     @include('backend.partials.error-messages')
                     <div class="col-md-12">
-
                         <!-- Begin: life time stats -->
+                        <?php $totalRecords = CustomerNumberHelper::orderCount(); ?>
                         <div class="portlet light portlet-fit portlet-datatable ">
                             <div class="portlet-title">
                                 <div class="caption">
@@ -32,37 +32,40 @@
                             </div>
                             <div class="portlet-body">
                                 <div class="row margin-bottom-40">
-                                        <div class="col-md-2 tags current dashboard-stat purple-plum"{{-- onclick="redirect('to_pack')--}}>
+                                        <div class="col-md-2 tags current dashboard-stat purple-plum" onclick="redirect('new')">
                                             <div class="tag1">
                                                 <div class="text-center"></div>
-                                                <div class="text-center margin-bottom-10 margin-top-10">New</div>
+                                                <div class="text-center margin-bottom-10 margin-top-10">New ({{$totalRecords['new']}})</div>
                                             </div>
                                         </div>
-                                        <div class="col-md-2 tags dashboard-stat yellow-mint" >
+                                        <div class="col-md-2 tags dashboard-stat yellow-mint" onclick="redirect('call-back')">
                                             <div class="tag2">
                                                 <div class="text-center"></div>
-                                                <div class="text-center margin-bottom-10 margin-top-10">Call Back {{--({{$totalRecords['pack']}})--}}</div>
+                                                <div class="text-center margin-bottom-10 margin-top-10">Call Back ({{$totalRecords['call-back']}})</div>
                                             </div>
                                         </div>
-                                        <div class="col-md-2 tags dashboard-stat green-dark" >
+                                        <div class="col-md-2 tags dashboard-stat green-dark" onclick="redirect('complete')">
                                             <div class="tag3">
                                                 <div class="text-center"></div>
-                                                <div class="text-center margin-bottom-10 margin-top-10">Complete</div>
+                                                <div class="text-center margin-bottom-10 margin-top-10">Complete ({{$totalRecords['complete']}})</div>
                                             </div>
                                         </div>
-                                        <div class="col-md-2 tags dashboard-stat red-flamingo" >
+                                        <div class="col-md-2 tags dashboard-stat red-flamingo" onclick="redirect('failed')">
                                             <div class="tag4">
                                                 <div class="text-center"></div>
-                                                <div class="text-center margin-bottom-10 margin-top-10">Failed </div>
+                                                <div class="text-center margin-bottom-10 margin-top-10">Failed ({{$totalRecords['failed']}})</div>
                                             </div>
                                         </div>
+                                    @if($user['role_id'] == 1)
+                                        <div class="col-md-4 pull-right" style="padding-top: 15px;">
+                                            <a href="/leads/export-customer-number" class="btn blue" style="margin-left: 30%">
+                                                Upload Sheet
+                                            </a>
+                                        </div>
+                                    @endif
                                     </div>
-                                    <!--Begin Packing Checklist popup -->
-                                    <!--End packinh-checklist popup -->
-                                    <!--Begin manifest Checklist popup -->
-
-                                    <!--End manifest-checklist popup -->
-                                        <table class="table table-striped table-bordered table-hover table-checkable" id="datatable_orders">
+                                    @if($user['role_id'] == 1)
+                                        <table class="table table-striped table-bordered table-hover table-checkable" id="sales_admin_list">
                                             <thead>
                                             <tr role="row" class="heading">
                                                 <th width="20%"> Mobile&nbsp;No </th>
@@ -73,11 +76,11 @@
                                             </tr>
                                             <tr role="row" class="filter">
                                                 <td>
-                                                    <input type="text" class="form-control form-filter input-sm" name="customer_name"> </td>
+                                                    <input type="text" class="form-control form-filter input-sm" name="mobile_number"> </td>
                                                 <td>
-                                                    <input type="text" class="form-control form-filter input-sm" name="quantity" > </td>
+                                                    <input type="text" class="form-control form-filter input-sm" name="agent_name" > </td>
                                                 <td>
-                                                    <input type="text" class="form-control form-filter input-sm" name="order_ship_to"> </td>
+                                                    <input type="text" class="form-control form-filter input-sm" name="created_date"> </td>
                                                 <td>
                                                     <div class="margin-bottom-5">
                                                         <button class="btn btn-sm btn-success filter-submit margin-bottom">
@@ -90,6 +93,33 @@
                                             </thead>
                                             <tbody></tbody>
                                         </table>
+                                        @else
+                                    <table class="table table-striped table-bordered table-hover table-checkable" id="sales_admin_list">
+                                        <thead>
+                                        <tr role="row" class="heading">
+                                            <th width="20%"> Mobile&nbsp;No </th>
+                                            <th width="30%"> Timestamp </th>
+                                            <th width="50%"> Actions </th>
+
+                                        </tr>
+                                        <tr role="row" class="filter">
+                                            <td>
+                                                <input type="text" class="form-control form-filter input-sm" name="mobile_number" > </td>
+                                            <td>
+                                                <input type="text" class="form-control form-filter input-sm" name="created_date"> </td>
+                                            <td>
+                                                <div class="margin-bottom-5">
+                                                    <button class="btn btn-sm btn-success filter-submit margin-bottom">
+                                                        <i class="fa fa-search"></i> Search</button>
+                                                </div>
+                                                <button class="btn btn-sm btn-default filter-cancel">
+                                                    <i class="fa fa-times"></i> Reset</button>
+                                            </td>
+                                        </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                @endif
                                 </div>
                             </div>
                         </div>
