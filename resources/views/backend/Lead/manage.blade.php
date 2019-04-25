@@ -56,7 +56,8 @@
                                                 <div class="text-center margin-bottom-10 margin-top-10">Failed ({{$totalRecords['failed']}})</div>
                                             </div>
                                         </div>
-                                    @if($user['role_id'] == 1)
+                                    <input type="hidden" name="current_status" id="current_status" value="{{Route::current()->getParameter('type')}}" />
+                                   @if($user['role_id'] == 1)
                                         <div class="col-md-4 pull-right" style="padding-top: 15px;">
                                             <a href="/leads/export-customer-number" class="btn blue" style="margin-left: 30%">
                                                 Upload Sheet
@@ -64,7 +65,7 @@
                                         </div>
                                     @endif
                                     </div>
-                                    @if($user['role_id'] == 1)
+                                    @if($user['role_id'] == 1 && (($status == 'new') || ($status == 'call-back') || ($status == 'complete') || ($status == 'failed')))
                                         <table class="table table-striped table-bordered table-hover table-checkable" id="sales_admin_list">
                                             <thead>
                                             <tr role="row" class="heading">
@@ -93,14 +94,13 @@
                                             </thead>
                                             <tbody></tbody>
                                         </table>
-                                        @else
+                                    @elseif($user['role_id'] == 2 && (($status == 'new') || ($status == 'call-back') || ($status == 'complete') || ($status == 'failed')))
                                     <table class="table table-striped table-bordered table-hover table-checkable" id="sales_admin_list">
                                         <thead>
                                         <tr role="row" class="heading">
                                             <th width="20%"> Mobile&nbsp;No </th>
                                             <th width="30%"> Timestamp </th>
                                             <th width="50%"> Actions </th>
-
                                         </tr>
                                         <tr role="row" class="filter">
                                             <td>
@@ -156,7 +156,7 @@
     <!-- END THEME GLOBAL SCRIPTS -->
     <!-- BEGIN PAGE LEVEL SCRIPTS -->
     <script src="/assets/pages/scripts/components-date-time-pickers.min.js" type="text/javascript"></script>
-
+    <script src="/assets/pages/scripts/superadmin/order/ecommerce-orders.min.js" type="text/javascript"></script>
     <!-- END PAGE LEVEL SCRIPTS -->
     <!-- BEGIN THEME LAYOUT SCRIPTS -->
     <script src="/assets/layouts/layout3/scripts/layout.min.js" type="text/javascript"></script>
@@ -165,5 +165,8 @@
     <!-- END THEME LAYOUT SCRIPTS -->
     <script>
 
+        function redirect(slug){
+            window.location.href= '/leads/manage/'+slug;
+        }
     </script>
 @endsection

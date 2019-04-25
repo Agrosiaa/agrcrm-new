@@ -63,10 +63,11 @@
                             <a href="/dashboard"> Dashboard</a>
                         </li>
                         <li class="menu-dropdown classic-menu-dropdown">
-                            <a href="crm/manage"> CRM</a>
+                            <a href="/crm/manage"> CRM</a>
                                 <ul class="dropdown-menu pull-left">
                                     <li class=" ">
-                                        <a href="leads/manage" class="nav-link">
+                                        <?php $status = \App\CustomerNumberStatus::where('slug','new')->pluck('slug')?>
+                                        <a href="/leads/manage/{{$status}}" class="nav-link">
                                             Leads
                                         </a>
                                     </li>
