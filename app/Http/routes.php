@@ -30,9 +30,10 @@ Route::group(['prefix' => '/crm'], function () {
     Route::get('/manage',array('uses' => 'Crm\CrmController@manage'));
 });
 Route::group(['prefix' => '/leads'], function () {
-    Route::get('/manage',array('uses' => 'Lead\LeadController@manage'));
+    Route::get('/manage/{type}',array('uses' => 'Lead\LeadController@manage'));
     Route::get('/export-customer-number',array('uses' => 'Lead\LeadController@exportCustomerView'));
-    Route::post('/export-customer-number',array('uses' => 'Lead\LeadController@exportCustomerSheet'));
+    Route::post('/export-customer-numbers',array('uses' => 'Lead\LeadController@exportCustomerSheet'));
+    Route::post('/sales-admin-listing/{status}',array('uses' => 'Lead\LeadController@saleAdminListing'));
 });
 Route::get('refresh-csrf', function(){
     return csrf_token();

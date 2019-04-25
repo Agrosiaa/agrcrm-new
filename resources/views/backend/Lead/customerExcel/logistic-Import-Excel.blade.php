@@ -33,14 +33,13 @@
                                     </li>
                                 </ul>
                                 <div class="tab-content">
-                                    @include('backend.partials.error-messages')
                                     <div class="tab-pane active" id="tab_1">
                                         <div class="portlet-body form">
                                             <div class="loading-img" style="display:none;">
                                                 <img src="/assets/global/img/loading-spinner-grey.gif"/>
                                             </div>
                                             <!-- BEGIN FORM-->
-                                            <form action="/leads/export-customer-number" method="POST" class="form-horizontal form-bordered" enctype="multipart/form-data">
+                                            <form action="/leads/export-customer-numbers" method="POST" class="form-horizontal form-bordered" enctype="multipart/form-data">
                                                 {!! csrf_field() !!}
                                                 <div class="form-body">
                                                     <div class="row">
