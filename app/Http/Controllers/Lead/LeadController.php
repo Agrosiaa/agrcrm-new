@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Lead;
 
 use App\CustomerNumberStatus;
 use App\CustomerNumberStatusDetails;
+use App\SalesChat;
 use App\User;
 use Box\Spout\Common\Type;
 use Box\Spout\Reader\ReaderFactory;
@@ -136,18 +137,17 @@ class LeadController extends Controller
                             $limitedProducts[$j]['number'],
                             User::where('id',$limitedProducts[$j]['user_id'])->pluck('name'),
                             date('d F Y H:i:s',strtotime($limitedProducts[$j]['created_at'])),
-                            '<a href="#" class="btn btn-sm btn-default btn-circle btn-editable"><i class="fa fa-pencil"></i> Chat</a>',
+                            '<a href="#" class="btn btn-sm btn-default btn-circle btn-editable chat_reply" onclick="passId('.$limitedProducts[$j]['id'].','.$limitedProducts[$j]['number'].')"><i class="fa fa-pencil"></i> Chat</a>',
                         );
                     } else {
                         $records["data"][] = array(
                             $limitedProducts[$j]['number'],
                             date('d F Y H:i:s',strtotime($limitedProducts[$j]['created_at'])),
-                            '<a href="#" class="btn btn-sm btn-default btn-circle btn-editable"><i class="fa fa-pencil"></i> Chat</a>
+                            '<a class="btn btn-sm btn-default btn-circle btn-editable chat_reply" onclick="passId('.$limitedProducts[$j]['id'].','.$limitedProducts[$j]['number'].')"><i class="fa fa-pencil"></i> Chat</a>
                                <select class="btn btn-sm btn-default btn-circle btn-editable">
                                <option></option>
                                </select>
-                            <a href="#" class="btn btn-sm btn-default btn-circle btn-editable"><i class="fa fa-pencil"></i> Create</a>',
-
+                            <a class="btn btn-sm btn-default btn-circle btn-editable"><i class="fa fa-pencil"></i> Create</a>',
                         );
                     }
                 }
@@ -165,5 +165,68 @@ class LeadController extends Controller
             $records = $e->getMessage();
         }
         return response()->json($records);
+    }
+
+    public function saleChatListing($id){
+        try{
+            $chatHistoryData = array();
+            $chatData = SalesChat::where('customer_number_details_id',$id)->get()->toArray();
+            $i = 0;
+            foreach ($chatData as $value){
+                if($value['user_id'] != null){
+                    $chatHistoryData[$i]['userName'] = User::where('id',$value['user_id'])->value('name');
+                }
+                $chatHistoryData[$i]['time'] = $time = $this->humanTiming(strtotime($value['created_at']));
+                $chatHistoryData[$i]['message'] = $value['message'];
+                $i++;
+            }
+            return $chatHistoryData;
+        }catch(\Exception $e){
+            $data = [
+                'action' => 'Chat details',
+                'exception' => $e->getMessage()
+            ];
+            Log::critical(json_encode($data));
+            abort(500,$e->getMessage());
+        }
+    }
+
+    public function saleChat(Request $request){
+        try{
+            $user = Auth::user();
+            $chatData['user_id'] = $user['id'];
+            $chatData['customer_number_details_id'] = $request['customer_id'];
+            $chatData['message'] = $request['reply_message'];
+            SalesChat::create($chatData);
+            return back();
+        }catch(\Exception $e){
+            $data = [
+                'action' => 'Create Chat',
+                'exception' => $e->getMessage()
+            ];
+            Log::critical(json_encode($data));
+            abort(500,$e->getMessage());
+        }
+    }
+
+    function humanTiming ($time)
+    {
+        $time = time() - $time; // to get the time since that moment
+        $time = ($time<1)? 1 : $time;
+        $tokens = array (
+            31536000 => 'year',
+            2592000 => 'month',
+            604800 => 'week',
+            86400 => 'day',
+            3600 => 'hour',
+            60 => 'minute',
+            1 => 'second'
+        );
+        foreach ($tokens as $unit => $text) {
+            if ($time < $unit) continue;
+            $numberOfUnits = floor($time / $unit);
+            return $numberOfUnits.' '.$text.(($numberOfUnits>1)?'s':'');
+        }
+
     }
 }
