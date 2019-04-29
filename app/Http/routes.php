@@ -34,8 +34,9 @@ Route::group(['prefix' => '/leads'], function () {
     Route::get('/export-customer-number',array('uses' => 'Lead\LeadController@exportCustomerView'));
     Route::post('/export-customer-numbers',array('uses' => 'Lead\LeadController@exportCustomerSheet'));
     Route::post('/sales-admin-listing/{status}',array('uses' => 'Lead\LeadController@saleAdminListing'));
+    Route::get('/sales-chat-listing/{id}',array('uses' => 'Lead\LeadController@saleChatListing'));
+    Route::post('/sales-chat',array('uses' => 'Lead\LeadController@saleChat'));
 });
 Route::get('refresh-csrf', function(){
     return csrf_token();
 });
-
