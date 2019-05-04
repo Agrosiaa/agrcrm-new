@@ -40,3 +40,6 @@ Route::group(['prefix' => '/leads'], function () {
 Route::get('refresh-csrf', function(){
     return csrf_token();
 });
+Route::get('manage-agents',array('uses' => 'Admin\AdminController@manageAgents'));
+Route::post('sales-agent-listing',array('uses' => 'Admin\AdminController@salesAgentListing'));
+Route::get('change-agent-status/{id}', array('uses' => 'Admin\AdminController@changeAgentStatus'));

@@ -154,7 +154,7 @@ return [
         Intervention\Image\ImageServiceProvider::class,
         Elibyy\TCPDF\ServiceProvider::class,
         Roumen\Sitemap\SitemapServiceProvider::class,
-        \Ixudra\Curl\CurlServiceProvider::class,
+        Ixudra\Curl\CurlServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
 
 
@@ -209,7 +209,9 @@ return [
         'CustomerNumberHelper' => \App\Helpers\CustomerNumberHelper::class,
         /* Image Magick */
         'Image' => Intervention\Image\Facades\Image::class,
-        'Excel' => Maatwebsite\Excel\Facades\Excel::class
+        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+
+        'Curl' => Ixudra\Curl\Facades\Curl::class,
     ],
 
 ];

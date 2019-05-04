@@ -36,7 +36,12 @@
                                     <a href="/logout">
                                         <i class="icon-key"></i> Log Out </a>
                                 </li>
-
+                                @if(Auth::user()->role_id == 1)
+                                <li>
+                                    <a href="/manage-agents">
+                                        <i class="icon-settings"></i> Settings </a>
+                                </li>
+                                @endif
                             </ul>
                         </li>
                         <!-- END USER LOGIN DROPDOWN -->

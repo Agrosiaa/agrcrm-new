@@ -135,14 +135,26 @@
                         <!-- Modal content-->
                         <div class="modal-content">
                             <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                <h4 class="modal-title reply-title"> </h4>
+                                <div class="col-md-6">
+                                    <h4 class="modal-title reply-title"> </h4>
+                                </div>
+                                <div class="col-md-4">
+                                    <select id="select-call-status" class="" style="-webkit-appearance: menulist; align-self: center">Select Call Status
+                                        <option>Select Call Status</option>
+                                        @foreach($callStatus as $status)
+                                            <option value="{!! $status['id'] !!}">{!! $status['name'] !!}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="button" class="close pull-right" data-dismiss="modal">&times;</button>
+                                </div>
                             </div>
                             <div class="modal-body">
                                 <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="portlet light ">
-                                            <div class="portlet-body">
+                                    <div class="col-md-12" >
+                                        <div class="portlet light" style="background-color: lightgrey">
+                                            <div class="portlet-body" >
                                                 <div class="scroller" style="height: 338px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
                                                     <div class="general-item-list" id="chat_message">
 
@@ -200,6 +212,174 @@
                         </div>
                     </div>
                 </div>
+                <div id="create-customer-modal" class="modal fade bs-modal-lg" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-lg">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title" style="text-align: center"><b>Create Customer</b></h4>
+                            </div>
+                            <hr>
+                            <form>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label class="col-md-4 control-label">Name : <span class="required">*</span></label>
+                                                <div class="col-md-4">
+                                                    <input type="text" class="form-control" id="name" name="name" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label class="col-md-4 control-label">Birth date : </label>
+                                                <div class="col-md-4">
+                                                    <input type="date" class="form-control" id="birthdate" name="birthdate">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label class="col-md-4 control-label">Email id : <span class="required">*</span></label>
+                                                <div class="col-md-4">
+                                                    <input type="text" class="form-control" id="email" name="email" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label class="col-md-4 control-label">Mobile Number : <span class="required">*</span></label>
+                                                <div class="col-md-4">
+                                                    <input type="text" class="form-control" id="cust_mobile_number" name="mobile_number" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label class="col-md-4 control-label">Address : </label>
+                                                <div class="col-md-4">
+                                                    <a id="add-new-address">Click here to add address</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <div id="address-div">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label class="col-md-4 control-label">Flat/Door/Blockno./House : <span class="required">*</span></label>
+                                                    <div class="col-md-4">
+                                                        <input type="text" class="form-control address" id="flat_house_no" name="flat_house_no" required>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label class="col-md-4 control-label">Name of Premises/Building/Village : <span class="required">*</span></label>
+                                                    <div class="col-md-4">
+                                                        <input type="text" class="form-control address" id="village" name="village" required>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="col-md-5 control-label">Area/Locality/Wadi : <span class="required">*</span></label>
+                                                    <div class="col-md-5">
+                                                        <input type="text" class="form-control address" id="area" name="area" required>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="col-md-5 control-label">Road Street Lane : <span class="required">*</span></label>
+                                                    <div class="col-md-5">
+                                                        <input type="text" class="form-control address" id="road" name="road" required>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="col-md-5 control-label">Pin Code : <span class="required">*</span></label>
+                                                    <div class="col-md-5">
+                                                        <input type="text" class="form-control address" id="pin_code" name="pin_code" required>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="col-md-5 control-label">At post : <span class="required">*</span></label>
+                                                    <div class="col-md-5">
+                                                        <input type="text" class="form-control address" id="post" name="post" required>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="col-md-5 control-label">State : <span class="required">*</span></label>
+                                                    <div class="col-md-5">
+                                                        <input type="text" class="form-control address" id="state" name="state" required>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="col-md-5 control-label">District : <span class="required">*</span></label>
+                                                    <div class="col-md-5">
+                                                        <input type="text" class="form-control address" id="dist" name="dist" required>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="col-md-5 control-label">Taluka : <span class="required">*</span></label>
+                                                    <div class="col-md-5">
+                                                        <input type="text" class="form-control address" id="taluka" name="taluka" required>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <button type="submit" id="create_customer" class="btn btn-sm btn-success">Create</button>
+                                            <button class="btn btn-sm btn-danger pull-right" data-dismiss="modal">Cancel</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
                 </div>
             </div>
             <!-- END PAGE CONTENT INNER -->
@@ -239,7 +419,9 @@
 
     <!-- END THEME LAYOUT SCRIPTS -->
     <script>
-
+        $( document ).ready(function() {
+           $('#address-div').hide();
+        });
         function redirect(slug){
             window.location.href= '/leads/manage/'+slug;
         }
@@ -258,19 +440,23 @@
                     var jsonObj = JSON.parse(obj);
                     var str = '';
                     $.each(jsonObj, function(key , data) {
-                        str  += '<div class="item">'+
-                            '<div class="item-head">'+
-                            '<div class="item-details">'+
-                            '<img class="item-pic rounded" height="35" width="35" src="/assets/layouts/layout3/img/avatar.png">'+
-                            '<span>'+data['userName']+'</span>'+
-                            '&nbsp;&nbsp;&nbsp;<span class="item-label">' +data['time']+ ' Ago</span>'+
-                            '</div>'+
-                            '</div>'+
-                            '<div class="item-body">'+
-                            '<span>'+data['message']+'</span>'+
-                            '</div>'+
-                            '</div>'+
-                            '<br>';
+                        if(data['status'] == null) {
+                            str += '<div class="item">' +
+                                '<div class="item-head">' +
+                                '<div class="item-details">' +
+                                '<img class="item-pic rounded" height="35" width="35" src="/assets/layouts/layout3/img/avatar.png">' +
+                                '<span>' + data['userName'] + '</span>' +
+                                '&nbsp;&nbsp;&nbsp;<span class="item-label" style="color: black">' + data['time'] + '</span>' +
+                                '</div>' +
+                                '</div>' +
+                                '<div class="item-body">' +
+                                '<span>' + data['message'] + '</span>' +
+                                '</div>' +
+                                '</div>' +
+                                '<br>';
+                        } else {
+                            str += '<div class="item" style="text-align: center"><span class="tag label label-info" style="font-size: 90%;">'+ data['status'] +' @ ' +data['time'] + ' by ' + data['userName'] + '</span></div><br>';
+                        }
                     });
                     $('#chat_message').html(str);
                 },
@@ -279,6 +465,17 @@
                 }
             });
         }
+
+        function createCustomer(mobile) {
+            $('#create-customer-modal').modal('show');
+            $('#cust_mobile_number').val(mobile);
+            $('#address-div').hide();
+        }
+
+        $('#add-new-address').on('click',function () {
+            $('#address-div').show();
+        });
+
         $(document).on("click",".chat-submit",function (e) {
             e.stopPropagation();
             var  message= $('#reply_text').val();
@@ -300,6 +497,80 @@
                     $('#reply').modal('toggle');
                 }
             })
+        });
+
+        $('#select-call-status').on('change',function () {
+            var statusId = $(this).val();
+            var customer= $('#customer_detail_id').val();
+            $.ajax({
+                url: '/leads/sales-chat',
+                type: 'POST',
+                dataType: 'array',
+                data: {
+                    'reply_status_id' : statusId,
+                    'customer_id' : customer
+                },
+                success: function (responce) {
+                    $('#reply').modal('toggle');
+                    location.reload();
+                },
+                error: function (responce) {
+                    location.reload();
+                    $('#reply').modal('toggle');
+                }
+            })
+        });
+
+        $(document).on("click","#create_customer",function (e) {
+            e.stopPropagation();
+            var name = $('#name').val();
+            var dob = $('#birthdate').val();
+            var email = $('#email').val();
+            var mobile = $('#cust_mobile_number').val();
+            var house_block = $('#flat_house_no').val();
+            var village_premises = $('#village').val();
+            var area = $('#area').val();
+            var road_street = $('#road').val();
+            var pin = $('#pin_code').val();
+            var post = $('#post').val();
+            var state = $('#state').val();
+            var dist = $('#dist').val();
+            var taluka = $('#taluka').val();
+            alert(dob);
+            if(name=='' || email=='' || mobile=='' || house_block=='' || village_premises=='' || area=='' || road_street=='' || pin=='' || post=='' || state=='' || dist=='' || taluka==''){
+                alert("Please fill all required fill");
+            } else {
+                $.ajax({
+                    url: "{{env('BASE_URL')}}/create-customer",
+                    type: 'POST',
+                    dataType: 'array',
+                    data: {
+                        'name': name,
+                        'dob': dob,
+                        'email': email,
+                        'mobile': mobile,
+                        'house_block': house_block,
+                        'village_premises': village_premises,
+                        'area': area,
+                        'road_street': road_street,
+                        'pin': pin,
+                        'at_post': post,
+                        'state': state,
+                        'dist': dist,
+                        'taluka': taluka
+                    },
+                    success: function (responce) {
+                        console.log(responce);
+                        $('#create-customer-modal').modal('toggle');
+                        location.reload();
+                    },
+                    error: function (responce) {
+                        console.log(responce);
+                        location.reload();
+                        $('#create-customer-modal').modal('toggle');
+                    }
+                })
+            }
         });
     </script>
 @endsection

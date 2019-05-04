@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Lead;
 
+use App\CallStatus;
 use App\CustomerNumberStatus;
 use App\CustomerNumberStatusDetails;
 use App\SalesChat;
@@ -19,7 +20,8 @@ class LeadController extends Controller
         try{
             $status = $type;
             $user = Auth::user();
-            return view('backend.Lead.manage')->with(compact('user','status'));
+            $callStatus = CallStatus::get()->toArray();
+            return view('backend.Lead.manage')->with(compact('user','status','callStatus'));
         }catch(\Exception $exception){
             $data =[
                 'action' => 'get Lead manage page',
@@ -144,10 +146,7 @@ class LeadController extends Controller
                             $limitedProducts[$j]['number'],
                             date('d F Y H:i:s',strtotime($limitedProducts[$j]['created_at'])),
                             '<a class="btn btn-sm btn-default btn-circle btn-editable chat_reply" onclick="passId('.$limitedProducts[$j]['id'].','.$limitedProducts[$j]['number'].')"><i class="fa fa-pencil"></i> Chat</a>
-                               <select class="btn btn-sm btn-default btn-circle btn-editable">
-                               <option></option>
-                               </select>
-                            <a class="btn btn-sm btn-default btn-circle btn-editable"><i class="fa fa-pencil"></i> Create</a>',
+                            <a class="btn btn-sm btn-default btn-circle btn-editable" onclick="createCustomer('.$limitedProducts[$j]['number'].')"><i class="fa fa-pencil"></i> Create</a>',
                         );
                     }
                 }
@@ -176,8 +175,13 @@ class LeadController extends Controller
                 if($value['user_id'] != null){
                     $chatHistoryData[$i]['userName'] = User::where('id',$value['user_id'])->value('name');
                 }
-                $chatHistoryData[$i]['time'] = $time = $this->humanTiming(strtotime($value['created_at']));
+                $chatHistoryData[$i]['time'] = date('d F Y H:i:s',strtotime($value['created_at']));
                 $chatHistoryData[$i]['message'] = $value['message'];
+                if($value['call_status_id'] != null) {
+                    $chatHistoryData[$i]['status'] = CallStatus::where('id',$value['call_status_id'])->value('name');
+                } else {
+                    $chatHistoryData[$i]['status'] = null;
+                }
                 $i++;
             }
             return $chatHistoryData;
@@ -196,6 +200,7 @@ class LeadController extends Controller
             $user = Auth::user();
             $chatData['user_id'] = $user['id'];
             $chatData['customer_number_details_id'] = $request['customer_id'];
+            $chatData['call_status_id'] = $request['reply_status_id'];
             $chatData['message'] = $request['reply_message'];
             SalesChat::create($chatData);
             return back();
@@ -209,24 +214,4 @@ class LeadController extends Controller
         }
     }
 
-    function humanTiming ($time)
-    {
-        $time = time() - $time; // to get the time since that moment
-        $time = ($time<1)? 1 : $time;
-        $tokens = array (
-            31536000 => 'year',
-            2592000 => 'month',
-            604800 => 'week',
-            86400 => 'day',
-            3600 => 'hour',
-            60 => 'minute',
-            1 => 'second'
-        );
-        foreach ($tokens as $unit => $text) {
-            if ($time < $unit) continue;
-            $numberOfUnits = floor($time / $unit);
-            return $numberOfUnits.' '.$text.(($numberOfUnits>1)?'s':'');
-        }
-
-    }
 }
