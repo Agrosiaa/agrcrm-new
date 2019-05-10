@@ -137,7 +137,7 @@
                         <!-- Modal content-->
                         <div class="modal-content" style="width: 590px">
                             <div class="modal-header" style="width: 580px">
-                                <div class="col-md-6">
+                                <div class="col-md-7">
                                     <h4 class="modal-title reply-title"> </h4>
                                 </div>
                                 <div class="col-md-4">
@@ -148,7 +148,7 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="col-md-2">
+                                <div class="col-md-1">
                                     <button type="button" class="close pull-right" data-dismiss="modal">&times;</button>
                                 </div>
                             </div>
