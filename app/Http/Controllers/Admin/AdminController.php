@@ -45,8 +45,9 @@ class AdminController extends Controller
     }
     public function home(Request $request){
         try{
-            /*$response = Curl::to(env('BASE_URL')."/order-detail")
-                ->asJson()->get();*/
+            $user = Auth::User();
+            $response = Curl::to(env('BASE_URL')."/order-detail")
+                ->withData( array( 'role_id' => $user['role_id'] ,'sales_id' => $user['id']) )->asJson()->get();
             return view('backend.admin.home')->with(compact('response'));
         }catch(\Exception $e){
             $data = [

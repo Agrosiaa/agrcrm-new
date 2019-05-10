@@ -10,6 +10,8 @@
     <link href="/assets/global/css/plugins.min.css" rel="stylesheet" type="text/css" />
     <link href="/assets/global/plugins/jstree/dist/themes/default/style.css" rel="stylesheet" type="text/css" />
     <!-- END PAGE LEVEL PLUGINS -->
+   <script type="text/css">
+   </script>
 @endsection
 @section('content')
     <!-- BEGIN PAGE CONTENT BODY -->
@@ -133,16 +135,16 @@
                 <div id="reply" class="modal" role="dialog" data-dismiss="modal">
                     <div class="modal-dialog">
                         <!-- Modal content-->
-                        <div class="modal-content">
-                            <div class="modal-header">
+                        <div class="modal-content" style="width: 590px">
+                            <div class="modal-header" style="width: 580px">
                                 <div class="col-md-6">
                                     <h4 class="modal-title reply-title"> </h4>
                                 </div>
                                 <div class="col-md-4">
                                     <select id="select-call-status" class="" style="-webkit-appearance: menulist; align-self: center">Select Call Status
                                         <option>Select Call Status</option>
-                                        @foreach($callStatus as $status)
-                                            <option value="{!! $status['id'] !!}">{!! $status['name'] !!}</option>
+                                        @foreach($callStatuses as $callStatus)
+                                            <option value="{!! $callStatus['id'] !!}">{!! $callStatus['name'] !!}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -150,10 +152,10 @@
                                     <button type="button" class="close pull-right" data-dismiss="modal">&times;</button>
                                 </div>
                             </div>
-                            <div class="modal-body">
+                            <div class="modal-body" style="width: 580px">
                                 <div class="row">
                                     <div class="col-md-12" >
-                                        <div class="portlet light" style="background-color: lightgrey">
+                                        <div class="portlet light" style="background-color: #cde4cc">
                                             <div class="portlet-body" >
                                                 <div class="scroller" style="height: 338px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
                                                     <div class="general-item-list" id="chat_message">
@@ -164,13 +166,29 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="row">
+                                    @if($status == 'new')
+                                        <div class="col-md-3">
+                                            <button type="button" class="btn btn-circle blue btn-outline">Call Back 1</button>
+                                        </div>
+                                    @endif
+                                    @if($status == 'call-back')
+                                            <div class="col-md-2">
+                                                <button type="button" class="btn btn-circle blue btn-outline">Call Back 2</button>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <button type="button" class="btn btn-circle blue btn-outline">Call Back 3</button>
+                                            </div>
+                                        @endif
+                                </div>
+                                <br>
                                 <div class="row" id="query-form">
                                     <form action="" role="form">
-                                        <div class="col-md-9">
+                                        <div class="col-md-10">
                                             <input type="text" name="reply_text" id="reply_text" required="required" maxlength="500" class="form-control" placeholder="reply">
                                             <input type="hidden" id="customer_detail_id" value="">
                                         </div>
-                                        <div class="col-md-3">
+                                        <div class="col-md-2">
                                             <button class="btn btn-sm btn-success table-group-action-submit chat-submit pull-right">Reply</button>
                                         </div>
                                     </form>
@@ -189,14 +207,15 @@
                                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                                 <h4 class="modal-title" style="text-align: center"><b>Assign Number to Agent</b></h4>
                             </div>
-                           <form>
+                           <form class="form-horizontal" method="post" role="form" action="/leads/assign-customer">
                                <div class="modal-body">
                                    <div class="row">
                                        <div class="col-md-12">
                                            <div class="form-group">
+                                               {{csrf_field()}}
                                                <label class="col-md-4 control-label">Mobile Number</label>
                                                <div class="col-md-4">
-                                                   <input type="text" class="form-control" id="mobile_number" name="mobile_number" value="">
+                                                   <input type="text" class="form-control" id="mobile_number" name="mobile_number" required>
                                                </div>
                                            </div>
                                        </div>
@@ -441,19 +460,35 @@
                     var str = '';
                     $.each(jsonObj, function(key , data) {
                         if(data['status'] == null) {
-                            str += '<div class="item">' +
-                                '<div class="item-head">' +
-                                '<div class="item-details">' +
-                                '<img class="item-pic rounded" height="35" width="35" src="/assets/layouts/layout3/img/avatar.png">' +
-                                '<span>' + data['userName'] + '</span>' +
-                                '&nbsp;&nbsp;&nbsp;<span class="item-label" style="color: black">' + data['time'] + '</span>' +
-                                '</div>' +
-                                '</div>' +
-                                '<div class="item-body">' +
-                                '<span>' + data['message'] + '</span>' +
-                                '</div>' +
-                                '</div>' +
-                                '<br>';
+                            if(data['user'] == true){
+                                str += '<div class="item">' +
+                                    '<div class="item-head">' +
+                                    '<div class="item-details pull-right">' +
+                                    '<img class="item-pic rounded" height="35" width="35" src="/assets/layouts/layout3/img/avatar.png">' +
+                                    '<span>' + data['userName'] + '</span>' +
+                                    '&nbsp;&nbsp;&nbsp;<span class="item-label" style="color: black">' + data['time'] + '</span>' +
+                                    '</div>' +
+                                    '</div>' +
+                                    '<div class="item-body pull-right">' +
+                                    '<span>' + data['message'] + '</span>' +
+                                    '</div>' +
+                                    '</div>' +
+                                    '<br>';
+                            }else {
+                                str += '<div class="item">' +
+                                    '<div class="item-head">' +
+                                    '<div class="item-details">' +
+                                    '<img class="item-pic rounded" height="35" width="35" src="/assets/layouts/layout3/img/avatar.png">' +
+                                    '<span>' + data['userName'] + '</span>' +
+                                    '&nbsp;&nbsp;&nbsp;<span class="item-label" style="color: black">' + data['time'] + '</span>' +
+                                    '</div>' +
+                                    '</div>' +
+                                    '<div class="item-body">' +
+                                    '<span>' + data['message'] + '</span>' +
+                                    '</div>' +
+                                    '</div>' +
+                                    '<br>';
+                            }
                         } else {
                             str += '<div class="item" style="text-align: center"><span class="tag label label-info" style="font-size: 90%;">'+ data['status'] +' @ ' +data['time'] + ' by ' + data['userName'] + '</span></div><br>';
                         }
