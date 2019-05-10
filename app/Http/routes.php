@@ -26,8 +26,21 @@ Route::post('password/reset', 'Auth\PasswordController@postReset');
 Route::get('city/{id}',array('uses' => 'UserController@getCity'));
 Route::post('password/update', 'Auth\PasswordController@updatePassword');
 Route::get('confirm/{token}', 'Auth\AuthController@confirm');
+Route::group(['prefix' => '/crm'], function () {
+    Route::get('/manage',array('uses' => 'Crm\CrmController@manage'));
+});
+Route::group(['prefix' => '/leads'], function () {
+    Route::get('/manage/{type}',array('uses' => 'Lead\LeadController@manage'));
+    Route::get('/export-customer-number',array('uses' => 'Lead\LeadController@exportCustomerView'));
+    Route::post('/export-customer-numbers',array('uses' => 'Lead\LeadController@exportCustomerSheet'));
+    Route::post('/assign-customer',array('uses' => 'Lead\LeadController@assignCustomerNumber'));
+    Route::post('/sales-admin-listing/{status}',array('uses' => 'Lead\LeadController@saleAdminListing'));
+    Route::get('/sales-chat-listing/{id}',array('uses' => 'Lead\LeadController@saleChatListing'));
+    Route::post('/sales-chat',array('uses' => 'Lead\LeadController@saleChat'));
+});
 Route::get('refresh-csrf', function(){
-    /* http://stackoverflow.com/questions/31449434/handling-expired-token-in-laravel*/
     return csrf_token();
 });
-
+Route::get('manage-agents',array('uses' => 'Admin\AdminController@manageAgents'));
+Route::post('sales-agent-listing',array('uses' => 'Admin\AdminController@salesAgentListing'));
+Route::get('change-agent-status/{id}', array('uses' => 'Admin\AdminController@changeAgentStatus'));

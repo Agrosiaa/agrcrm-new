@@ -4,7 +4,7 @@
                 <!-- BEGIN LOGO -->
                 <div class="page-logo">
                     <a href="/">
-                        <img src="assets/pages/img/login/agrosia-logo.png" alt="logo" class="logo-default">
+                        <img src="/assets/pages/img/login/agrosia-logo.png" alt="logo" class="logo-default">
                     </a>
                 </div>
                 <!-- END LOGO -->
@@ -36,7 +36,12 @@
                                     <a href="/logout">
                                         <i class="icon-key"></i> Log Out </a>
                                 </li>
-
+                                @if(Auth::user()->role_id == 1)
+                                <li>
+                                    <a href="/manage-agents">
+                                        <i class="icon-settings"></i> Settings </a>
+                                </li>
+                                @endif
                             </ul>
                         </li>
                         <!-- END USER LOGIN DROPDOWN -->
@@ -59,10 +64,19 @@
                 <!-- DOC: Remove data-hover="dropdown" and data-close-others="true" attributes below to disable the dropdown opening on mouse hover -->
                 <div class="hor-menu">
                     <ul class="nav navbar-nav">
-                        <li aria-haspopup="true" class="menu-dropdown classic-menu-dropdown">
-                            <a href="/dashboard"> Dashboard
-                                <span class="arrow"></span>
-                            </a>
+                        <li class="menu-dropdown classic-menu-dropdown">
+                            <a href="/dashboard"> Dashboard</a>
+                        </li>
+                        <li class="menu-dropdown classic-menu-dropdown">
+                            <a href="/crm/manage"> CRM</a>
+                                <ul class="dropdown-menu pull-left">
+                                    <li class=" ">
+                                        <?php $status = \App\CustomerNumberStatus::where('slug','new')->pluck('slug')?>
+                                        <a href="/leads/manage/{{$status}}" class="nav-link">
+                                            Leads
+                                        </a>
+                                    </li>
+                                </ul>
                         </li>
                     </ul>
                 </div>
