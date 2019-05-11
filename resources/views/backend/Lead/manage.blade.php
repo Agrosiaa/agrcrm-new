@@ -9,6 +9,7 @@
     <link href="/assets/global/plugins/fancybox/source/jquery.fancybox.css" rel="stylesheet" type="text/css" />
     <link href="/assets/global/css/plugins.min.css" rel="stylesheet" type="text/css" />
     <link href="/assets/global/plugins/jstree/dist/themes/default/style.css" rel="stylesheet" type="text/css" />
+    <link href="/assets/global/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css" rel="stylesheet" type="text/css" />
     <!-- END PAGE LEVEL PLUGINS -->
    <script type="text/css">
    </script>
@@ -167,19 +168,24 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    @if($status == 'new')
-                                        <div class="col-md-3">
-                                            <button type="button" class="btn btn-circle blue btn-outline">Call Back 1</button>
-                                        </div>
-                                    @endif
-                                    @if($status == 'call-back')
-                                            <div class="col-md-2">
-                                                <button type="button" class="btn btn-circle blue btn-outline">Call Back 2</button>
+                                    @foreach($callBacks as $callBack)
+                                        @if($status == 'new' && $callBack['slug'] == 'call-back-1')
+                                            <div class="col-md-3" id="call_back_1">
+                                                <button type="button" class="btn btn-circle blue btn-outline" onclick="setReminder({{$callBack['id']}})">{{$callBack['name']}}</button>
                                             </div>
-                                            <div class="col-md-3">
-                                                <button type="button" class="btn btn-circle blue btn-outline">Call Back 3</button>
+                                        @elseif($status == 'call-back' && $callBack['slug'] != 'call-back-1')
+                                            @if($callBack['slug'] == 'call-back-2')
+                                            <div class="col-md-3 call_back" id="call_back_2">
+                                                <button type="button" class="btn btn-circle blue btn-outline" onclick="setReminder({{$callBack['id']}})">{{$callBack['name']}}</button>
                                             </div>
+                                            @endif
+                                                @if($callBack['slug'] == 'call-back-3')
+                                                    <div class="col-md-3 call_back" id="call_back_3">
+                                                        <button type="button" class="btn btn-circle blue btn-outline" onclick="setReminder({{$callBack['id']}})">{{$callBack['name']}}</button>
+                                                    </div>
+                                                @endif
                                         @endif
+                                    @endforeach
                                 </div>
                                 <br>
                                 <div class="row" id="query-form">
@@ -194,6 +200,43 @@
                                     </form>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="reminder_modal" class="modal fade bs-modal-md" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-md">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title" style="text-align: center"><b>Set Reminder</b></h4>
+                            </div>
+                            <form class="form-horizontal" method="post" role="form" action="/leads/set-reminder">
+                                <div class="modal-body">
+                                        <div class="form-group">
+                                            {{csrf_field()}}
+                                            <label class="control-label col-sm-4">Reminder Time</label>
+                                            <div class="col-md-8">
+                                                <div class="input-group date form_datetime input-large">
+                                                    <input type="text" size="16" name="reminder_time" class="form-control">
+                                                    <span class="input-group-btn">
+                                                        <button class="btn default date-set" type="button">
+                                                            <i class="fa fa-calendar"></i>
+                                                        </button>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <div class="row">
+                                        <div class="col-md-8 col-md-offset-4">
+                                            <input type="hidden" id="customer_status_detail_id" name="customer_status_detail_id" value="">
+                                            <input type="hidden" id="call_back_id" name="call_back_id" value="">
+                                            <button type="submit" class="btn btn-sm btn-success">Create</button>
+                                            <button class="btn btn-sm btn-danger" data-dismiss="modal">Cancel</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -449,7 +492,25 @@
         function passId(id,number) {
             $('#reply').modal('show');
             $('#customer_detail_id').val(id);
+            $('#customer_status_detail_id').val(id);
             $('.reply-title').text("Chat History - " +number);
+            $('.call_back').hide();
+            $.ajax({
+                url: '/leads/call-back-status/'+id,
+                type: 'get',
+                dataType: 'json',
+                success: function (response) {
+                    var nextCallBack = response['status_id'] + 1;
+                    if(response['setNextCall'] == true){
+                        $('#call_back_'+nextCallBack+'').show();
+                    } else {
+                        $('#call_back_'+nextCallBack+'').hide();
+                    }
+                },
+                error: function (response) {
+                    
+                }
+            });
             $.ajax({
                 url: '/leads/sales-chat-listing/'+id,
                 type: 'get',
@@ -499,6 +560,11 @@
                     console.log(responce);
                 }
             });
+        }
+
+        function setReminder(callId) {
+            $('#reminder_modal').modal('show');
+            $('#call_back_id').val(callId);
         }
 
         function createCustomer(mobile) {

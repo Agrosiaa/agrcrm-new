@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers\Lead;
 
+use App\CallBack;
 use App\CallStatus;
 use App\CustomerNumberStatus;
 use App\CustomerNumberStatusDetails;
+use App\Reminder;
 use App\SalesChat;
 use App\User;
 use Box\Spout\Common\Type;
 use Box\Spout\Reader\ReaderFactory;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -27,7 +30,8 @@ class LeadController extends Controller
             $status = $type;
             $user = Auth::user();
             $callStatuses = CallStatus::get()->toArray();
-            return view('backend.Lead.manage')->with(compact('user','status','callStatuses'));
+            $callBacks = CallBack::all()->toArray();
+            return view('backend.Lead.manage')->with(compact('user','status','callStatuses','callBacks'));
         }catch(\Exception $exception){
             $data =[
                 'action' => 'get Lead manage page',
@@ -271,6 +275,63 @@ class LeadController extends Controller
         }catch(\Exception $e){
             $data = [
                 'action' => 'Create Chat',
+                'exception' => $e->getMessage()
+            ];
+            Log::critical(json_encode($data));
+            abort(500,$e->getMessage());
+        }
+    }
+
+    public function setReminder(Request $request){
+        try{
+            $inputDate = str_replace('-','',$request->reminder_time);
+            if($request->reminder_time != ''){
+                $data['reminder_time'] = Carbon::parse($inputDate);
+            }
+            $data['call_back_id'] = $request->call_back_id;
+            $data['customer_number_status_details_id'] = $request->customer_status_detail_id;
+            $setReminder = Reminder::create($data);
+            $callBack1 = CallBack::where('slug','call-back-1')->value('id');
+            $callBack3 = CallBack::where('slug','call-back-3')->value('id');
+            if($setReminder->call_back_id == $callBack1){
+                $callBackStatusId = CustomerNumberStatus::where('slug','call-back')->value('id');
+                $updateStatus['customer_number_status_id'] = $callBackStatusId;
+                CustomerNumberStatusDetails::where('id',$request->customer_status_detail_id)->update($updateStatus);
+            }
+            if($setReminder->call_back_id == $callBack3){
+                $failStatusId = CustomerNumberStatus::where('slug','failed')->value('id');
+                $updateStatus['customer_number_status_id'] = $failStatusId;
+                CustomerNumberStatusDetails::where('id',$request->customer_status_detail_id)->update($updateStatus);
+            }
+            return back();
+        }catch(\Exception $e){
+            $data = [
+                'action' => 'Set Reminder',
+                'exception' => $e->getMessage()
+            ];
+            Log::critical(json_encode($data));
+            abort(500,$e->getMessage());
+        }
+    }
+
+    public function callBackStatus($custDetailId){
+        try{
+            $reminderStatus = Reminder::where('customer_number_status_details_id',$custDetailId)->orderBy('call_back_id','desc')->get()->first();
+            $data['status_id'] = $reminderStatus['call_back_id'];
+            $currentDateTime = Carbon::now();
+            if($reminderStatus['reminder_time'] != null) {
+                if ($currentDateTime > $reminderStatus['reminder_time']){
+                    $data['setNextCall'] = true;
+                } else {
+                    $data['setNextCall'] = false;
+                }
+            }else{
+                $data['setNextCall'] = true;
+            }
+            return $data;
+        }catch(\Exception $e){
+            $data = [
+                'action' => 'Set Reminder',
                 'exception' => $e->getMessage()
             ];
             Log::critical(json_encode($data));
