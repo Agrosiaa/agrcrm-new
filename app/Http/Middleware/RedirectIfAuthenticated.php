@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Route;
 
 class RedirectIfAuthenticated
@@ -36,13 +37,8 @@ class RedirectIfAuthenticated
     public function handle($request, Closure $next)
     {
         if ($this->auth->check()) {
-            $url_array = explode('.', parse_url($request->url(), PHP_URL_HOST));
-            $subdomain = $url_array[0];
-            if($subdomain==env('SELLER_SUB_DOMAIN_NAME') || $subdomain==env('ADMIN_SUB_DOMAIN_NAME')){
-                return redirect('dashboard');
-            }else{
-                return redirect('/');
-            }
+            $request->session()->reflash();
+            return new RedirectResponse(url('/home'));
         }
 
         return $next($request);
