@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\CustomerNumberStatusDetails;
+use App\Reminder;
 use App\User;
 use App\UserRoles;
 use App\WorkOrderStatusDetail;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Ixudra\Curl\Facades\Curl;
 
@@ -46,9 +49,23 @@ class AdminController extends Controller
     public function home(Request $request){
         try{
             $user = Auth::User();
+            $currentDateTime = Carbon::now();
             $response = Curl::to(env('BASE_URL')."/order-detail")
                 ->withData( array( 'role_id' => $user['role_id'] ,'sales_id' => $user['id']) )->asJson()->get();
-            return view('backend.admin.home')->with(compact('response'));
+            if($user['role_id'] == 2){
+                $custDetailIds = CustomerNumberStatusDetails::where('user_id',$user['id'])->lists('id');
+                $callBackReminders = User::join('customer_number_status_details','customer_number_status_details.user_id','=','users.id')
+                    ->join('reminder','reminder.customer_number_status_details_id','=','customer_number_status_details.id')
+                    ->whereIn('reminder.customer_number_status_details_id',$custDetailIds)
+                    ->where('reminder.reminder_time','>=',$currentDateTime)
+                    ->select('customer_number_status_details.number','reminder.reminder_time','reminder.call_back_id')->get()->toArray();
+            }else{
+                $callBackReminders = User::join('customer_number_status_details','customer_number_status_details.user_id','=','users.id')
+                    ->join('reminder','reminder.customer_number_status_details_id','=','customer_number_status_details.id')
+                    ->where('reminder.reminder_time','>=',$currentDateTime)
+                    ->select('customer_number_status_details.number','reminder.reminder_time','reminder.call_back_id','users.name')->get()->toArray();
+            }
+            return view('backend.admin.home')->with(compact('response','callBackReminders'));
         }catch(\Exception $e){
             $data = [
                 'action' => 'validate mobile from cart',

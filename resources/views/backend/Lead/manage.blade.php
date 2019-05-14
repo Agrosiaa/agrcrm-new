@@ -79,7 +79,7 @@
                                             <tr role="row" class="heading">
                                                 <th width="20%"> Mobile&nbsp;No </th>
                                                 <th width="30%"> Assigned Agent </th>
-                                                <th width="30%"> Timestamp </th>
+                                                <th width="30%"> Allocated </th>
                                                 <th width="20%"> Actions </th>
 
                                             </tr>
@@ -107,7 +107,7 @@
                                         <thead>
                                         <tr role="row" class="heading">
                                             <th width="20%"> Mobile&nbsp;No </th>
-                                            <th width="30%"> Timestamp </th>
+                                            <th width="30%"> Allocated </th>
                                             <th width="50%"> Actions </th>
                                         </tr>
                                         <tr role="row" class="filter">
@@ -139,7 +139,7 @@
                         <div class="modal-content" style="width: 590px">
                             <div class="modal-header" style="width: 580px">
                                 <div class="col-md-7">
-                                    <h4 class="modal-title reply-title"> </h4>
+                                    <h4 class="modal-title reply-title" style="color: black"> </h4>
                                 </div>
                                 <div class="col-md-4">
                                     <select id="select-call-status" class="" style="-webkit-appearance: menulist; align-self: center">Select Call Status
@@ -156,9 +156,9 @@
                             <div class="modal-body" style="width: 580px">
                                 <div class="row">
                                     <div class="col-md-12" >
-                                        <div class="portlet light" style="background-color: #cde4cc">
+                                        <div class="portlet light" style="background-image: url(/assets/global/img/chat-background.jpg);">
                                             <div class="portlet-body" >
-                                                <div class="scroller" style="height: 338px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
+                                                <div class="scroller scro" style="height: 338px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
                                                     <div class="general-item-list" id="chat_message">
 
                                                     </div>
@@ -520,38 +520,72 @@
                     var jsonObj = JSON.parse(obj);
                     var str = '';
                     $.each(jsonObj, function(key , data) {
-                        if(data['status'] == null) {
-                            if(data['user'] == true){
-                                str += '<div class="item">' +
-                                    '<div class="item-head">' +
-                                    '<div class="item-details pull-right">' +
-                                    '<img class="item-pic rounded" height="35" width="35" src="/assets/layouts/layout3/img/avatar.png">' +
-                                    '<span>' + data['userName'] + '</span>' +
-                                    '&nbsp;&nbsp;&nbsp;<span class="item-label" style="color: black">' + data['time'] + '</span>' +
-                                    '</div>' +
-                                    '</div>' +
-                                    '<div class="item-body pull-right">' +
-                                    '<span>' + data['message'] + '</span>' +
-                                    '</div>' +
-                                    '</div>' +
-                                    '<br>';
-                            }else {
-                                str += '<div class="item">' +
-                                    '<div class="item-head">' +
-                                    '<div class="item-details">' +
-                                    '<img class="item-pic rounded" height="35" width="35" src="/assets/layouts/layout3/img/avatar.png">' +
-                                    '<span>' + data['userName'] + '</span>' +
-                                    '&nbsp;&nbsp;&nbsp;<span class="item-label" style="color: black">' + data['time'] + '</span>' +
-                                    '</div>' +
-                                    '</div>' +
-                                    '<div class="item-body">' +
-                                    '<span>' + data['message'] + '</span>' +
-                                    '</div>' +
-                                    '</div>' +
-                                    '<br>';
-                            }
+                        if(data['is_allocation'] == true){
+                            str += '<div class="item" style="text-align: center">' +
+                                '<span class="tag label label-info" style="font-size: 90%;">' +
+                                data['number'] +' was allocated to ' +data['sale_agent'] + ' on '+ data['time'] +
+                                '</span>' +
+                                '</div> '+
+                                '<br>';
                         } else {
-                            str += '<div class="item" style="text-align: center"><span class="tag label label-info" style="font-size: 90%;">'+ data['status'] +' @ ' +data['time'] + ' by ' + data['userName'] + '</span></div><br>';
+                            if(data['reminder_time'] == true){
+                                if(data['reminder'] != null){
+                                    str += '<div class="item" style="text-align: center">' +
+                                        '<span class="tag label label-info" style="font-size: 90%;">' +
+                                        data['call'] +' was completed on ' +data['callTime'] +
+                                        '</span>' +
+                                        '</div> '+
+                                        '<br>' +
+                                        '<div class="item" style="text-align: center">' +
+                                        '<span class="tag label label-info" style="font-size: 90%;">' +
+                                        data['nextCall'] +' reminder set on ' +data['reminder'] +
+                                        '</span>' +
+                                        '</div> '+
+                                        '<br>'
+                                    ;
+                                } else {
+                                    str += '<div class="item" style="text-align: center">' +
+                                        '<span class="tag label label-info" style="font-size: 90%;">' +
+                                        data['call'] +' was completed on ' +data['callTime'] +
+                                        '</span>' +
+                                        '</div> '+
+                                        '<br>';
+                                }
+                            }else {
+                                if(data['status'] == null) {
+                                    if(data['user'] == true){
+                                        str += '<div class="item">' +
+                                            '<div class="item-head">' +
+                                            '<div class="item-details pull-right">' +
+                                            '<img class="item-pic rounded" height="35" width="35" src="/assets/layouts/layout3/img/avatar.png">' +
+                                            '<span style="color: black">' + data['userName'] + '</span>' +
+                                            '&nbsp;&nbsp;&nbsp;<span class="item-label" style="color: #8c8c8e">' + data['time'] + '</span>' +
+                                            '</div>' +
+                                            '</div>' +
+                                            '<div class="item-body pull-right">' +
+                                            '<span>' + data['message'] + '</span>' +
+                                            '</div>' +
+                                            '</div>' +
+                                            '<br>';
+                                    }else {
+                                        str += '<div class="item">' +
+                                            '<div class="item-head">' +
+                                            '<div class="item-details">' +
+                                            '<img class="item-pic rounded" height="35" width="35" src="/assets/layouts/layout3/img/avatar.png">' +
+                                            '<span style="color: black">' + data['userName'] + '</span>' +
+                                            '&nbsp;&nbsp;&nbsp;<span class="item-label" style="color: #8c8c8e">' + data['time'] + '</span>' +
+                                            '</div>' +
+                                            '</div>' +
+                                            '<div class="item-body">' +
+                                            '<span>' + data['message'] + '</span>' +
+                                            '</div>' +
+                                            '</div>' +
+                                            '<br>';
+                                    }
+                                } else {
+                                    str += '<div class="item" style="text-align: center"><span class="tag label label-info" style="font-size: 90%;">'+ data['status'] +' @ ' +data['time'] + ' by ' + data['userName'] + '</span></div><br>';
+                                }
+                            }
                         }
                     });
                     $('#chat_message').html(str);
