@@ -10,21 +10,21 @@
     <link href="/assets/global/css/plugins.min.css" rel="stylesheet" type="text/css" />
     <link href="/assets/global/plugins/jstree/dist/themes/default/style.css" rel="stylesheet" type="text/css" />
     <!-- END PAGE LEVEL PLUGINS -->
-    <link href="../assets/global/plugins/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
-    <link href="../assets/global/plugins/simple-line-icons/simple-line-icons.min.css" rel="stylesheet" type="text/css" />
-    <link href="../assets/global/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-    <link href="../assets/global/plugins/uniform/css/uniform.default.css" rel="stylesheet" type="text/css" />
+    <link href="/assets/global/plugins/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link href="/assets/global/plugins/simple-line-icons/simple-line-icons.min.css" rel="stylesheet" type="text/css" />
+    <link href="/assets/global/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="/assets/global/plugins/uniform/css/uniform.default.css" rel="stylesheet" type="text/css" />
     <!-- END GLOBAL MANDATORY STYLES -->
     <!-- BEGIN PAGE LEVEL PLUGINS -->
-    <link href="../assets/global/plugins/bootstrap-switch/css/bootstrap-switch.min.css" rel="stylesheet" type="text/css" />
+    <link href="/assets/global/plugins/bootstrap-switch/css/bootstrap-switch.min.css" rel="stylesheet" type="text/css" />
     <!-- END PAGE LEVEL PLUGINS -->
     <!-- BEGIN THEME GLOBAL STYLES -->
-    <link href="../assets/global/css/components.min.css" rel="stylesheet" id="style_components" type="text/css" />
+    <link href="/assets/global/css/components.min.css" rel="stylesheet" id="style_components" type="text/css" />
     <!-- END THEME GLOBAL STYLES -->
     <!-- BEGIN THEME LAYOUT STYLES -->
-    <link href="../assets/layouts/layout3/css/layout.min.css" rel="stylesheet" type="text/css" />
-    <link href="../assets/layouts/layout3/css/themes/default.min.css" rel="stylesheet" type="text/css" id="style_color" />
-    <link href="../assets/layouts/layout3/css/custom.min.css" rel="stylesheet" type="text/css" />
+    <link href="/assets/layouts/layout3/css/layout.min.css" rel="stylesheet" type="text/css" />
+    <link href="/assets/layouts/layout3/css/themes/default.min.css" rel="stylesheet" type="text/css" id="style_color" />
+    <link href="/assets/layouts/layout3/css/custom.min.css" rel="stylesheet" type="text/css" />
 @endsection
 @section('content')
     <!-- BEGIN PAGE CONTENT BODY -->
@@ -48,26 +48,37 @@
                                     <table class="table table-striped table-bordered table-hover table-checkable" id="sales_agent_list">
                                         <thead>
                                         <tr role="row" class="heading">
-                                            <th width="20%"> Agent Name </th>
-                                            <th width="30%"> Timestamp </th>
-                                            <th width="50%"> Actions </th>
-                                        </tr>
-                                        <tr role="row" class="filter">
-                                            <td>
-                                                <input type="text" class="form-control form-filter input-sm" name="agent_name" > </td>
-                                            <td>
-                                                <input type="text" class="form-control form-filter input-sm" name="created_date"> </td>
-                                            <td>
-                                                <div class="margin-bottom-5">
-                                                    <button class="btn btn-sm btn-success filter-submit margin-bottom">
-                                                        <i class="fa fa-search"></i> Search</button>
-                                                <button class="btn btn-sm btn-default filter-cancel">
-                                                    <i class="fa fa-times"></i> Reset</button>
-                                                </div>
-                                            </td>
+                                            <th width="30%"> Agent Name </th>
+                                            <th width="30%"> Actions </th>
                                         </tr>
                                         </thead>
-                                        <tbody></tbody>
+                                        <tbody>
+                                        @foreach($saleAgents as $saleAgent)
+                                            @if($saleAgent['is_active'] == true)
+                                            <tr role="row">
+                                                <td class="sorting_1">{{$saleAgent['name']}}</td>
+                                                <td>
+                                                    <div class="bootstrap-switch bootstrap-switch-wrapper bootstrap-switch-small bootstrap-switch-animate bootstrap-switch-on" style="width: 90px;">
+                                                        <div class="bootstrap-switch-container" onclick="changeStatus({{$saleAgent['id']}})" style="width: 132px; margin-left: 0px;">
+                                                            <span class="bootstrap-switch-handle-on bootstrap-switch-primary" style="width: 44px;">ON</span>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            @else
+                                            <tr role="row">
+                                                <td class="sorting_1">{{$saleAgent['name']}}</td>
+                                                <td>
+                                                    <div class="bootstrap-switch bootstrap-switch-wrapper bootstrap-switch-small bootstrap-switch-animate bootstrap-switch-off" style="width: 90px;">
+                                                        <div class="bootstrap-switch-container" onclick="changeStatus({{$saleAgent['id']}})" style="width: 132px; margin-left: 0px;">
+                                                            <span class="bootstrap-switch-handle-off bootstrap-switch-default" style="width: 44px;margin-left: 44px;">OFF</span>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            @endif
+                                        @endforeach
+                                        </tbody>
                                     </table>
                             </div>
                         </div>
@@ -106,13 +117,14 @@
     <!-- END THEME GLOBAL SCRIPTS -->
     <!-- BEGIN PAGE LEVEL SCRIPTS -->
     <script src="/assets/pages/scripts/components-date-time-pickers.min.js" type="text/javascript"></script>
-    <script src="/assets/pages/scripts/superadmin/Agents/sales-agents.min.js" type="text/javascript"></script>
-    <script src="../assets/pages/scripts/components-bootstrap-switch.min.js" type="text/javascript"></script>
+    {{--<script src="/assets/pages/scripts/superadmin/Agents/sales-agents.min.js" type="text/javascript"></script>--}}
+    <script src="/assets/pages/scripts/components-bootstrap-switch.min.js" type="text/javascript"></script>
+
     <!-- END PAGE LEVEL SCRIPTS -->
     <!-- BEGIN THEME LAYOUT SCRIPTS -->
     <script src="/assets/layouts/layout3/scripts/layout.min.js" type="text/javascript"></script>
     <script src="/assets/layouts/layout3/scripts/demo.min.js" type="text/javascript"></script>
-    <script src="../assets/layouts/global/scripts/quick-sidebar.min.js" type="text/javascript"></script>
+    <script src="/assets/layouts/global/scripts/quick-sidebar.min.js" type="text/javascript"></script>
     <script>
         function changeStatus(id) {
             $.ajax({

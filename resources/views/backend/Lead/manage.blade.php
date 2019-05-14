@@ -2,6 +2,11 @@
 @section('title','Agrosiaa | Leads')
 @include('backend.partials.common.nav')
 @section('css')
+    <style>
+        .sortable-handler {
+            touch-action: none;
+        }
+    </style>
     <!-- BEGIN PAGE LEVEL PLUGINS -->
     <link href="/assets/global/plugins/datatables/datatables.min.css" rel="stylesheet" type="text/css" />
     <link href="/assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.css" rel="stylesheet" type="text/css" />
@@ -78,7 +83,7 @@
                                             <tr role="row" class="heading">
                                                 <th width="20%"> Mobile&nbsp;No </th>
                                                 <th width="30%"> Assigned Agent </th>
-                                                <th width="30%"> Timestamp </th>
+                                                <th width="30%"> Allocation </th>
                                                 <th width="20%"> Actions </th>
 
                                             </tr>
@@ -106,7 +111,7 @@
                                         <thead>
                                         <tr role="row" class="heading">
                                             <th width="20%"> Mobile&nbsp;No </th>
-                                            <th width="30%"> Timestamp </th>
+                                            <th width="30%"> Allocation </th>
                                             <th width="50%"> Actions </th>
                                         </tr>
                                         <tr role="row" class="filter">
@@ -446,6 +451,7 @@
         }
     </script>
     <script>
+
         function passId(id,number) {
             $('#reply').modal('show');
             $('#customer_detail_id').val(id);
@@ -512,7 +518,6 @@
         });
 
         $(document).on("click",".chat-submit",function (e) {
-            e.stopPropagation();
             var  message= $('#reply_text').val();
             var customer= $('#customer_detail_id').val();
             $.ajax({
@@ -524,12 +529,8 @@
                     'customer_id' : customer
                 },
                 success: function (responce) {
-                    $('#reply').modal('toggle');
-                    location.reload();
                 },
                 error: function (responce) {
-                    location.reload();
-                    $('#reply').modal('toggle');
                 }
             })
         });

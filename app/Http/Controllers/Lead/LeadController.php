@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 use Ixudra\Curl\Facades\Curl;
 
 class LeadController extends Controller
@@ -64,24 +65,31 @@ class LeadController extends Controller
                     $rowIndex = 1;
                     $setIndex = 0;
                     foreach ($sheet->getRowIterator() as $rows) {
-                        /* Create Array To data Insert */
-                        if($rowIndex > 1){
-                            if($rows[0] == null){
-                                $message = "Please Insert Number";
-                                $request->session()->flash('error', $message);
-                                return redirect('/leads/export-customer-number');
-                            }else{
-                                $customerData['customer_number_status_id'] = CustomerNumberStatus::where('slug','new')->pluck('id');
-                                $customerData['user_id'] = $saleAgents[$setIndex]['id'];
-                                $customerData['number'] = $rows[0];
-                                CustomerNumberStatusDetails::create($customerData);
-                                if($setIndex >= count($saleAgents)-1){
-                                    $setIndex = 0;
+                        if($rows[0] == 'Mobile'){
+                            if($rowIndex > 1){
+                                if($rows[0] == null){
+                                    $message = "Please Insert Number";
+                                    $request->session()->flash('error', $message);
+                                    return redirect('/leads/export-customer-number');
                                 }else{
-                                    $setIndex++;
+                                    $customerData['customer_number_status_id'] = CustomerNumberStatus::where('slug','new')->pluck('id');
+                                    $customerData['user_id'] = $saleAgents[$setIndex]['id'];
+                                    $customerData['number'] = $rows[0];
+                                    CustomerNumberStatusDetails::create($customerData);
+                                    if($setIndex >= count($saleAgents)-1){
+                                        $setIndex = 0;
+                                    }else{
+                                        $setIndex++;
+                                    }
                                 }
                             }
+                        }else{
+                            $message = "File Header name should be -Mobile";
+                            Session::flash('error',$message);
+                            return redirect('/leads/export-customer-number');
                         }
+                        /* Create Array To data Insert */
+
                         $rowIndex++;
                     }
                 }
