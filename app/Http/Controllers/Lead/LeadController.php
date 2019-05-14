@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 use Ixudra\Curl\Facades\Curl;
 
 class LeadController extends Controller
@@ -84,7 +85,7 @@ class LeadController extends Controller
                             }
                         }else{
                             $message = "File Header name should be -Mobile";
-                            $request->session()->flash('error', $message);
+                            Session::flash('error',$message);
                             return redirect('/leads/export-customer-number');
                         }
                         /* Create Array To data Insert */
