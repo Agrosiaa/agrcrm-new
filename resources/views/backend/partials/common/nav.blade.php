@@ -71,8 +71,8 @@
                             <a href="/crm/manage"> CRM</a>
                                 <ul class="dropdown-menu pull-left">
                                     <li class=" ">
-                                        <?php $status = \App\CustomerNumberStatus::where('slug','new')->pluck('slug')?>
-                                        <a href="/leads/manage/{{$status}}" class="nav-link">
+                                        <?php $status = \App\CustomerNumberStatus::where('slug','new')->first();?>
+                                        <a href="/leads/manage/{{$status['slug']}}" class="nav-link">
                                             Leads
                                         </a>
                                     </li>

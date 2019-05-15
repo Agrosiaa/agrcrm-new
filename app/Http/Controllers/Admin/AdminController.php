@@ -80,7 +80,8 @@ class AdminController extends Controller
     public function manageAgents(Request $request){
         try{
             $user = Auth::User();
-            return view('backend.admin.manageAgents')->with(compact('user'));
+            $saleAgents = User::where('role_id',2)->get()->toArray();
+            return view('backend.admin.manageAgents')->with(compact('user','saleAgents'));
         }catch (\Exception $e){
             $data = [
                 'action' => 'Manage Sales Agents',
@@ -91,7 +92,7 @@ class AdminController extends Controller
         }
     }
 
-    public function salesAgentListing(Request $request){
+    /*public function salesAgentListing(Request $request){
         try{
             $user = Auth::user();
             $tableData = $request->all();
@@ -121,14 +122,12 @@ class AdminController extends Controller
                     if($limitedProducts[$j]['is_active'] == true){
                         $records["data"][] = array(
                             $limitedProducts[$j]['name'],
-                            date('d F Y H:i:s',strtotime($limitedProducts[$j]['created_at'])),
                             '<div class="bootstrap-switch bootstrap-switch-wrapper bootstrap-switch-small bootstrap-switch-animate bootstrap-switch-on" style="width: 90px;"><div class="bootstrap-switch-container" onclick="changeStatus('.$limitedProducts[$j]['id'].')" style="width: 132px; margin-left: 0px;"><span class="bootstrap-switch-handle-on bootstrap-switch-primary" style="width: 44px;">ON</span><span class="bootstrap-switch-label" style="width: 44px;">&nbsp;</span><span class="bootstrap-switch-handle-off bootstrap-switch-default" style="width: 44px;">OFF</span></div></div>'
                             //'<input class="switch-light switch-material" onclick="changeStatus('.$limitedProducts[$j]['id'].')" type="checkbox" checked>',
                         );
                     } else {
                         $records["data"][] = array(
                             $limitedProducts[$j]['name'],
-                            date('d F Y H:i:s',strtotime($limitedProducts[$j]['created_at'])),
                             '<div class="bootstrap-switch bootstrap-switch-wrapper bootstrap-switch-small bootstrap-switch-animate bootstrap-switch-off" style="width: 90px;"><div class="bootstrap-switch-container" onclick="changeStatus('.$limitedProducts[$j]['id'].')" style="width: 132px; margin-left: -44px;"><span class="bootstrap-switch-handle-on bootstrap-switch-primary" style="width: 44px;">ON</span><span class="bootstrap-switch-label" style="width: 44px;">&nbsp;</span><span class="bootstrap-switch-handle-off bootstrap-switch-default" style="width: 44px;">OFF</span></div></div>'
                             // '<input class="switch-light switch-material" onclick="changeStatus('.$limitedProducts[$j]['id'].')" type="checkbox">',
                         );
@@ -148,7 +147,7 @@ class AdminController extends Controller
             $records = $e->getMessage();
         }
         return response()->json($records);
-    }
+    }*/
 
     public function changeAgentStatus(Request $request, $id){
         try{
