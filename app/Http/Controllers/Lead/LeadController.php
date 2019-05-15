@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers\Lead;
 
+use App\CallBack;
 use App\CallStatus;
 use App\CustomerNumberStatus;
 use App\CustomerNumberStatusDetails;
+use App\Reminder;
 use App\SalesChat;
 use App\User;
 use Box\Spout\Common\Type;
 use Box\Spout\Reader\ReaderFactory;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -28,7 +31,8 @@ class LeadController extends Controller
             $status = $type;
             $user = Auth::user();
             $callStatuses = CallStatus::get()->toArray();
-            return view('backend.Lead.manage')->with(compact('user','status','callStatuses'));
+            $callBacks = CallBack::all()->toArray();
+            return view('backend.Lead.manage')->with(compact('user','status','callStatuses','callBacks'));
         }catch(\Exception $exception){
             $data =[
                 'action' => 'get Lead manage page',
@@ -183,14 +187,14 @@ class LeadController extends Controller
                             $limitedProducts[$j]['number'],
                             User::where('id',$limitedProducts[$j]['user_id'])->pluck('name'),
                             date('d F Y H:i:s',strtotime($limitedProducts[$j]['created_at'])),
-                            '<a href="#" class="btn btn-sm btn-default btn-circle btn-editable chat_reply" onclick="passId('.$limitedProducts[$j]['id'].','.$limitedProducts[$j]['number'].')"><i class="fa fa-pencil"></i> Chat</a>',
+                            '<a href="#" class="btn btn-sm btn-default btn-circle btn-editable chat_reply" onclick="passId('.$limitedProducts[$j]['id'].','.$limitedProducts[$j]['number'].')"><i class="fa fa-pencil"></i> Log</a>',
                         );
                     } else {
                         if(in_array($limitedProducts[$j]['number'],$createdCustomers)){
                             $records["data"][] = array(
                                 $limitedProducts[$j]['number'],
                                 date('d F Y H:i:s', strtotime($limitedProducts[$j]['created_at'])),
-                                '<a class="btn btn-sm btn-default btn-circle btn-editable chat_reply" onclick="passId(' . $limitedProducts[$j]['id'] . ',' . $limitedProducts[$j]['number'] . ')"><i class="fa fa-pencil"></i> Chat</a>'
+                                '<a class="btn btn-sm btn-default btn-circle btn-editable chat_reply" onclick="passId(' . $limitedProducts[$j]['id'] . ',' . $limitedProducts[$j]['number'] . ')"><i class="fa fa-pencil"></i> Log</a>'
                             );
                             if($limitedProducts[$j]['customer_number_status_id'] != $completeStatusId){
                                 $updateStatus['customer_number_status_id'] = $completeStatusId;
@@ -200,7 +204,7 @@ class LeadController extends Controller
                             $records["data"][] = array(
                                 $limitedProducts[$j]['number'],
                                 date('d F Y H:i:s', strtotime($limitedProducts[$j]['created_at'])),
-                                '<a class="btn btn-sm btn-default btn-circle btn-editable chat_reply" onclick="passId(' . $limitedProducts[$j]['id'] . ',' . $limitedProducts[$j]['number'] . ')"><i class="fa fa-pencil"></i> Chat</a>
+                                '<a class="btn btn-sm btn-default btn-circle btn-editable chat_reply" onclick="passId(' . $limitedProducts[$j]['id'] . ',' . $limitedProducts[$j]['number'] . ')"><i class="fa fa-pencil"></i> Log</a>
                             <a class="btn btn-sm btn-default btn-circle btn-editable" onclick="createCustomer(' . $limitedProducts[$j]['number'] . ')"><i class="fa fa-pencil"></i> Create</a>',
                             );
                         }
@@ -226,32 +230,70 @@ class LeadController extends Controller
         try{
             $user = Auth::User();
             $chatHistoryData = array();
-            $chatData = SalesChat::where('customer_number_details_id',$id)->get()->toArray();
+           /* $chatReminder = CustomerNumberStatusDetails::join('reminder','customer_number_status_details.id','=','reminder.customer_number_status_details_id')
+                ->join('sales_chat','customer_number_status_details.id','=','sales_chat.customer_number_details_id')
+                ->where('sales_chat.customer_number_details_id','=',$id)
+                ->where('reminder.customer_number_status_details_id','=',$id)
+                ->select('sales_chat.id','sales_chat.user_id','.sales_chat.message','reminder.reminder_time','reminder.created_at')
+                ->get();*/
+           $mobileNumber = CustomerNumberStatusDetails::where('id',$id)->value('number');
+           $custDetailIds = CustomerNumberStatusDetails::where('number',$mobileNumber)->lists('id');
+           $allocationData = CustomerNumberStatusDetails::where('number',$mobileNumber)->get()->toArray();
+           $reminderDetails = Reminder::where('customer_number_status_details_id',$id)->get()->toArray();
+            $chatData = SalesChat::whereIn('customer_number_details_id',$custDetailIds)->get()->toArray();
+            $chatRemainderData = array_merge($chatData,$reminderDetails);
+            $chatRemainderAllocationData = array_merge($allocationData,$chatRemainderData);
             $i = 0;
-            foreach ($chatData as $value){
-                if($value['user_id'] == $user['id']){
-                    if($value['user_id'] != null){
-                        $chatHistoryData[$i]['userName'] = User::where('id',$value['user_id'])->value('name');
-                    }
+            foreach ($chatRemainderAllocationData as $value){
+                if(array_key_exists('number',$value)){
+                    $chatHistoryData[$i]['is_allocation'] = true;
+                    $chatHistoryData[$i]['number'] = $value['number'];
+                    $chatHistoryData[$i]['sale_agent'] = User::where('id',$value['user_id'])->value('name');
                     $chatHistoryData[$i]['time'] = date('d F Y H:i:s',strtotime($value['created_at']));
-                    $chatHistoryData[$i]['message'] = $value['message'];
-                    $chatHistoryData[$i]['user'] = true;
-                    if($value['call_status_id'] != null) {
-                        $chatHistoryData[$i]['status'] = CallStatus::where('id',$value['call_status_id'])->value('name');
-                    } else {
-                        $chatHistoryData[$i]['status'] = null;
-                    }
-                }else{
-                    if($value['user_id'] != null){
-                        $chatHistoryData[$i]['userName'] = User::where('id',$value['user_id'])->value('name');
-                    }
-                    $chatHistoryData[$i]['time'] = date('d F Y H:i:s',strtotime($value['created_at']));
-                    $chatHistoryData[$i]['message'] = $value['message'];
-                    $chatHistoryData[$i]['user'] = false;
-                    if($value['call_status_id'] != null) {
-                        $chatHistoryData[$i]['status'] = CallStatus::where('id',$value['call_status_id'])->value('name');
-                    } else {
-                        $chatHistoryData[$i]['status'] = null;
+                } else {
+                    $chatHistoryData[$i]['is_allocation'] = false;
+                    if(array_key_exists('reminder_time',$value)){
+                        $callBack = CallBack::where('id',$value['call_back_id'])->value('slug');
+                        if($callBack == 'call-back-1'){
+                            $chatHistoryData[$i]['reminder_time'] = true;
+                            $chatHistoryData[$i]['call'] = CallBack::where('slug','call-back-1')->value('name');
+                            $chatHistoryData[$i]['callTime'] = date('d F Y H:i:s',strtotime($value['created_at']));
+                            $chatHistoryData[$i]['nextCall'] = CallBack::where('slug','call-back-2')->value('name');
+                            $chatHistoryData[$i]['reminder'] = date('d F Y H:i:s',strtotime($value['reminder_time']));
+                        } elseif ($callBack == 'call-back-2') {
+                            $chatHistoryData[$i]['reminder_time'] = true;
+                            $chatHistoryData[$i]['call'] = CallBack::where('slug','call-back-2')->value('name');
+                            $chatHistoryData[$i]['callTime'] = date('d F Y H:i:s',strtotime($value['created_at']));
+                            $chatHistoryData[$i]['nextCall'] = CallBack::where('slug','call-back-3')->value('name');
+                            $chatHistoryData[$i]['reminder'] = date('d F Y H:i:s',strtotime($value['reminder_time']));
+                        }else{
+                            $chatHistoryData[$i]['reminder_time'] = true;
+                            $chatHistoryData[$i]['call'] = date('d F Y H:i:s',strtotime($value['created_at']));
+                            $chatHistoryData[$i]['reminder'] = null;
+                        }
+                    }else{
+                        $chatHistoryData[$i]['reminder_time'] = false;
+                        if($value['user_id'] == $user['id']){
+                            $chatHistoryData[$i]['userName'] = User::where('id',$value['user_id'])->value('name');
+                            $chatHistoryData[$i]['time'] = date('d F Y H:i:s',strtotime($value['created_at']));
+                            $chatHistoryData[$i]['message'] = $value['message'];
+                            $chatHistoryData[$i]['user'] = true;
+                            if($value['call_status_id'] != null) {
+                                $chatHistoryData[$i]['status'] = CallStatus::where('id',$value['call_status_id'])->value('name');
+                            } else {
+                                $chatHistoryData[$i]['status'] = null;
+                            }
+                        }else{
+                            $chatHistoryData[$i]['userName'] = User::where('id',$value['user_id'])->value('name');
+                            $chatHistoryData[$i]['time'] = date('d F Y H:i:s',strtotime($value['created_at']));
+                            $chatHistoryData[$i]['message'] = $value['message'];
+                            $chatHistoryData[$i]['user'] = false;
+                            if($value['call_status_id'] != null) {
+                                $chatHistoryData[$i]['status'] = CallStatus::where('id',$value['call_status_id'])->value('name');
+                            } else {
+                                $chatHistoryData[$i]['status'] = null;
+                            }
+                        }
                     }
                 }
                 $i++;
@@ -279,6 +321,63 @@ class LeadController extends Controller
         }catch(\Exception $e){
             $data = [
                 'action' => 'Create Chat',
+                'exception' => $e->getMessage()
+            ];
+            Log::critical(json_encode($data));
+            abort(500,$e->getMessage());
+        }
+    }
+
+    public function setReminder(Request $request){
+        try{
+            $inputDate = str_replace('-','',$request->reminder_time);
+            if($request->reminder_time != ''){
+                $data['reminder_time'] = Carbon::parse($inputDate);
+            }
+            $data['call_back_id'] = $request->call_back_id;
+            $data['customer_number_status_details_id'] = $request->customer_status_detail_id;
+            $setReminder = Reminder::create($data);
+            $callBack1 = CallBack::where('slug','call-back-1')->value('id');
+            $callBack3 = CallBack::where('slug','call-back-3')->value('id');
+            if($setReminder->call_back_id == $callBack1){
+                $callBackStatusId = CustomerNumberStatus::where('slug','call-back')->value('id');
+                $updateStatus['customer_number_status_id'] = $callBackStatusId;
+                CustomerNumberStatusDetails::where('id',$request->customer_status_detail_id)->update($updateStatus);
+            }
+            if($setReminder->call_back_id == $callBack3){
+                $failStatusId = CustomerNumberStatus::where('slug','failed')->value('id');
+                $updateStatus['customer_number_status_id'] = $failStatusId;
+                CustomerNumberStatusDetails::where('id',$request->customer_status_detail_id)->update($updateStatus);
+            }
+            return back();
+        }catch(\Exception $e){
+            $data = [
+                'action' => 'Set Reminder',
+                'exception' => $e->getMessage()
+            ];
+            Log::critical(json_encode($data));
+            abort(500,$e->getMessage());
+        }
+    }
+
+    public function callBackStatus($custDetailId){
+        try{
+            $reminderStatus = Reminder::where('customer_number_status_details_id',$custDetailId)->orderBy('call_back_id','desc')->get()->first();
+            $data['status_id'] = $reminderStatus['call_back_id'];
+            $currentDateTime = Carbon::now();
+            if($reminderStatus['reminder_time'] != null) {
+                if ($currentDateTime > $reminderStatus['reminder_time']){
+                    $data['setNextCall'] = true;
+                } else {
+                    $data['setNextCall'] = false;
+                }
+            }else{
+                $data['setNextCall'] = true;
+            }
+            return $data;
+        }catch(\Exception $e){
+            $data = [
+                'action' => 'Set Reminder',
                 'exception' => $e->getMessage()
             ];
             Log::critical(json_encode($data));

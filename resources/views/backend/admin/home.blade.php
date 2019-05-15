@@ -37,6 +37,60 @@
                 <input type="hidden" id="sales_id" value="{{$user['id']}}">
                 <input type="hidden" id="role_id" value="{{$user['role_id']}}">
                     <div class="row">
+                        <div class="col-md-6 col-sm-6">
+                            <div class="portlet light bordered">
+                                <div class="portlet-title">
+                                    <div class="caption">
+                                        <i class="icon-share text-danger"></i>
+                                        <span class="caption-subject text-danger bold uppercase">Call Back Reminder</span>
+                                    </div>
+                                </div>
+                                <div class="portlet-body">
+                                    <div class="scroller" style="height: 250px;" data-always-visible="1" data-rail-visible="0">
+                                        <ul class="feeds">
+                                            <div class="col1">
+                                                <div class="cont">
+                                                    <div class="cont-col2" id="">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <li id="" style="background-color: white">
+                                                @if($user['id'] == 1)
+                                                    @foreach($callBackReminders as $callBackReminder)
+                                                        <div class="row">
+                                                            <div class="col-md-1">
+                                                                <div class="label label-sm label-info">
+                                                                    <i class="fa fa-clock-o"></i>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-10" style="margin-left: -15px;margin-top: -3px"><span>Reminder to Call Back {{$callBackReminder['number']}} is set on {{$callBackReminder['reminder_time']}} by {{$callBackReminder['name']}}</span><br>
+                                                            </div>
+                                                        </div>
+                                                        <br>
+                                                    @endforeach
+                                                    @else
+                                                    @foreach($callBackReminders as $callBackReminder)
+                                                        <div class="row">
+                                                            <div class="col-md-1">
+                                                                <div class="label label-sm label-info">
+                                                                    <i class="fa fa-clock-o"></i>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-10" style="margin-left: -15px;margin-top: -3px"><span>Reminder to Call Back {{$callBackReminder['number']}} is set on {{$callBackReminder['reminder_time']}}</span><br>
+                                                            </div>
+                                                        </div>
+                                                        <br>
+                                                    @endforeach
+                                                @endif
+
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="scroller-footer">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="col-md-6 col-md-6">
                             <div class="portlet light bordered">
                                 <div class="portlet-title">
