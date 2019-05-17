@@ -37,6 +37,8 @@ Route::group(['prefix' => '/leads'], function () {
     Route::post('/sales-admin-listing/{status}',array('uses' => 'Lead\LeadController@saleAdminListing'));
     Route::get('/sales-chat-listing/{id}',array('uses' => 'Lead\LeadController@saleChatListing'));
     Route::post('/sales-chat',array('uses' => 'Lead\LeadController@saleChat'));
+    Route::post('/set-reminder',array('uses' => 'Lead\LeadController@setReminder'));
+    Route::get('/call-back-status/{custDetailId}',array('uses' => 'Lead\LeadController@callBackStatus'));
 });
 Route::get('refresh-csrf', function(){
     return csrf_token();

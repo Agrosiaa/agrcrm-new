@@ -14,6 +14,7 @@
     <link href="/assets/global/plugins/fancybox/source/jquery.fancybox.css" rel="stylesheet" type="text/css" />
     <link href="/assets/global/css/plugins.min.css" rel="stylesheet" type="text/css" />
     <link href="/assets/global/plugins/jstree/dist/themes/default/style.css" rel="stylesheet" type="text/css" />
+    <link href="/assets/global/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css" rel="stylesheet" type="text/css" />
     <!-- END PAGE LEVEL PLUGINS -->
    <script type="text/css">
    </script>
@@ -83,7 +84,7 @@
                                             <tr role="row" class="heading">
                                                 <th width="20%"> Mobile&nbsp;No </th>
                                                 <th width="30%"> Assigned Agent </th>
-                                                <th width="30%"> Allocation </th>
+                                                <th width="30%"> Allocated </th>
                                                 <th width="20%"> Actions </th>
 
                                             </tr>
@@ -111,7 +112,7 @@
                                         <thead>
                                         <tr role="row" class="heading">
                                             <th width="20%"> Mobile&nbsp;No </th>
-                                            <th width="30%"> Allocation </th>
+                                            <th width="30%"> Allocated </th>
                                             <th width="50%"> Actions </th>
                                         </tr>
                                         <tr role="row" class="filter">
@@ -142,8 +143,8 @@
                         <!-- Modal content-->
                         <div class="modal-content" style="width: 590px">
                             <div class="modal-header" style="width: 580px">
-                                <div class="col-md-6">
-                                    <h4 class="modal-title reply-title"> </h4>
+                                <div class="col-md-7">
+                                    <h4 class="modal-title reply-title" style="color: black"> </h4>
                                 </div>
                                 <div class="col-md-4">
                                     <select id="select-call-status" class="" style="-webkit-appearance: menulist; align-self: center">Select Call Status
@@ -153,16 +154,16 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="col-md-2">
+                                <div class="col-md-1">
                                     <button type="button" class="close pull-right" data-dismiss="modal">&times;</button>
                                 </div>
                             </div>
                             <div class="modal-body" style="width: 580px">
                                 <div class="row">
                                     <div class="col-md-12" >
-                                        <div class="portlet light" style="background-color: #cde4cc">
+                                        <div class="portlet light" style="background-image: url(/assets/global/img/chat-background.jpg);">
                                             <div class="portlet-body" >
-                                                <div class="scroller" style="height: 338px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
+                                                <div class="scroller scro" style="height: 338px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
                                                     <div class="general-item-list" id="chat_message">
 
                                                     </div>
@@ -172,19 +173,24 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    @if($status == 'new')
-                                        <div class="col-md-3">
-                                            <button type="button" class="btn btn-circle blue btn-outline">Call Back 1</button>
-                                        </div>
-                                    @endif
-                                    @if($status == 'call-back')
-                                            <div class="col-md-2">
-                                                <button type="button" class="btn btn-circle blue btn-outline">Call Back 2</button>
+                                    @foreach($callBacks as $callBack)
+                                        @if($status == 'new' && $callBack['slug'] == 'call-back-1')
+                                            <div class="col-md-3" id="call_back_1">
+                                                <button type="button" class="btn btn-circle blue btn-outline" onclick="setReminder({{$callBack['id']}})">{{$callBack['name']}}</button>
                                             </div>
-                                            <div class="col-md-3">
-                                                <button type="button" class="btn btn-circle blue btn-outline">Call Back 3</button>
+                                        @elseif($status == 'call-back' && $callBack['slug'] != 'call-back-1')
+                                            @if($callBack['slug'] == 'call-back-2')
+                                            <div class="col-md-3 call_back" id="call_back_2">
+                                                <button type="button" class="btn btn-circle blue btn-outline" onclick="setReminder({{$callBack['id']}})">{{$callBack['name']}}</button>
                                             </div>
+                                            @endif
+                                                @if($callBack['slug'] == 'call-back-3')
+                                                    <div class="col-md-3 call_back" id="call_back_3">
+                                                        <button type="button" class="btn btn-circle blue btn-outline" onclick="setReminder({{$callBack['id']}})">{{$callBack['name']}}</button>
+                                                    </div>
+                                                @endif
                                         @endif
+                                    @endforeach
                                 </div>
                                 <br>
                                 <div class="row" id="query-form">
@@ -199,6 +205,43 @@
                                     </form>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="reminder_modal" class="modal fade bs-modal-md" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-md">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title" style="text-align: center"><b>Set Reminder</b></h4>
+                            </div>
+                            <form class="form-horizontal" method="post" role="form" action="/leads/set-reminder">
+                                <div class="modal-body">
+                                        <div class="form-group">
+                                            {{csrf_field()}}
+                                            <label class="control-label col-sm-4">Reminder Time</label>
+                                            <div class="col-md-8">
+                                                <div class="input-group date form_datetime input-large">
+                                                    <input type="text" size="16" name="reminder_time" class="form-control">
+                                                    <span class="input-group-btn">
+                                                        <button class="btn default date-set" type="button">
+                                                            <i class="fa fa-calendar"></i>
+                                                        </button>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <div class="row">
+                                        <div class="col-md-8 col-md-offset-4">
+                                            <input type="hidden" id="customer_status_detail_id" name="customer_status_detail_id" value="">
+                                            <input type="hidden" id="call_back_id" name="call_back_id" value="">
+                                            <button type="submit" class="btn btn-sm btn-success">Create</button>
+                                            <button class="btn btn-sm btn-danger" data-dismiss="modal">Cancel</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -455,7 +498,25 @@
         function passId(id,number) {
             $('#reply').modal('show');
             $('#customer_detail_id').val(id);
+            $('#customer_status_detail_id').val(id);
             $('.reply-title').text("Chat History - " +number);
+            $('.call_back').hide();
+            $.ajax({
+                url: '/leads/call-back-status/'+id,
+                type: 'get',
+                dataType: 'json',
+                success: function (response) {
+                    var nextCallBack = response['status_id'] + 1;
+                    if(response['setNextCall'] == true){
+                        $('#call_back_'+nextCallBack+'').show();
+                    } else {
+                        $('#call_back_'+nextCallBack+'').hide();
+                    }
+                },
+                error: function (response) {
+                    
+                }
+            });
             $.ajax({
                 url: '/leads/sales-chat-listing/'+id,
                 type: 'get',
@@ -465,38 +526,72 @@
                     var jsonObj = JSON.parse(obj);
                     var str = '';
                     $.each(jsonObj, function(key , data) {
-                        if(data['status'] == null) {
-                            if(data['user'] == true){
-                                str += '<div class="item">' +
-                                    '<div class="item-head">' +
-                                    '<div class="item-details pull-right">' +
-                                    '<img class="item-pic rounded" height="35" width="35" src="/assets/layouts/layout3/img/avatar.png">' +
-                                    '<span>' + data['userName'] + '</span>' +
-                                    '&nbsp;&nbsp;&nbsp;<span class="item-label" style="color: black">' + data['time'] + '</span>' +
-                                    '</div>' +
-                                    '</div>' +
-                                    '<div class="item-body pull-right">' +
-                                    '<span>' + data['message'] + '</span>' +
-                                    '</div>' +
-                                    '</div>' +
-                                    '<br>';
-                            }else {
-                                str += '<div class="item">' +
-                                    '<div class="item-head">' +
-                                    '<div class="item-details">' +
-                                    '<img class="item-pic rounded" height="35" width="35" src="/assets/layouts/layout3/img/avatar.png">' +
-                                    '<span>' + data['userName'] + '</span>' +
-                                    '&nbsp;&nbsp;&nbsp;<span class="item-label" style="color: black">' + data['time'] + '</span>' +
-                                    '</div>' +
-                                    '</div>' +
-                                    '<div class="item-body">' +
-                                    '<span>' + data['message'] + '</span>' +
-                                    '</div>' +
-                                    '</div>' +
-                                    '<br>';
-                            }
+                        if(data['is_allocation'] == true){
+                            str += '<div class="item" style="text-align: center">' +
+                                '<span class="tag label label-info" style="font-size: 90%;">' +
+                                data['number'] +' was allocated to ' +data['sale_agent'] + ' on '+ data['time'] +
+                                '</span>' +
+                                '</div> '+
+                                '<br>';
                         } else {
-                            str += '<div class="item" style="text-align: center"><span class="tag label label-info" style="font-size: 90%;">'+ data['status'] +' @ ' +data['time'] + ' by ' + data['userName'] + '</span></div><br>';
+                            if(data['reminder_time'] == true){
+                                if(data['reminder'] != null){
+                                    str += '<div class="item" style="text-align: center">' +
+                                        '<span class="tag label label-info" style="font-size: 90%;">' +
+                                        data['call'] +' was completed on ' +data['callTime'] +
+                                        '</span>' +
+                                        '</div> '+
+                                        '<br>' +
+                                        '<div class="item" style="text-align: center">' +
+                                        '<span class="tag label label-info" style="font-size: 90%;">' +
+                                        data['nextCall'] +' reminder set on ' +data['reminder'] +
+                                        '</span>' +
+                                        '</div> '+
+                                        '<br>'
+                                    ;
+                                } else {
+                                    str += '<div class="item" style="text-align: center">' +
+                                        '<span class="tag label label-info" style="font-size: 90%;">' +
+                                        data['call'] +' was completed on ' +data['callTime'] +
+                                        '</span>' +
+                                        '</div> '+
+                                        '<br>';
+                                }
+                            }else {
+                                if(data['status'] == null) {
+                                    if(data['user'] == true){
+                                        str += '<div class="item">' +
+                                            '<div class="item-head">' +
+                                            '<div class="item-details pull-right">' +
+                                            '<img class="item-pic rounded" height="35" width="35" src="/assets/layouts/layout3/img/avatar.png">' +
+                                            '<span style="color: black">' + data['userName'] + '</span>' +
+                                            '&nbsp;&nbsp;&nbsp;<span class="item-label" style="color: #8c8c8e">' + data['time'] + '</span>' +
+                                            '</div>' +
+                                            '</div>' +
+                                            '<div class="item-body pull-right">' +
+                                            '<span>' + data['message'] + '</span>' +
+                                            '</div>' +
+                                            '</div>' +
+                                            '<br>';
+                                    }else {
+                                        str += '<div class="item">' +
+                                            '<div class="item-head">' +
+                                            '<div class="item-details">' +
+                                            '<img class="item-pic rounded" height="35" width="35" src="/assets/layouts/layout3/img/avatar.png">' +
+                                            '<span style="color: black">' + data['userName'] + '</span>' +
+                                            '&nbsp;&nbsp;&nbsp;<span class="item-label" style="color: #8c8c8e">' + data['time'] + '</span>' +
+                                            '</div>' +
+                                            '</div>' +
+                                            '<div class="item-body">' +
+                                            '<span>' + data['message'] + '</span>' +
+                                            '</div>' +
+                                            '</div>' +
+                                            '<br>';
+                                    }
+                                } else {
+                                    str += '<div class="item" style="text-align: center"><span class="tag label label-info" style="font-size: 90%;">'+ data['status'] +' @ ' +data['time'] + ' by ' + data['userName'] + '</span></div><br>';
+                                }
+                            }
                         }
                     });
                     $('#chat_message').html(str);
@@ -505,6 +600,11 @@
                     console.log(responce);
                 }
             });
+        }
+
+        function setReminder(callId) {
+            $('#reminder_modal').modal('show');
+            $('#call_back_id').val(callId);
         }
 
         function createCustomer(mobile) {
