@@ -255,7 +255,7 @@
                                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                                 <h4 class="modal-title" style="text-align: center"><b>Assign Number to Agent</b></h4>
                             </div>
-                           <form class="form-horizontal" method="post" role="form" action="/leads/assign-customer">
+                           <form class="form-horizontal" id="assign_num_form" method="post" role="form" action="/leads/assign-customer">
                                <div class="modal-body">
                                    <div class="row">
                                        <div class="col-md-12">
@@ -263,7 +263,7 @@
                                                {{csrf_field()}}
                                                <label class="col-md-4 control-label">Mobile Number</label>
                                                <div class="col-md-4">
-                                                   <input type="text" class="form-control" id="mobile_number" name="mobile_number" required>
+                                                   <input type="number" class="form-control" id="mobile_number" name="mobile_number" required>
                                                </div>
                                            </div>
                                        </div>
@@ -288,14 +288,25 @@
                                 <h4 class="modal-title" style="text-align: center"><b>Create Customer</b></h4>
                             </div>
                             <hr>
-                            <form>
+                            <form id="create-customer-form">
                                 <div class="modal-body">
                                     <div class="row">
                                         <div class="col-md-12">
                                             <div class="form-group">
-                                                <label class="col-md-4 control-label">Name : <span class="required">*</span></label>
+                                                <label class="col-md-4 control-label">First Name : <span class="required">*</span></label>
                                                 <div class="col-md-4">
-                                                    <input type="text" class="form-control" id="name" name="name" required>
+                                                    <input type="text" class="form-control" id="fname" name="fname" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label class="col-md-4 control-label">Last Name : <span class="required">*</span></label>
+                                                <div class="col-md-4">
+                                                    <input type="text" class="form-control" id="lname" name="lname" required>
                                                 </div>
                                             </div>
                                         </div>
@@ -315,9 +326,9 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <div class="form-group">
-                                                <label class="col-md-4 control-label">Email id : <span class="required">*</span></label>
+                                                <label class="col-md-4 control-label">Email id : </label>
                                                 <div class="col-md-4">
-                                                    <input type="text" class="form-control" id="email" name="email" required>
+                                                    <input type="text" class="form-control" id="email" name="email">
                                                 </div>
                                             </div>
                                         </div>
@@ -346,6 +357,28 @@
                                     </div>
                                     <br>
                                     <div id="address-div">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label class="col-md-4 control-label">Full Name : <span class="required">*</span></label>
+                                                    <div class="col-md-4">
+                                                        <input type="text" class="form-control address" id="address_fname" name="address_fname" required>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label class="col-md-4 control-label">Mobile Number : <span class="required">*</span></label>
+                                                    <div class="col-md-4">
+                                                        <input type="number" class="form-control address" id="address_mobile_number" name="address_mobile_number" required>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br>
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <div class="form-group">
@@ -479,6 +512,8 @@
     <!-- BEGIN PAGE LEVEL SCRIPTS -->
     <script src="/assets/pages/scripts/components-date-time-pickers.min.js" type="text/javascript"></script>
     <script src="/assets/pages/scripts/superadmin/order/ecommerce-orders.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/jquery-validation/js/jquery.validate.min.js" type="text/javascript"></script>
+
     <!-- END PAGE LEVEL SCRIPTS -->
     <!-- BEGIN THEME LAYOUT SCRIPTS -->
     <script src="/assets/layouts/layout3/scripts/layout.min.js" type="text/javascript"></script>
@@ -488,6 +523,93 @@
     <script>
         $( document ).ready(function() {
            $('#address-div').hide();
+
+            jQuery(document).ready(function() {
+                //Assign number to sale agent validation
+                jQuery("#assign_num_form").validate({
+                rules: {
+                    mobile_number: {
+                        required: true,
+                        minlength:9,
+                        maxlength:10,
+                        number: true
+                    }
+                },
+                    messages: {
+                        mobile_number: {
+                            required: 'Please enter the mobile number',
+                            number: 'Please enter valid mobile number',
+                            minlength: 'Please enter valid mobile number',
+                            maxlength: 'Please enter valid mobile number'
+                        }
+
+                    },
+                    submitHandler: function(form) {
+                        form.submit();
+                    }
+            });
+
+                //Create customer form validate
+                jQuery("#create-customer-form").validate({
+                    rules: {
+                        fname: 'required',
+                        lname: 'required',
+                        address_fname: 'required',
+                        flat_house_no: 'required',
+                        village: 'required',
+                        area: 'required',
+                        road: 'required',
+                        pin_code: 'required',
+                        post: 'required',
+                        state: 'required',
+                        dist: 'required',
+                        taluka: 'required',
+                        mobile_number: {
+                            required: true,
+                            minlength:9,
+                            maxlength:10,
+                            number: true
+                        },
+                        address_mobile_number: {
+                            required: true,
+                            minlength:9,
+                            maxlength:10,
+                            number: true
+                        }
+                    },
+                    messages: {
+                        fname: 'Please enter customer first name',
+                        lname: 'Please enter customer last name',
+                        address_fname: 'Please enter customer full name',
+                        flat_house_no: 'Please enter flat/door/blockno./house',
+                        village: 'Please enter premises/building/village',
+                        area: 'Please enter area/locality/wadi',
+                        road: 'Please enter road street lane',
+                        pin_code: 'Please enter pin code',
+                        post: 'Please enter post',
+                        state: 'Please enter state',
+                        dist: 'Please enter district',
+                        taluka: 'Please enter taluka',
+                        mobile_number: {
+                            required: 'Please enter the mobile number',
+                            number: 'Please enter valid mobile number',
+                            minlength: 'Please enter valid mobile number',
+                            maxlength: 'Please enter valid mobile number'
+                        },
+                        address_mobile_number: {
+                            required: 'Please enter the mobile number',
+                            number: 'Please enter valid mobile number',
+                            minlength: 'Please enter valid mobile number',
+                            maxlength: 'Please enter valid mobile number'
+                        }
+
+                    },
+                    submitHandler: function(form) {
+                        form.submit();
+                    }
+                });
+        });
+
         });
         function redirect(slug){
             window.location.href= '/leads/manage/'+slug;
@@ -659,10 +781,13 @@
 
         $(document).on("click","#create_customer",function (e) {
             e.stopPropagation();
-            var name = $('#name').val();
+            var fname = $('#fname').val();
+            var lname = $('#lname').val();
             var dob = $('#birthdate').val();
             var email = $('#email').val();
             var mobile = $('#cust_mobile_number').val();
+            var addressFullName= $('#address_fname').val();
+            var addrMobile= $('#address_mobile_number').val();
             var house_block = $('#flat_house_no').val();
             var village_premises = $('#village').val();
             var area = $('#area').val();
@@ -672,40 +797,79 @@
             var state = $('#state').val();
             var dist = $('#dist').val();
             var taluka = $('#taluka').val();
-            alert(dob);
-            if(name=='' || email=='' || mobile=='' || house_block=='' || village_premises=='' || area=='' || road_street=='' || pin=='' || post=='' || state=='' || dist=='' || taluka==''){
-                alert("Please fill all required fill");
-            } else {
-                $.ajax({
-                    url: "{{env('BASE_URL')}}/create-customer",
-                    type: 'POST',
-                    dataType: 'array',
-                    data: {
-                        'name': name,
-                        'dob': dob,
-                        'email': email,
-                        'mobile': mobile,
-                        'house_block': house_block,
-                        'village_premises': village_premises,
-                        'area': area,
-                        'road_street': road_street,
-                        'pin': pin,
-                        'at_post': post,
-                        'state': state,
-                        'dist': dist,
-                        'taluka': taluka
-                    },
-                    success: function (responce) {
-                        console.log(responce);
-                        $('#create-customer-modal').modal('toggle');
-                        location.reload();
-                    },
-                    error: function (responce) {
-                        console.log(responce);
-                        location.reload();
-                        $('#create-customer-modal').modal('toggle');
+            if(fname != '' && lname != '' && mobile != ''){
+                if($('#address-div').is(":visible")){
+                    if(house_block != '' && village_premises != '' && area != '' && road_street != '' && pin != '' && post != '' && state != '' && dist != '' && taluka != '')
+                    {
+                        $.ajax({
+                            url: "{{env('BASE_URL')}}/create-customer",
+                            type: 'POST',
+                            dataType: 'array',
+                            data: {
+                                'fname': fname,
+                                'lname': lname,
+                                'dob': dob,
+                                'email': email,
+                                'mobile': mobile,
+                                'address_fname': addressFullName,
+                                'address_mobile': addrMobile,
+                                'house_block': house_block,
+                                'village_premises': village_premises,
+                                'area': area,
+                                'road_street': road_street,
+                                'pin': pin,
+                                'at_post': post,
+                                'state': state,
+                                'dist': dist,
+                                'taluka': taluka
+                            },
+                            success: function (responce) {
+                                console.log(responce);
+                                $('#create-customer-modal').modal('toggle');
+                                location.reload();
+                            },
+                            error: function (responce) {
+                                console.log(responce);
+                                 location.reload();
+                                $('#create-customer-modal').modal('toggle');
+                            }
+                        })
                     }
-                })
+                } else{
+                    $.ajax({
+                        url: "{{env('BASE_URL')}}/create-customer",
+                        type: 'POST',
+                        dataType: 'array',
+                        data: {
+                            'fname': fname,
+                            'lname': lname,
+                            'dob': dob,
+                            'email': email,
+                            'mobile': mobile,
+                            'address_fname': addressFullName,
+                            'address_mobile': addrMobile,
+                            'house_block': house_block,
+                            'village_premises': village_premises,
+                            'area': area,
+                            'road_street': road_street,
+                            'pin': pin,
+                            'at_post': post,
+                            'state': state,
+                            'dist': dist,
+                            'taluka': taluka
+                        },
+                        success: function (responce) {
+                            console.log(responce);
+                            $('#create-customer-modal').modal('toggle');
+                            location.reload();
+                        },
+                        error: function (responce) {
+                            console.log(responce);
+                             location.reload();
+                            $('#create-customer-modal').modal('toggle');
+                        }
+                    })
+                }
             }
         });
     </script>
