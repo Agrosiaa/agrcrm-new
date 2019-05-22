@@ -7,7 +7,7 @@ $(document).ready(function(){
         datumTokenizer: Bloodhound.tokenizers.obj.whitespace('office_name'),
         queryTokenizer: Bloodhound.tokenizers.whitespace,
         remote: {
-            url: "/operational/administration/krishimitra/get-pincode?_token="+$("input[name='_token']").val()+"&pincode=%QUERY",
+            url: "http://agrcrm_api.com/get-pincode?_token="+$("input[name='_token']").val()+"&pincode=%QUERY",
             filter: function(x) {
                 return $.map(x, function (data) {
                     return {
@@ -45,7 +45,7 @@ $(document).ready(function(){
         var postId = $(this).val();
         var pincode = $("#pincode").val();
         $.ajax({
-            url:'/operational/administration/krishimitra/get-post-office-info/'+postId+"?pincode="+pincode+"&_token="+$("input[name='_token']").val(),
+            url:'http://agrcrm_api.com/get-post-office-info/'+postId+"?pincode="+pincode+"&_token="+$("input[name='_token']").val(),
             method: 'GET',
             async: false,
             success: function(data,textStatus,xhr){

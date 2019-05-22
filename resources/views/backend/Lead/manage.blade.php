@@ -390,17 +390,24 @@
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="form-group">
-                                                    <label class="col-md-5 control-label">Pin Code : <span class="required">*</span></label>
+                                                    <div class="col-md-5 control-label">Pincode
+                                                        <span class="required"> * </span>
+                                                    </div>
                                                     <div class="col-md-5">
-                                                        <input type="text" class="form-control address" id="pin_code" name="pin_code" required>
+                                                        <input type="text" class="typeahead form-control" id="pincode" name="pincode" />
+                                                        <span style="color: darkred"><h7>Make sure you choose the exact pincode from the dropdown values only</h7></span>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="form-group">
-                                                    <label class="col-md-5 control-label">At post : <span class="required">*</span></label>
-                                                    <div class="col-md-5">
-                                                        <input type="text" class="form-control address" id="post" name="post" required>
+                                                    <div class="col-md-5 control-label">At Post
+                                                        <span class="required"> * </span>
+                                                    </div>
+                                                    <div id="at-post" class="col-md-5">
+                                                        <select id="atPost" name="at_post" class="form-control">
+
+                                                        </select>
                                                     </div>
                                                 </div>
                                             </div>
@@ -411,7 +418,7 @@
                                                 <div class="form-group">
                                                     <label class="col-md-5 control-label">State : <span class="required">*</span></label>
                                                     <div class="col-md-5">
-                                                        <input type="text" class="form-control address" id="state" name="state" required>
+                                                        <input type="text" class="form-control address" id="stateName" name="state" required>
                                                     </div>
                                                 </div>
                                             </div>
@@ -419,7 +426,7 @@
                                                 <div class="form-group">
                                                     <label class="col-md-5 control-label">District : <span class="required">*</span></label>
                                                     <div class="col-md-5">
-                                                        <input type="text" class="form-control address" id="dist" name="dist" required>
+                                                        <input type="text" class="form-control address" id="district" name="district" required>
                                                     </div>
                                                 </div>
                                             </div>
@@ -477,7 +484,10 @@
     <script src="/assets/global/scripts/app.min.js" type="text/javascript"></script>
     <!-- END THEME GLOBAL SCRIPTS -->
     <!-- BEGIN PAGE LEVEL SCRIPTS -->
+    <script type="text/javascript" src="/assets/frontend/custom/registration/js/typeahead.bundle.js"></script>
+    <script type="text/javascript" src="/assets/frontend/custom/registration/js/handlebars-v3.0.3.js"></script>
     <script src="/assets/pages/scripts/components-date-time-pickers.min.js" type="text/javascript"></script>
+    <script src="/assets/custom/superadmin/krishimitra/addresses.js"></script>
     <script src="/assets/pages/scripts/superadmin/order/ecommerce-orders.min.js" type="text/javascript"></script>
     <!-- END PAGE LEVEL SCRIPTS -->
     <!-- BEGIN THEME LAYOUT SCRIPTS -->
