@@ -191,7 +191,7 @@ class LeadController extends Controller
                     } else {
                         if(in_array($limitedProducts[$j]['number'],$createdCustomers)){
                             $records["data"][] = array(
-                                $limitedProducts[$j]['number'],
+                                '<a href="/leads/customer-details/'.$limitedProducts[$j]['id'].'">'.$limitedProducts[$j]['number'].'</a>',
                                 date('d F Y H:i:s', strtotime($limitedProducts[$j]['created_at'])),
                                 '<a class="btn btn-sm btn-default btn-circle btn-editable chat_reply" onclick="passId(' . $limitedProducts[$j]['id'] . ',' . $limitedProducts[$j]['number'] . ')"><i class="fa fa-pencil"></i> Log</a>'
                             );
@@ -397,6 +397,23 @@ class LeadController extends Controller
             ];
             Log::critical(json_encode($data));
             abort(500,$e->getMessage());
+        }
+    }
+
+    public function CustomerDetailsView(Request $request, $id){
+        try{
+            $callStatuses = CallStatus::get()->toArray();
+            $mobile = CustomerNumberStatusDetails::where('id',$id)->value('number');
+            $customerInfo = Curl::to(env('BASE_URL')."/customer-profile")
+                ->withData( array( 'mobile' => $mobile))->asJson()->get();
+            return view('backend.Lead.customerDetails')->with(compact('id','callStatuses','mobile','customerInfo'));
+        }catch(\Exception $exception){
+            $data =[
+                'action' => 'export excel view',
+                'exception' => $exception->getMessage()
+            ];
+            Log::critical(json_encode($data));
+            abort(500,$exception->getMessage());
         }
     }
 

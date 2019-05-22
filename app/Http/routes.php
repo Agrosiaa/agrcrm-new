@@ -39,6 +39,7 @@ Route::group(['prefix' => '/leads'], function () {
     Route::post('/sales-chat',array('uses' => 'Lead\LeadController@saleChat'));
     Route::post('/set-reminder',array('uses' => 'Lead\LeadController@setReminder'));
     Route::get('/call-back-status/{custDetailId}',array('uses' => 'Lead\LeadController@callBackStatus'));
+    Route::get('/customer-details/{id}',array('uses' => 'Lead\LeadController@CustomerDetailsView'));
 });
 Route::get('refresh-csrf', function(){
     return csrf_token();
