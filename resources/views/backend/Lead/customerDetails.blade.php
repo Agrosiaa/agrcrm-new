@@ -61,6 +61,12 @@
                                     </div>
                                     <div class="scroller-footer">
                                     </div>
+                                    <a href="javascript:void(0);" class="btn blue m-icon" data-toggle="modal" data-target="#profile-edit-modal">
+                                        Edit
+                                    </a>
+                                </div>
+                                <div class="col-md-6">
+
                                 </div>
                             </div>
                         </div>
@@ -83,32 +89,40 @@
                                         </ul>
                                         <div class="tab-content" id="pills-tabContent">
                                             <div class="tab-pane fade active" id="customer-order" onscroll="" role="tabpanel" aria-labelledby="pills-home-tab" style="height: 200px;overflow-y: scroll">
-                                                @foreach($customerInfo->orders as $order)
-                                                    <div class="row" style="border-bottom: 1px solid #b2b2b2; padding: 10px;background-color: #fefefe;">
-                                                        <div class="col-md-12" style="text-align: right; color: lightcoral"><i>{!! date('dS M Y',strtotime($order->created_at)) !!}</i></div>
-                                                        <div class="col-md-12"><i>Order Number : </i> <span style="color: #000000">{{$order->id}}</span></div>
-                                                        <div class="col-md-12"><i>Product : </i> {{$order->product_name}}</div>
-                                                        <div class="col-md-12"><i>Qty : </i><span style="color: #007AFF">{{$order->quantity}}</span> </div>
-                                                        <div class="col-md-12"><i>Status : </i><span style="color: #007AFF">{{$order->status}}</span></div>
-                                                        <div class="col-md-12"><i>Consignment Number : </i> {{$order->consignment_number}}</div>
-                                                        <div class="col-md-12"><i>Payment Mode : </i> {{$order->payment_mode}}</div>
-                                                        <div class="col-md-12"><i>Grand Total : </i> {{$order->subtotal}}</div>
-                                                    </div>
-                                                @endforeach
+                                                @if($customerInfo->orders == null)
+                                                        <div class="col-md-12" style="text-align: center"><i><b>There are No Orders for this Customer</b></i></div>
+                                                  @else
+                                                    @foreach($customerInfo->orders as $order)
+                                                        <div class="row" style="border-bottom: 1px solid #b2b2b2; padding: 10px;background-color: #fefefe;">
+                                                            <div class="col-md-12" style="text-align: right; color: lightcoral"><i>{!! date('dS M Y',strtotime($order->created_at)) !!}</i></div>
+                                                            <div class="col-md-12"><i>Order Number : </i> <span style="color: #000000">{{$order->id}}</span></div>
+                                                            <div class="col-md-12"><i>Product : </i> {{$order->product_name}}</div>
+                                                            <div class="col-md-12"><i>Qty : </i><span style="color: #007AFF">{{$order->quantity}}</span> </div>
+                                                            <div class="col-md-12"><i>Status : </i><span style="color: #007AFF">{{$order->status}}</span></div>
+                                                            <div class="col-md-12"><i>Consignment Number : </i> {{$order->consignment_number}}</div>
+                                                            <div class="col-md-12"><i>Payment Mode : </i> {{$order->payment_mode}}</div>
+                                                            <div class="col-md-12"><i>Grand Total : </i> {{$order->subtotal}}</div>
+                                                        </div>
+                                                    @endforeach
+                                                @endif
                                             </div>
                                             <div class="tab-pane fade" id="customer-return" role="tabpanel" aria-labelledby="pills-profile-tab" style="height: 200px;overflow-y: scroll">
-                                                @foreach($customerInfo->returns as $order)
-                                                    <div class="row" style="border-bottom: 1px solid #b2b2b2; padding: 10px;background-color: #fefefe;">
-                                                        <div class="col-md-12" style="text-align: right; color: lightcoral"><i>{!! date('dS M Y',strtotime($order->created_at)) !!}</i></div>
-                                                        <div class="col-md-12"><i>Order Number : </i> <span style="color: #000000">{{$order->id}}</span></div>
-                                                        <div class="col-md-12"><i>Product : </i> {{$order->product_name}}</div>
-                                                        <div class="col-md-12"><i>Qty : </i><span style="color: #007AFF">{{$order->quantity}}</span> </div>
-                                                        <div class="col-md-12"><i>Status : </i><span style="color: #007AFF">{{$order->status}}</span></div>
-                                                        <div class="col-md-12"><i>Consignment Number : </i> {{$order->consignment_number}}</div>
-                                                        <div class="col-md-12"><i>Payment Mode : </i> {{$order->payment_mode}}</div>
-                                                        <div class="col-md-12"><i>Grand Total : </i> {{$order->subtotal}}</div>
-                                                    </div>
-                                                @endforeach
+                                                @if($customerInfo->returns == null)
+                                                    <div class="col-md-12" style="text-align: center"><i><b>There are No Order Return for this Customer</b></i></div>
+                                                @else
+                                                    @foreach($customerInfo->returns as $order)
+                                                        <div class="row" style="border-bottom: 1px solid #b2b2b2; padding: 10px;background-color: #fefefe;">
+                                                            <div class="col-md-12" style="text-align: right; color: lightcoral"><i>{!! date('dS M Y',strtotime($order->created_at)) !!}</i></div>
+                                                            <div class="col-md-12"><i>Order Number : </i> <span style="color: #000000">{{$order->id}}</span></div>
+                                                            <div class="col-md-12"><i>Product : </i> {{$order->product_name}}</div>
+                                                            <div class="col-md-12"><i>Qty : </i><span style="color: #007AFF">{{$order->quantity}}</span> </div>
+                                                            <div class="col-md-12"><i>Status : </i><span style="color: #007AFF">{{$order->status}}</span></div>
+                                                            <div class="col-md-12"><i>Consignment Number : </i> {{$order->consignment_number}}</div>
+                                                            <div class="col-md-12"><i>Payment Mode : </i> {{$order->payment_mode}}</div>
+                                                            <div class="col-md-12"><i>Grand Total : </i> {{$order->subtotal}}</div>
+                                                        </div>
+                                                    @endforeach
+                                                @endif
                                             </div>
                                         </div>
                                     <div class="scroller-footer">
@@ -249,6 +263,88 @@
                                 </div>
                             </div>
                         </div>
+                    {{--Modal for Profile edit--}}
+                    <div id="profile-edit-modal" class="modal fade bs-modal-md" tabindex="-1" role="dialog">
+                        <div class="modal-dialog modal-md">
+                            <!-- Modal content-->
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title" style="text-align: center"><b>Customer Profile Edit</b></h4>
+                                </div>
+                                <hr>
+                                <form id="edit-customer-profile">
+                                    <input type="hidden" value="{{$customerInfo->profile->id}}" id="user_id">
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label class="col-md-3 control-label">First Name : <span class="required">*</span></label>
+                                                    <div class="col-md-6">
+                                                        <input type="text" class="form-control" id="fname" value="{{ucwords($customerInfo->profile->first_name)}}" name="fname" required>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label class="col-md-3 control-label">Last Name : <span class="required">*</span></label>
+                                                    <div class="col-md-6">
+                                                        <input type="text" class="form-control" id="lname" value="{{ucwords($customerInfo->profile->last_name)}}" name="lname" required>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label class="col-md-3 control-label">Birth date : </label>
+                                                    <div class="col-md-6">
+                                                        <input type="date" class="form-control" id="birthdate" value="{{$customerInfo->profile->dob}}" name="birthdate">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label class="col-md-3 control-label">Email id : </label>
+                                                    <div class="col-md-6">
+                                                        <input type="text" class="form-control" id="email" value="{{$customerInfo->profile->email}}" name="email">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label class="col-md-3 control-label">Mobile Number : <span class="required">*</span></label>
+                                                    <div class="col-md-6">
+                                                        <input type="text" class="form-control" id="cust_mobile_number" value="{{ucwords($customerInfo->profile->mobile)}}" name="mobile_number" required>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <div class="col-md-10">
+                                                <button type="submit" id="profile-edit" class="btn btn-sm btn-success pull-right">Edit</button>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <button class="btn btn-sm btn-danger pull-right" data-dismiss="modal">Cancel</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {{--END of Modal for Profile edit--}}
                 </div>
                 <!-- END PAGE CONTENT INNER -->
             </div>
@@ -393,5 +489,32 @@
                 }
             });
         }
+        $(document).on("click","#profile-edit",function (e) {
+            var first_name = $('#fname').val();
+            var last_name = $('#lname').val();
+            var email = $('#email').val();
+            var dob = $('#birthdate').val();
+            var mobile = $('#cust_mobile_number').val();
+            var id = $('#user_id').val();
+                $.ajax({
+                url: "{{env('BASE_URL')}}/edit-profile",
+                type: 'POST',
+                dataType: 'array',
+                data: {
+                    'f_name': first_name,
+                    'l_name': last_name,
+                    'email': email,
+                    'dob': dob,
+                    'mobile': mobile,
+                    'id' :id
+                },
+                success: function (responce) {
+                    location.reload();
+                },
+                error: function (responce) {
+                }
+            })
+        });
+
     </script>
 @endsection
