@@ -194,7 +194,7 @@
                         </div>
                         <div class="col-md-12">
                             <button class="col-md-2 col-md-offset-3 btn btn-primary" onclick="chatHistory('{{$id}}','{{$mobile}}')"> Make a Log </button>&nbsp;&nbsp;&nbsp;
-                            <button class="col-md-2 btn btn-primary"> Place Order </button>&nbsp;&nbsp;&nbsp;
+                            <button class="col-md-2 btn btn-primary" id="place_order_button"> Place Order </button>&nbsp;&nbsp;&nbsp;
                             <button class="col-md-2 btn btn-primary"> Schedule </button>&nbsp;&nbsp;&nbsp;
                         </div>
                     </div>
@@ -249,6 +249,251 @@
                                 </div>
                             </div>
                         </div>
+                    <div id="place_order" class="modal fade bs-modal-lg" tabindex="-1" role="dialog">
+                        <div class="modal-dialog modal-lg">
+                            <!-- Modal content-->
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title" style="text-align: center"><b>Create Customer</b></h4>
+                                    <div>
+                                        <a id="select_product_modal"><h6 style="text-align: right">next</h6></a>
+                                    </div>
+                                </div>
+                                <form id="create-customer-form">
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <form id="add_new_address">
+                                                    <div class="address-form">
+                                                        <div class="form-group">
+                                                            <label for="company">Full Name</label><span class="required">*</span>
+                                                            <input type="text" class="form-control" name="full_name" id="full_name">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="mobile">Mobile</label><span class="required">*</span>
+                                                            <input type="text" class="form-control" name="mobile" id="mobile">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="company">Flat/Door/Block No.</label><span class="required">*</span>
+                                                            <input type="text" class="form-control" name="flat_door_block_house_no" id="flat_door_block_house_no">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="company">Name of the Premise/Building/Village</label><span class="required">*</span>
+                                                            <input type="text" class="form-control" name="name_of_premise_building_village" id="name_of_premise_building_village">
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                    <label for="area">Area/Locality/Wadi</label><span class="required">*</span>
+                                                                    <input class="form-control area" id="area" name="area_locality_wadi">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                    <label for="post">Road/Street/Lane</label><span class="required">*</span>
+                                                                    <div id="at-post">
+                                                                        <input class="form-control" type="text" id="road_street_lane" name="road_street_lane">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                    <label for="pin">Pin</label><span class="required">*</span>
+                                                                    <input class="form-control pincode typeahead" type="text" id="pincode" name="pincode">
+                                                                    <span style="color: darkred"><h6></h6></span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                    <label for="post">Post</label><span class="required">*</span>
+                                                                    <div id="at-post">
+                                                                        <select class="form-control" name="at_post" id="atPost">
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                    <label for="state">State</label><span class="required">*</span>
+                                                                    <input class="form-control state" type="text" id="state" name="state" readonly>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                    <label for="dist">District</label><span class="required">*</span>
+                                                                    <input type="text" class="form-control" name="district" id="district" readonly>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                    <label for="taluka">Taluka</label><span class="required">*</span>
+                                                                    <input type="text" class="form-control" name="taluka" id="taluka" readonly>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <button type="submit" id="new_address_button" class="btn btn-primary btn-icon">Add new address</button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="address-list-wrap">
+                                                    <label>Saved Address</label>
+                                                    <div class="address-list" id="address-list">
+                                                        @if($customerInfo->address != null)
+                                                            @foreach($customerInfo->address as $address)
+                                                                <div class="address-item" id="address_{{$address->id}}">
+                                                                    <input type="radio" name="customer_address_id" class="btn-address" value="{{$address->id}}">
+                                                                    <div class="full-address">
+                                                                        <div class="name">{{ucwords($address->full_name)}}</div>
+                                                                        <div class="mobile"><span><i class="fa fa-phone"></i> {{$address->mobile}}</span></div>
+                                                                        <div class="address">{{$address->flat_door_block_house_no}}, {{$address->name_of_premise_building_village}}, {{$address->area_locality_wadi}}, {{$address->road_street_lane}}, {{$address->at_post}}, {{$address->taluka}}, {{$address->district}} - {{$address->pincode}}, {{ucwords(strtolower($address->state))}}, INDIA</div>
+                                                                        <div class="col-md-12 col-sm-4">
+                                                                            <div class="edit-delete-btns">
+                                                                                <button class="btn-edit" data-edit="{{$address->id}}">@lang('message.edit_text')</button>
+                                                                                <button class="btn-delete" data-delete="{{$address->id}}">@lang('message.delete_text')</button>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            @endforeach
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {{--<div class="row">
+                                            <div class="col-md-12">
+                                                <button type="submit" id="create_customer" class="btn btn-sm btn-success">Create</button>
+                                                <button class="btn btn-sm btn-danger pull-right" data-dismiss="modal">Cancel</button>
+                                            </div>
+                                        </div>--}}
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="select_products" class="modal fade bs-modal-lg" tabindex="-1" role="dialog">
+                        <div class="modal-dialog modal-lg">
+                            <!-- Modal content-->
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title" style="text-align: center"><b>Select Products</b></h4>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <a id="place_order_modal"><h6 style="text-align: left">previous</h6></a>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <a id="confirm_order_modal"><h6 style="text-align: right">next</h6></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <form id="create-customer-form">
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-md-offset-4">
+                                                <label for="state">Enter Product</label><span class="required">*</span>
+                                                <input type="text" class="typeahead form-control" id="product_name" name="product_name" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="confirm_order" class="modal fade bs-modal-lg" tabindex="-1" role="dialog">
+                        <div class="modal-dialog modal-lg">
+                            <!-- Modal content-->
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title" style="text-align: center"><b>Confirm Order</b></h4>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <a id="select_order_modal"><h6 style="text-align: left">previous</h6></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr>
+                                <form id="create-customer-form">
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label class="col-md-4 control-label">First Name : <span class="required">*</span></label>
+                                                    <div class="col-md-4">
+                                                        <input type="text" class="form-control" id="fname" name="fname" required>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label class="col-md-4 control-label">Last Name : <span class="required">*</span></label>
+                                                    <div class="col-md-4">
+                                                        <input type="text" class="form-control" id="lname" name="lname" required>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label class="col-md-4 control-label">Birth date : </label>
+                                                    <div class="col-md-4">
+                                                        <input type="date" class="form-control" id="birthdate" name="birthdate">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label class="col-md-4 control-label">Email id : </label>
+                                                    <div class="col-md-4">
+                                                        <input type="text" class="form-control" id="email" name="email">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label class="col-md-4 control-label">Mobile Number : <span class="required">*</span></label>
+                                                    <div class="col-md-4">
+                                                        <input type="text" class="form-control" id="cust_mobile_number" name="mobile_number" required>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <button type="submit" id="create_customer" class="btn btn-sm btn-success">Create</button>
+                                                <button class="btn btn-sm btn-danger pull-right" data-dismiss="modal">Cancel</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
                 <!-- END PAGE CONTENT INNER -->
             </div>
@@ -261,8 +506,324 @@
 
     <!-- END QUICK SIDEBAR -->
     <!-- END CONTAINER -->
+    <!-- BEGIN CORE PLUGINS -->
     <script src="/assets/global/plugins/jquery.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/js.cookie.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/bootstrap-hover-dropdown/bootstrap-hover-dropdown.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/jquery-slimscroll/jquery.slimscroll.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/jquery.blockui.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/uniform/jquery.uniform.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/bootstrap-switch/js/bootstrap-switch.min.js" type="text/javascript"></script>
+    <!-- END CORE PLUGINS -->
+    <!-- BEGIN PAGE LEVEL PLUGINS -->
+    <script src="/assets/global/scripts/datatable.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/datatables/datatables.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js" type="text/javascript"></script>
+    <!-- END PAGE LEVEL PLUGINS -->
+    <!-- BEGIN THEME GLOBAL SCRIPTS -->
+    <script src="/assets/global/scripts/app.min.js" type="text/javascript"></script>
+    <!-- END THEME GLOBAL SCRIPTS -->
+    <!-- BEGIN PAGE LEVEL SCRIPTS -->
+    <script type="text/javascript" src="/assets/frontend/custom/registration/js/handlebars-v3.0.3.js"></script>
+    <script src="/assets/pages/scripts/components-date-time-pickers.min.js" type="text/javascript"></script>
+    <script src="/assets/global/plugins/jquery-validation/js/jquery.validate.min.js" type="text/javascript"></script>
+    <script src="/assets/frontend/custom/registration/js/typeahead.bundle.js" type="text/javascript" ></script>
+
+    <!-- END PAGE LEVEL SCRIPTS -->
+    <!-- BEGIN THEME LAYOUT SCRIPTS -->
+    <script src="/assets/layouts/layout3/scripts/layout.min.js" type="text/javascript"></script>
+    <script src="/assets/layouts/layout3/scripts/demo.min.js" type="text/javascript"></script>
     <script>
+
+        $(document).ready(function () {
+            $('#place_order').modal('hide');
+
+            var productList = new Bloodhound({
+                datumTokenizer: Bloodhound.tokenizers.obj.whitespace('office_name'),
+                queryTokenizer: Bloodhound.tokenizers.whitespace,
+                remote: {
+                    url: "{{env('BASE_URL')}}/delete-address",
+                    filter: function(x) {
+                        if($(window).width()<420){
+                            $("#header").addClass("fixed");
+                        }
+                        return $.map(x, function (data) {
+                            return {
+                                id: data.id,
+                                name: data.name,
+                                translated_name: data.translated_name,
+                                position: data.position,
+                                slug: data.slug,
+                                btn_class: data.class,
+                                url_param: data.url_param,
+                                translated_slug:data.translated_slug
+                            };
+                        });
+                    },
+                    wildcard: "%QUERY"
+                }
+            });
+            var language = $('#language').val();
+            productList.initialize();
+            $('#product_name .typeahead').typeahead(null, {
+                displayKey: 'name',
+                engine: Handlebars,
+                source: productList.ttAdapter(),
+                limit: 30,
+                templates: {
+                    empty: [
+                        '<div class="empty-message">',
+                        'Unable to find any Result that match the current query',
+                        '</div>'
+                    ].join('\n'),
+                    suggestion: Handlebars.compile('<div style="text-transform: capitalize;">  <strong>@{{translated_name}}</strong><span class="@{{btn_class}}">@{{translated_slug}}</span></div>')
+                },
+                {{--<img height="50px" width="50px" src="/assets/frontend/global/images/logo.png" />--}}
+            }).on('typeahead:selected', function (obj, datum) {
+                var POData = new Array();
+                POData = $.parseJSON(JSON.stringify(datum));
+                POData.name = POData.name.replace(/\&/g,'%26');
+
+            })
+                .on('typeahead:open', function (obj, datum) {
+
+                });
+        });
+
+        $('#place_order_button').on('click',function () {
+            $('#place_order').modal('show');
+        });
+
+        $('#select_product_modal').on('click',function () {
+            $('#select_products').modal('show');
+            $('#place_order').modal('hide');
+        });
+
+        $('#place_order_modal').on('click',function () {
+            $('#place_order').modal('show');
+            $('#select_products').modal('hide');
+        });
+
+        $('#confirm_order_modal').on('click',function () {
+            $('#confirm_order').modal('show');
+            $('#select_products').modal('hide');
+        });
+
+        $('#select_order_modal').on('click',function () {
+            $('#select_products').modal('show');
+            $('#confirm_order').modal('hide');
+        });
+
+        $(document).on("click",'.btn-delete',function (e) {
+            e.preventDefault();
+            var id = $(this).data("delete");
+            $.ajax({
+                url: "{{env('BASE_URL')}}/delete-address",
+                type: 'get',
+                dataType: 'array',
+                data: {
+                    'address_id': id
+                },
+                success: function (responce) {
+                    location.reload();
+                },
+                error: function (responce) {
+                    location.reload();
+                }
+            })
+        });
+
+        /*$('#product_name').on('keyup',function () {
+           var productName = $(this).val();
+           if(productName.length >= 3){
+               $.ajax({
+                   url: "{{env('BASE_URL')}}/get-products",
+                   type: 'get',
+                   dataType: 'array',
+                   data: {
+                       'product_name': productName
+                   },
+                   success: function (responce) {
+                       console.log(responce);
+                       var obj = JSON.stringify(responce);
+                       var jsonObj = JSON.parse(obj);
+                       var str = '';
+                       $.each(jsonObj, function(key , data) {
+                           console.log(data['product_name']);
+                       })
+                   },
+                   error: function (responce) {
+                       console.log(responce);
+                   }
+               })
+            }
+        });*/
+
+
+        $(document).on("click",'.btn-edit',function (e) {
+            e.preventDefault();
+            $("#edit_is_default").prop("checked", false);
+            $("#edit_is_default").removeAttr("disabled");
+            var id = $(this).data("edit");
+            var rememberToken = $('meta[name="csrf_token"]').attr('content');
+            $.ajaxSetup({ headers: { 'X-CSRF-TOKEN' : rememberToken } });
+            $.ajax({
+                url: "/address/get",
+                async:true,
+                data: {'id':id},
+                error: function(data, textStatus, xhr) {
+
+                },
+                success: function(data, textStatus, xhr) {
+                    if(xhr.status==200){
+                        $("#modal_edit_address").modal('show');
+                        $("#form_edit_address").html(data);
+                        $('#edit_at_Post').trigger('change');
+                    }
+                },
+                type: 'POST'
+            });
+        });
+
+        $('#new_address_button').on('click',function () {
+            jQuery('#add_new_address').validate({
+                messages:{
+                    full_name : {
+                        required: "This field is required.",
+                        minlength: "Please enter at least {0} characters.",
+                        maxlength: "Please enter no more than {0} characters"
+                    },
+                    mobile:{
+                        required: "This field is required."
+                    },
+                    name_of_premise_building_village: {
+                        required:  "This field is required.",
+                        minlength: "Please enter at least {0} characters.",
+                        maxlength: "Please enter no more than {0} characters."
+                    },
+                    flat_door_block_house_no: {
+                        required: "This field is required.",
+                        minlength: "Please enter at least {0} characters.",
+                        maxlength: "Please enter no more than {0} characters."
+                    },
+                    area_locality_wadi: {
+                        required: "This field is required.",
+                        minlength: "Please enter at least {0} characters.",
+                        maxlength: "Please enter no more than {0} characters."
+                    },
+                    road_street_lane: {
+                        required: "This field is required.",
+                        minlength: "Please enter at least {0} characters.",
+                        maxlength: "Please enter no more than {0} characters."
+                    },
+                    taluka:{
+                        required: "This field is required."
+                    },
+                    district:{
+                        required: "This field is required."
+                    },
+                    pincode:{
+                        required: "This field is required."
+                    },
+                    state:{
+                        required: "This field is required."
+                    },
+                    at_post:{
+                        required: "This field is required."
+                    }
+                },
+                rules: {
+                    full_name: {
+                        required: true,
+                        // alphaSpace:true,
+                        minlength: 1,
+                        maxlength: 50
+                    },
+                    mobile:{
+                        required: true,
+                        mobile: true
+                    },
+                    name_of_premise_building_village: {
+                        //  alpha_num_space_allow:true,
+                        minlength: 1,
+                        maxlength: 50
+                    },
+                    flat_door_block_house_no: {
+                        minlength: 1,
+                        maxlength: 50
+                        // alphaSpaceSpecial:true
+                    },
+                    area_locality_wadi: {
+                        //  areaLocality:true,
+                        minlength: 1,
+                        maxlength: 50
+                    },
+                    road_street_lane: {
+                        //  areaLocality:true,
+                        minlength: 1,
+                        maxlength: 50
+                    },
+                    taluka:{
+                        required: true
+                    },
+                    district:{
+                        required: true
+                    },
+                    pincode:{
+                        required: true
+                    },
+                    state:{
+                        required: true
+                    },
+                    at_post:{
+                        required: true
+                    }
+                },
+                errorElement: "em",
+                errorPlacement: function ( error, element ) {
+
+                    // Add the `help-block` class to the error element
+                    error.addClass( "help-block" );
+                    error.css("color","red");
+                    if ( element.prop( "type" ) === "checkbox" ) {
+                        error.insertAfter( element.parent( "label" ) );
+                    } else {
+                        error.insertAfter( element );
+                    }
+                },
+                highlight: function ( element, errorClass, validClass ) {
+                    $( element ).parents( ".col-sm-5" ).addClass( "has-error" ).removeClass( "has-success" );
+                },
+                unhighlight: function (element, errorClass, validClass) {
+                    $( element ).parents( ".col-sm-5" ).addClass( "has-success" ).removeClass( "has-error" );
+                },
+                submitHandler: function (form) { // for demo
+                    $.ajax({
+                        url: "/address/create",
+                        async:true,
+                        data: $("#add_new_address").serializeArray(),
+                        error: function(data, textStatus, xhr) {
+
+                        },
+                        success: function(data, textStatus, xhr) {
+                            if(xhr.status==200){
+                                $('#add_new_address')[0].reset();
+                                $('#address-list').append(data);
+                            }else if(xhr.status==201){
+                                $('#add_new_address')[0].reset();
+                                alert('Maximum 3 address allowed');
+                            }
+                        },
+                        type: 'POST'
+                    });
+                    return false;
+                }
+            });
+        });
+
         $(document).on("click",".chat-submit",function (e) {
             var  message= $('#reply_text').val();
             var customer= $('#customer_detail_id').val();
@@ -275,6 +836,12 @@
                     'customer_id' : customer
                 },
                 success: function (responce) {
+                    var obj = JSON.stringify(responce);
+                    var jsonObj = JSON.parse(obj);
+                    var str = '';
+                    $.each(jsonObj, function(key , data) {
+
+                    })
                 },
                 error: function (responce) {
                 }
