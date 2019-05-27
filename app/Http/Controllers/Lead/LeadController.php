@@ -69,14 +69,18 @@ class LeadController extends Controller
                     $rowIndex = 1;
                     $setIndex = 0;
                     foreach ($sheet->getRowIterator() as $rows) {
-                        if($rows[0] == 'Mobile'){
+                        if($rows[0] != 'Mobile' && $rowIndex == 1){
+                            $message = "File Header name should be -Mobile";
+                            Session::flash('error',$message);
+                            return redirect('/leads/export-customer-number');
+                        }else{
                             if($rowIndex > 1){
                                 if($rows[0] == null){
                                     $message = "Please Insert Number";
                                     $request->session()->flash('error', $message);
                                     return redirect('/leads/export-customer-number');
                                 }else{
-                                    $customerData['customer_number_status_id'] = CustomerNumberStatus::where('slug','new')->pluck('id');
+                                    $customerData['customer_number_status_id'] = CustomerNumberStatus::where('slug','new')->value('id');
                                     $customerData['user_id'] = $saleAgents[$setIndex]['id'];
                                     $customerData['number'] = $rows[0];
                                     CustomerNumberStatusDetails::create($customerData);
@@ -87,13 +91,8 @@ class LeadController extends Controller
                                     }
                                 }
                             }
-                        }else{
-                            $message = "File Header name should be -Mobile";
-                            Session::flash('error',$message);
-                            return redirect('/leads/export-customer-number');
                         }
-                        /* Create Array To data Insert */
-
+                        Log::info('at end');
                         $rowIndex++;
                     }
                 }
@@ -192,13 +191,16 @@ class LeadController extends Controller
                     } else {
                         if(in_array($limitedProducts[$j]['number'],$createdCustomers)){
                             $records["data"][] = array(
-                                $limitedProducts[$j]['number'],
+                                '<a href="/leads/customer-details/'.$limitedProducts[$j]['id'].'">'.$limitedProducts[$j]['number'].'</a>',
                                 date('d F Y H:i:s', strtotime($limitedProducts[$j]['created_at'])),
                                 '<a class="btn btn-sm btn-default btn-circle btn-editable chat_reply" onclick="passId(' . $limitedProducts[$j]['id'] . ',' . $limitedProducts[$j]['number'] . ')"><i class="fa fa-pencil"></i> Log</a>'
                             );
-                            if($limitedProducts[$j]['customer_number_status_id'] != $completeStatusId){
-                                $updateStatus['customer_number_status_id'] = $completeStatusId;
-                                CustomerNumberStatusDetails::where('id',$limitedProducts[$j]['id'])->update($updateStatus);
+                            $mobileNumber = CustomerNumberStatusDetails::where('number',$limitedProducts[$j]['number'])->get()->toArray();
+                            if(count($mobileNumber) == 1){
+                                if($limitedProducts[$j]['customer_number_status_id'] != $completeStatusId){
+                                    $updateStatus['customer_number_status_id'] = $completeStatusId;
+                                    CustomerNumberStatusDetails::where('id',$limitedProducts[$j]['id'])->update($updateStatus);
+                                }
                             }
                         }else {
                             $records["data"][] = array(
@@ -317,6 +319,19 @@ class LeadController extends Controller
             $chatData['call_status_id'] = $request['reply_status_id'];
             $chatData['message'] = $request['reply_message'];
             SalesChat::create($chatData);
+            $connectStatusId = CallStatus::where('slug','connected')->value('id');
+            if($connectStatusId == $request['reply_status_id']){
+                $mobileNumber = CustomerNumberStatusDetails::where('id',$request['customer_id'])->value('number');
+                $mobileNumbers = CustomerNumberStatusDetails::where('number',$mobileNumber)->get()->toArray();
+                if(count($mobileNumbers) > 1){
+                    $createdCustomers = Curl::to(env('BASE_URL')."/created-customers")->asJson()->get();
+                    if(in_array($mobileNumber,$createdCustomers)){
+                        $completeStatusId = CustomerNumberStatus::where('slug','complete')->value('id');
+                        $updateCust['customer_number_status_id'] = $completeStatusId;
+                        CustomerNumberStatusDetails::where('id',$request['customer_id'])->update($updateCust);
+                    }
+                }
+            }
             return back();
         }catch(\Exception $e){
             $data = [
@@ -382,6 +397,23 @@ class LeadController extends Controller
             ];
             Log::critical(json_encode($data));
             abort(500,$e->getMessage());
+        }
+    }
+
+    public function CustomerDetailsView(Request $request, $id){
+        try{
+            $callStatuses = CallStatus::get()->toArray();
+            $mobile = CustomerNumberStatusDetails::where('id',$id)->value('number');
+            $customerInfo = Curl::to(env('BASE_URL')."/customer-profile")
+                ->withData( array( 'mobile' => $mobile))->asJson()->get();
+            return view('backend.Lead.customerDetails')->with(compact('id','callStatuses','mobile','customerInfo'));
+        }catch(\Exception $exception){
+            $data =[
+                'action' => 'export excel view',
+                'exception' => $exception->getMessage()
+            ];
+            Log::critical(json_encode($data));
+            abort(500,$exception->getMessage());
         }
     }
 
