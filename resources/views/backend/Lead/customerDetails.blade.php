@@ -279,6 +279,7 @@
                                     <div class="row">
                                         <div class="col-md-6">
                                             <form id="add_new_address">
+                                                <input type="hidden" value="{{$customerInfo->profile->id}}" id="customer_id">
                                                 <div class="address-form">
                                                     <div class="form-group">
                                                         <label for="company">Full Name</label><span class="required">*</span>
@@ -317,7 +318,7 @@
                                                             <div class="form-group">
                                                                 <label for="pin">Pin</label><span class="required">*</span>
                                                                 <input class="form-control pincode typeahead" type="text" id="pincode" name="pincode" required>
-                                                                <span style="color: darkred"><h6></h6></span>
+                                                                <span style="color: darkred"><h7>Make sure you choose the exact pincode from the dropdown values only</h7></span>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6">
@@ -334,7 +335,7 @@
                                                         <div class="col-md-6">
                                                             <div class="form-group">
                                                                 <label for="state">State</label><span class="required">*</span>
-                                                                <input class="form-control state" type="text" id="state" name="state" readonly>
+                                                                <input class="form-control state" type="text" id="stateName" name="stateName" readonly>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6">
@@ -373,8 +374,8 @@
                                                                     <div class="address">{{$address->flat_door_block_house_no}}, {{$address->name_of_premise_building_village}}, {{$address->area_locality_wadi}}, {{$address->road_street_lane}}, {{$address->at_post}}, {{$address->taluka}}, {{$address->district}} - {{$address->pincode}}, {{ucwords(strtolower($address->state))}}, INDIA</div>
                                                                     <div class="col-md-12 col-sm-4">
                                                                         <div class="edit-delete-btns">
-                                                                            <button class="btn-edit" data-edit="{{$address->id}}">@lang('message.edit_text')</button>
-                                                                            <button class="btn-delete" data-delete="{{$address->id}}">@lang('message.delete_text')</button>
+                                                                            <button class="btn-edit" data-edit="{{$address->id}}">Edit address</button>
+                                                                            <button class="btn-delete" data-delete="{{$address->id}}">delete address</button>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -590,6 +591,113 @@
                         </div>
                     </div>
                     {{--END of Modal for Profile edit--}}
+
+                    {{--Modal for edit address--}}
+                    @if($customerInfo->address != null)
+                        @foreach($customerInfo->address as $address)
+                            <div id="edit_address_{{$address->id}}" class="modal fade bs-modal-md" tabindex="-1" role="dialog">
+                                <div class="modal-dialog modal-md">
+                                    <!-- Modal content-->
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                            <h4 class="modal-title" style="text-align: center"><b>Edit Address</b></h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <form id="add_new_address">
+                                                        <input type="hidden" value="{{$customerInfo->profile->id}}" id="customer_id">
+                                                        <div class="address-form">
+                                                            <div class="form-group">
+                                                                <label for="company">Full Name</label><span class="required">*</span>
+                                                                <input type="text" class="form-control" name="full_name" id="full_name_{{$address->id}}" value="{{$address->full_name}}" required>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="mobile">Mobile</label><span class="required">*</span>
+                                                                <input type="text" class="form-control" name="mobile" id="mobile_{{$address->id}}" value="{{$address->mobile}}" required>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="company">Flat/Door/Block No.</label><span class="required">*</span>
+                                                                <input type="text" class="form-control" name="flat_door_block_house_no" id="flat_door_block_house_no_{{$address->id}}" value="{{$address->flat_door_block_house_no}}" required>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="company">Name of the Premise/Building/Village</label><span class="required">*</span>
+                                                                <input type="text" class="form-control" name="name_of_premise_building_village" id="name_of_premise_building_village_{{$address->id}}" value="{{$address->name_of_premise_building_village}}" required>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group">
+                                                                        <label for="area">Area/Locality/Wadi</label><span class="required">*</span>
+                                                                        <input class="form-control area" id="area_{{$address->id}}" name="area_locality_wadi" value="{{$address->area_locality_wadi}}" required>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group">
+                                                                        <label for="post">Road/Street/Lane</label><span class="required">*</span>
+                                                                        <div id="at-post">
+                                                                            <input class="form-control" type="text" id="road_street_lane_{{$address->id}}" name="road_street_lane" value="{{$address->road_street_lane}}" required>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group">
+                                                                        <label for="pin">Pin</label><span class="required">*</span>
+                                                                        <input class="form-control edit-pincode typeahead" type="text" id="pincode_{{$address->id}}" name="pincode" value="{{$address->pincode}}" required>
+                                                                        <span style="color: darkred"><h7>Make sure you choose the exact pincode from the dropdown values only</h7></span>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group">
+                                                                        <label for="post">Post</label><span class="required">*</span>
+                                                                        <div id="at-post">
+                                                                            <select class="form-control edit-atPost" name="at_post" id="atPost_{{$address->id}}" required>
+                                                                                <option value="{{$address->at_post}}">{{$address->at_post}}</option>
+                                                                            </select>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group">
+                                                                        <label for="state">State</label><span class="required">*</span>
+                                                                        <input class="form-control edit-stateName" type="text" id="stateName_{{$address->id}}" name="stateName" value="{{$address->state}}" readonly>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group">
+                                                                        <label for="dist">District</label><span class="required">*</span>
+                                                                        <input type="text" class="form-control edit-district" name="district" id="district_{{$address->id}}" value="{{$address->district}}" readonly>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group">
+                                                                        <label for="taluka">Taluka</label><span class="required">*</span>
+                                                                        <input type="text" class="form-control edit-taluka" name="taluka" id="taluka_{{$address->id}}" value="{{$address->taluka}}" readonly>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <button type="submit" id="edit_address_button" class="btn btn-primary btn-icon" onclick="editAddress({{$address->id}})">Edit address</button>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    @endif
+
+                    {{--End of Modal for Edit Address--}}
                 </div>
                 <!-- END PAGE CONTENT INNER -->
             </div>
@@ -629,7 +737,7 @@
     <script type="text/javascript" src="/assets/frontend/custom/registration/js/handlebars-v3.0.3.js"></script>
     <script src="/assets/pages/scripts/components-date-time-pickers.min.js" type="text/javascript"></script>
     <script src="/assets/custom/superadmin/krishimitra/addresses.js"></script>
-    <script src="/assets/pages/scripts/superadmin/order/ecommerce-orders.min.js" type="text/javascript"></script>
+    <script src="/assets/custom/superadmin/krishimitra/editaddress.js"></script>
     <script src="/assets/global/plugins/jquery-validation/js/jquery.validate.min.js" type="text/javascript"></script>
 
     <!-- END PAGE LEVEL SCRIPTS -->
@@ -729,67 +837,70 @@
                 },
                 success: function (responce) {
                     location.reload();
+                    $('#place_order').modal('show');
                 },
                 error: function (responce) {
                     location.reload();
+                    $('#place_order').modal('show');
                 }
             })
         });
 
-        /*$('#product_name').on('keyup',function () {
-         var productName = $(this).val();
-         if(productName.length >= 3){
-         $.ajax({
-         url: "{{env('BASE_URL')}}/get-products",
-         type: 'get',
-         dataType: 'array',
-         data: {
-         'product_name': productName
-         },
-         success: function (responce) {
-         console.log(responce);
-         var obj = JSON.stringify(responce);
-         var jsonObj = JSON.parse(obj);
-         var str = '';
-         $.each(jsonObj, function(key , data) {
-         console.log(data['product_name']);
-         })
-         },
-         error: function (responce) {
-         console.log(responce);
-         }
-         })
-         }
-         });*/
 
 
         $(document).on("click",'.btn-edit',function (e) {
             e.preventDefault();
-            $("#edit_is_default").prop("checked", false);
-            $("#edit_is_default").removeAttr("disabled");
             var id = $(this).data("edit");
-            var rememberToken = $('meta[name="csrf_token"]').attr('content');
-            $.ajaxSetup({ headers: { 'X-CSRF-TOKEN' : rememberToken } });
-            $.ajax({
-                url: "/address/get",
-                async:true,
-                data: {'id':id},
-                error: function(data, textStatus, xhr) {
-
-                },
-                success: function(data, textStatus, xhr) {
-                    if(xhr.status==200){
-                        $("#modal_edit_address").modal('show');
-                        $("#form_edit_address").html(data);
-                        $('#edit_at_Post').trigger('change');
-                    }
-                },
-                type: 'POST'
-            });
+            $('#edit_address_'+id).modal('show');
         });
 
-        $('#new_address_button').on('click',function () {
-            jQuery('#add_new_address').validate({
+        function editAddress(id) {
+            alert(id);
+            var addressFullName= $('#full_name_'+id).val();
+            var addrMobile= $('#mobile_'+id).val();
+            var house_block = $('#flat_door_block_house_no_'+id).val();
+            var village_premises = $('#name_of_premise_building_village_'+id).val();
+            var area = $('#area_'+id).val();
+            var road_street = $('#road_street_lane_'+id).val();
+            var pin = $('#pincode_'+id).val();
+            var post = $('#atPost_'+id).val();
+            var state = $('#stateName_'+id).val();
+            var dist = $('#district_'+id).val();
+            var taluka = $('#taluka_'+id).val();
+            alert('values'+ addressFullName + addrMobile + pin);
+            alert('In edit');
+            if(house_block != '' && village_premises != '' && area != '' && road_street != '' && pin != '' && post != '' && state != '' && dist != '' && taluka != '')
+            {
+                alert('In ajax');
+                $.ajax({
+                    url: "{{env('BASE_URL')}}/edit-address",
+                    type: 'POST',
+                    dataType: 'array',
+                    data: {
+                        'address_id': id,
+                        'address_fname': addressFullName,
+                        'address_mobile': addrMobile,
+                        'house_block': house_block,
+                        'village_premises': village_premises,
+                        'area': area,
+                        'road_street': road_street,
+                        'pin': pin,
+                        'at_post': post,
+                        'state': state,
+                        'dist': dist,
+                        'taluka': taluka
+                    },
+                    success: function (responce) {
+                        $('#place_order').modal('show');
+                    },
+                    error: function (responce) {
+                        $('#place_order').modal('show');
+                    }
+                })
+            }
+        }
+
+        jQuery('#add_new_address').validate({
                 rules: {
                     full_name: {
                         required: true,
@@ -798,8 +909,7 @@
                         maxlength: 50
                     },
                     mobile:{
-                        required: true,
-                        mobile: true
+                        required: true
                     },
                     name_of_premise_building_village: {
                         //  alpha_num_space_allow:true,
@@ -830,7 +940,7 @@
                     pincode:{
                         required: true
                     },
-                    state:{
+                    stateName:{
                         required: true
                     },
                     at_post:{
@@ -875,7 +985,7 @@
                     pincode:{
                         required: "This field is required."
                     },
-                    state:{
+                    stateName:{
                         required: "This field is required."
                     },
                     at_post:{
@@ -884,7 +994,6 @@
                 },
                 errorElement: "em",
                 errorPlacement: function ( error, element ) {
-
                     // Add the `help-block` class to the error element
                     error.addClass( "help-block" );
                     error.css("color","red");
@@ -901,27 +1010,52 @@
                     $( element ).parents( ".col-sm-5" ).addClass( "has-success" ).removeClass( "has-error" );
                 },
                 submitHandler: function (form) { // for demo
-                    $.ajax({
-                        url: "/address/create",
-                        async:true,
-                        data: $("#add_new_address").serializeArray(),
-                        error: function(data, textStatus, xhr) {
-
-                        },
-                        success: function(data, textStatus, xhr) {
-                            if(xhr.status==200){
-                                $('#add_new_address')[0].reset();
-                                $('#address-list').append(data);
-                            }else if(xhr.status==201){
-                                $('#add_new_address')[0].reset();
-                                alert('Maximum 3 address allowed');
-                            }
-                        },
-                        type: 'POST'
-                    });
-                    return false;
+                    form.submit();
                 }
             });
+
+        $(document).on("click","#new_address_button",function (e) {
+            e.stopPropagation();
+            var userId = $('#customer_id').val();
+            var addressFullName= $('#full_name').val();
+            var addrMobile= $('#mobile').val();
+            var house_block = $('#flat_door_block_house_no').val();
+            var village_premises = $('#name_of_premise_building_village').val();
+            var area = $('#area').val();
+            var road_street = $('#road_street_lane').val();
+            var pin = $('#pincode').val();
+            var post = $('#atPost').val();
+            var state = $('#stateName').val();
+            var dist = $('#district').val();
+            var taluka = $('#taluka').val();
+            if(house_block != '' && village_premises != '' && area != '' && road_street != '' && pin != '' && post != '' && state != '' && dist != '' && taluka != '')
+            {
+                $.ajax({
+                    url: "{{env('BASE_URL')}}/add-address",
+                    type: 'POST',
+                    dataType: 'array',
+                    data: {
+                        'user_id': userId,
+                        'address_fname': addressFullName,
+                        'address_mobile': addrMobile,
+                        'house_block': house_block,
+                        'village_premises': village_premises,
+                        'area': area,
+                        'road_street': road_street,
+                        'pin': pin,
+                        'at_post': post,
+                        'state': state,
+                        'dist': dist,
+                        'taluka': taluka
+                    },
+                    success: function (responce) {
+                        location.reload();
+                    },
+                    error: function (responce) {
+                        location.reload();
+                    }
+                })
+            }
         });
 
         $(document).on("click",".chat-submit",function (e) {
