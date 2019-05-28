@@ -2,6 +2,10 @@
 @section('title','Agrosiaa | Dashboard')
 @include('backend.partials.common.nav')
 @section('css')
+    <link rel="stylesheet" type="text/css" href="/assets/frontend/global/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/assets/frontend/global/css/mCustomScrollbar.min.css">
+    <link rel="stylesheet" type="text/css" href="/assets/frontend/global/css/styles/style.css">
+
 @endsection
 @section('content')
     <!-- BEGIN CONTAINER -->
@@ -396,13 +400,13 @@
                             </div>
                         </div>
                     </div>
-                    <div id="select_products" class="modal fade bs-modal-lg" tabindex="-1" role="dialog">
-                        <div class="modal-dialog modal-lg">
+                    <div id="select_products" class="modal fade bs-modal-md" tabindex="-1" role="dialog" style="height: 500%">
+                        <div class="modal-dialog modal-md">
                             <!-- Modal content-->
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                    <h4 class="modal-title" style="text-align: center"><b>Select Products</b></h4>
+                                    <h4 class="modal-title" style="text-align: center"><b>Add Products Checkout</b></h4>
                                     <div class="row">
                                         <div class="col-sm-6">
                                             <a id="place_order_modal"><h6 style="text-align: left">previous</h6></a>
@@ -412,16 +416,23 @@
                                         </div>
                                     </div>
                                 </div>
-                                <form id="create-customer-form">
-                                    <div class="modal-body">
-                                        <div class="row">
-                                            <div class="col-md-offset-4">
-                                                <label for="state">Enter Product</label><span class="required">*</span>
-                                                <input type="text" class="typeahead form-control" id="product_name" name="product_name" />
+                                <div class="modal-body">
+                                    <div class="logo-wrap">
+                                        <div class=container>
+                                            <div class="menu clearfix">
+                                                <ul class="clearfix">
+                                                     <li class="select-category" id="search_header_main">
+                                                         <input type="text" id="product_name" class="typeahead" placeholder=" Search Products" style=""/>
+                                                     </li>
+                                                </ul>
                                             </div>
                                         </div>
                                     </div>
-                                </form>
+                                    <br><hr>
+                                    <h4>Checkout Preview</h4>
+                                    <div id="check_out_preview">
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -527,7 +538,7 @@
                                                 <div class="form-group">
                                                     <label class="col-md-3 control-label">First Name : <span class="required">*</span></label>
                                                     <div class="col-md-6">
-                                                        <input type="text" class="form-control" id="fname" value="{{ucwords($customerInfo->profile->first_name)}}" name="fname" required>
+                                                        <input type="text" class="form-control" id="f_name" value="{{ucwords($customerInfo->profile->first_name)}}" name="f_name" required>
                                                     </div>
                                                 </div>
                                             </div>
@@ -538,7 +549,7 @@
                                                 <div class="form-group">
                                                     <label class="col-md-3 control-label">Last Name : <span class="required">*</span></label>
                                                     <div class="col-md-6">
-                                                        <input type="text" class="form-control" id="lname" value="{{ucwords($customerInfo->profile->last_name)}}" name="lname" required>
+                                                        <input type="text" class="form-control" id="l_name" value="{{ucwords($customerInfo->profile->last_name)}}" name="l_name" required>
                                                     </div>
                                                 </div>
                                             </div>
@@ -549,7 +560,7 @@
                                                 <div class="form-group">
                                                     <label class="col-md-3 control-label">Birth date : </label>
                                                     <div class="col-md-6">
-                                                        <input type="date" class="form-control" id="birthdate" value="{{$customerInfo->profile->dob}}" name="birthdate">
+                                                        <input type="date" class="form-control" id="dob" value="{{$customerInfo->profile->dob}}" name="dob">
                                                     </div>
                                                 </div>
                                             </div>
@@ -560,7 +571,7 @@
                                                 <div class="form-group">
                                                     <label class="col-md-3 control-label">Email id : </label>
                                                     <div class="col-md-6">
-                                                        <input type="text" class="form-control" id="email" value="{{$customerInfo->profile->email}}" name="email">
+                                                        <input type="email" class="form-control" id="profile_email" value="{{$customerInfo->profile->email}}" name="profile_email">
                                                     </div>
                                                 </div>
                                             </div>
@@ -571,7 +582,7 @@
                                                 <div class="form-group">
                                                     <label class="col-md-3 control-label">Mobile Number : <span class="required">*</span></label>
                                                     <div class="col-md-6">
-                                                        <input type="text" class="form-control" id="cust_mobile_number" value="{{ucwords($customerInfo->profile->mobile)}}" name="mobile_number" required>
+                                                        <input type="text" class="form-control" id="profile_mobile" value="{{ucwords($customerInfo->profile->mobile)}}" name="profile_mobile" readonly>
                                                     </div>
                                                 </div>
                                             </div>
@@ -748,16 +759,12 @@
 
         $(document).ready(function () {
             $('#place_order').modal('hide');
-
             var productList = new Bloodhound({
                 datumTokenizer: Bloodhound.tokenizers.obj.whitespace('office_name'),
                 queryTokenizer: Bloodhound.tokenizers.whitespace,
                 remote: {
-                    url: "{{env('BASE_URL')}}/get-products",
+                    url: "http://agrcrm_api.com/get-products?product_name=%QUERY",
                     filter: function(x) {
-                        if($(window).width()<420){
-                            $("#header").addClass("fixed");
-                        }
                         return $.map(x, function (data) {
                             return {
                                 id: data.id,
@@ -776,7 +783,7 @@
             });
             var language = $('#language').val();
             productList.initialize();
-            $('#product_name .typeahead').typeahead(null, {
+            $('#product_name').typeahead(null, {
                 displayKey: 'name',
                 engine: Handlebars,
                 source: productList.ttAdapter(),
@@ -788,15 +795,13 @@
                         '</div>'
                     ].join('\n'),
                     suggestion: Handlebars.compile('<div style="text-transform: capitalize;">  <strong>@{{translated_name}}</strong><span class="@{{btn_class}}">@{{translated_slug}}</span></div>')
-                },
-                {{--<img height="50px" width="50px" src="/assets/frontend/global/images/logo.png" />--}}
+                }
             }).on('typeahead:selected', function (obj, datum) {
                 var POData = new Array();
                 POData = $.parseJSON(JSON.stringify(datum));
                 POData.name = POData.name.replace(/\&/g,'%26');
 
-            })
-                .on('typeahead:open', function (obj, datum) {
+            }).on('typeahead:open', function (obj, datum) {
 
                 });
         });
@@ -845,8 +850,6 @@
                 }
             })
         });
-
-
 
         $(document).on("click",'.btn-edit',function (e) {
             e.preventDefault();
@@ -1195,11 +1198,11 @@
             });
         }
         $(document).on("click","#profile-edit",function (e) {
-            var first_name = $('#fname').val();
-            var last_name = $('#lname').val();
-            var email = $('#email').val();
-            var dob = $('#birthdate').val();
-            var mobile = $('#cust_mobile_number').val();
+            var first_name = $('#f_name').val();
+            var last_name = $('#l_name').val();
+            var email = $('#profile_email').val();
+            var dob = $('#dob').val();
+            var mobile = $('#profile_mobile').val();
             var id = $('#user_id').val();
             $.ajax({
                 url: "{{env('BASE_URL')}}/edit-profile",

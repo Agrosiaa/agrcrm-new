@@ -426,7 +426,7 @@
                                                     <div class="col-md-5 control-label">Pincode
                                                         <span class="required"> * </span>
                                                     </div>
-                                                    <div class="col-md-5">
+                                                    <div class="col-md-5" >
                                                         <input type="text" class="typeahead form-control" id="pincode" name="pincode" />
                                                         <span style="color: darkred"><h7>Make sure you choose the exact pincode from the dropdown values only</h7></span>
                                                     </div>
