@@ -274,7 +274,7 @@
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                    <h4 class="modal-title" style="text-align: center"><b>Create Customer</b></h4>
+                                    <h4 class="modal-title" style="text-align: center"><b>Place Order</b></h4>
                                     <div>
                                         <a id="select_product_modal"><h6 style="text-align: right">next</h6></a>
                                     </div>
@@ -371,16 +371,16 @@
                                                     @if($customerInfo->address != null)
                                                         @foreach($customerInfo->address as $address)
                                                             <div class="address-item" id="address_{{$address->id}}">
-                                                                <input type="radio" name="customer_address_id" class="btn-address" value="{{$address->id}}">
-                                                                <div class="full-address">
+                                                                <input type="radio" name="customer_address_id" value="{{$address->id}}" style="width: 30px; height: 30px">
+                                                                <div class="full-address" id="delivery_address_{!! $address->id !!}">
                                                                     <div class="name">{{ucwords($address->full_name)}}</div>
                                                                     <div class="mobile"><span><i class="fa fa-phone"></i> {{$address->mobile}}</span></div>
                                                                     <div class="address">{{$address->flat_door_block_house_no}}, {{$address->name_of_premise_building_village}}, {{$address->area_locality_wadi}}, {{$address->road_street_lane}}, {{$address->at_post}}, {{$address->taluka}}, {{$address->district}} - {{$address->pincode}}, {{ucwords(strtolower($address->state))}}, INDIA</div>
-                                                                    <div class="col-md-12 col-sm-4">
-                                                                        <div class="edit-delete-btns">
-                                                                            <button class="btn-edit" data-edit="{{$address->id}}">Edit address</button>
-                                                                            <button class="btn-delete" data-delete="{{$address->id}}">delete address</button>
-                                                                        </div>
+                                                                </div>
+                                                                <div class="col-md-12 col-sm-4">
+                                                                    <div class="edit-delete-btns">
+                                                                        <button class="btn-edit" data-edit="{{$address->id}}">Edit address</button>
+                                                                        <button class="btn-delete" data-delete="{{$address->id}}">delete address</button>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -449,74 +449,24 @@
                                         </div>
                                     </div>
                                 </div>
-                                <hr>
-                                <form id="create-customer-form">
-                                    <div class="modal-body">
+                                <div class="modal-body">
+                                    <div class="row">
                                         <div class="row">
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label class="col-md-4 control-label">First Name : <span class="required">*</span></label>
-                                                    <div class="col-md-4">
-                                                        <input type="text" class="form-control" id="fname" name="fname" required>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            <h4 class="col-md-offset-1">Order Summery</h4>
                                         </div>
-                                        <br>
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label class="col-md-4 control-label">Last Name : <span class="required">*</span></label>
-                                                    <div class="col-md-4">
-                                                        <input type="text" class="form-control" id="lname" name="lname" required>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <br>
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label class="col-md-4 control-label">Birth date : </label>
-                                                    <div class="col-md-4">
-                                                        <input type="date" class="form-control" id="birthdate" name="birthdate">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <br>
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label class="col-md-4 control-label">Email id : </label>
-                                                    <div class="col-md-4">
-                                                        <input type="text" class="form-control" id="email" name="email">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <br>
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label class="col-md-4 control-label">Mobile Number : <span class="required">*</span></label>
-                                                    <div class="col-md-4">
-                                                        <input type="text" class="form-control" id="cust_mobile_number" name="mobile_number" required>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <br>
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <button type="submit" id="create_customer" class="btn btn-sm btn-success">Create</button>
-                                                <button class="btn btn-sm btn-danger pull-right" data-dismiss="modal">Cancel</button>
-                                            </div>
+                                        <div class="row col-md-offset-2" id="selected_products">
                                         </div>
                                     </div>
-                                </form>
+                                    <div class="row">
+                                        <div class="row">
+                                            <h4 class="col-md-offset-1">Delivery Order</h4>
+                                        </div>
+                                        <div class="row col-md-offset-2" id="delivery_address">
+                                        </div>
+                                    </div>
                             </div>
                         </div>
+                    </div>
                     </div>
 
                     {{--End of modal for place orders--}}
@@ -709,7 +659,6 @@
                     @endif
 
                     {{--End of Modal for Edit Address--}}
-                </div>
                 <!-- END PAGE CONTENT INNER -->
             </div>
         </div>
@@ -758,12 +707,13 @@
     <script>
 
         $(document).ready(function () {
+
             $('#place_order').modal('hide');
             var productList = new Bloodhound({
                 datumTokenizer: Bloodhound.tokenizers.obj.whitespace('office_name'),
                 queryTokenizer: Bloodhound.tokenizers.whitespace,
                 remote: {
-                    url: "http://agrcrm_api.com/get-products?product_name=%QUERY",
+                    url: "http://agrcrm-api.com/get-products?product_name=%QUERY",
                     filter: function(x) {
                         return $.map(x, function (data) {
                             return {
@@ -774,7 +724,9 @@
                                 slug: data.slug,
                                 btn_class: data.class,
                                 url_param: data.url_param,
-                                translated_slug:data.translated_slug
+                                translated_slug:data.translated_slug,
+                                price:data.discounted_price,
+                                sku:data.seller_sku
                             };
                         });
                     },
@@ -794,17 +746,46 @@
                         'Unable to find any Result that match the current query',
                         '</div>'
                     ].join('\n'),
-                    suggestion: Handlebars.compile('<div style="text-transform: capitalize;">  <strong>@{{translated_name}}</strong><span class="@{{btn_class}}">@{{translated_slug}}</span></div>')
+                    suggestion: Handlebars.compile('<div style="text-transform: capitalize;"><strong>@{{translated_name}}</strong><span class="@{{btn_class}}">@{{sku}}</span><span><i class="fa fa-rupee"></i>@{{ price }}</span></div>')
                 }
             }).on('typeahead:selected', function (obj, datum) {
                 var POData = new Array();
                 POData = $.parseJSON(JSON.stringify(datum));
                 POData.name = POData.name.replace(/\&/g,'%26');
-
+                str = '<div class="row" id="div_'+POData.id+'"><div class="col-md-7"><h5>'+POData.name+'</h5></div>'+
+                        '<div class="col-md-3">'+
+                                '<a class="btn" onclick="updateProductQuantity('+POData.id+',false,'+POData.price+')" >-</a>'+
+                                '<input class="cart-quantity" type="text" id="product_'+POData.id+'" value="1" style="width: 30px; text-align: center" readonly>'+
+                                '<a class="btn" onclick="updateProductQuantity('+POData.id+',true,'+POData.price+')">+</a>'+
+                        '</div>'+
+                        '<div class="col-md-2"><i class="fa fa-rupee"></i><span id="price_'+POData.id+'">'+POData.price+'</span> &nbsp;&nbsp;<a><span onclick="removeProduct('+POData.id+')">x</span></a></div>'+
+                    '</div>';
+                $('#check_out_preview').append(str);
             }).on('typeahead:open', function (obj, datum) {
 
                 });
         });
+
+        function updateProductQuantity(id,update,price) {
+            var qnt = $('#product_'+id).val();
+            if(update == true){
+                qnt++;
+                price = price*qnt;
+                $('#price_'+id).text(price);
+                $('#product_'+id).val(qnt);
+            } else {
+                qnt--;
+                if(qnt > 0){
+                    price = price*qnt;
+                    $('#price_'+id).text(price);
+                    $('#product_'+id).val(qnt);
+                }
+            }
+        }
+
+        function removeProduct(id) {
+            $('#div_'+id).remove();
+        }
 
         $('#place_order_button').on('click',function () {
             $('#place_order').modal('show');
@@ -813,6 +794,9 @@
         $('#select_product_modal').on('click',function () {
             $('#select_products').modal('show');
             $('#place_order').modal('hide');
+            var addressId = $('input[name=customer_address_id]:checked').val();
+            var str = $('#delivery_address_'+addressId).html();
+            $('#delivery_address').html(str);
         });
 
         $('#place_order_modal').on('click',function () {
@@ -823,6 +807,8 @@
         $('#confirm_order_modal').on('click',function () {
             $('#confirm_order').modal('show');
             $('#select_products').modal('hide');
+            var str = $('#check_out_preview').html();
+            $('#selected_products').html(str);
         });
 
         $('#select_order_modal').on('click',function () {
