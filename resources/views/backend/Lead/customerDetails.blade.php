@@ -32,6 +32,14 @@
                     <!-- BEGIN PAGE CONTENT INNER -->
                     {{--<div class="page-content-inner">--}}
                     <div class="row">
+                        <div class="col-md-12 col-md-offset-9">
+                            <a href="#" onclick="chatHistory('{{$id}}','{{$mobile}}')" class="btn yellow">Make a Log </a>
+                            <a href="#" id="place_order_button" class="btn blue">Place Order </a>
+                            <a href="#" class="btn red-intense">Schedule </a>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
                         <div class="col-md-6">
                             <div class="portlet yellow box">
                                 <div class="portlet-title">
@@ -83,7 +91,7 @@
                                     </div>
                                 </div>
                                 <div class="portlet-body">
-                                    <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                                    <ul class="nav nav-pills mb-12" id="pills-tab" role="tablist">
                                         <li class="nav-item col-md-5">
                                             <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#customer-order" role="tab" aria-controls="pills-achievements" aria-selected="true" style="width:213px">Orders</a>
                                         </li>
@@ -94,7 +102,7 @@
                                     <div class="tab-content" id="pills-tabContent">
                                         <div class="tab-pane fade active" id="customer-order" onscroll="" role="tabpanel" aria-labelledby="pills-home-tab" style="height: 200px;overflow-y: scroll">
                                             @if($customerInfo->orders == null)
-                                                <div class="col-md-12" style="text-align: center"><i><b>There are No Orders for this Customer</b></i></div>
+                                                <div class="col-md-12" style="text-align: center;margin-top: 10%;"><i><b>There are No Orders for this Customer</b></i></div>
                                             @else
                                                 @foreach($customerInfo->orders as $order)
                                                     <div class="row" style="border-bottom: 1px solid #b2b2b2; padding: 10px;background-color: #fefefe;">
@@ -112,7 +120,7 @@
                                         </div>
                                         <div class="tab-pane fade" id="customer-return" role="tabpanel" aria-labelledby="pills-profile-tab" style="height: 200px;overflow-y: scroll">
                                             @if($customerInfo->returns == null)
-                                                <div class="col-md-12" style="text-align: center"><i><b>There are No Order Return for this Customer</b></i></div>
+                                                <div class="col-md-12" style="text-align: center;margin-top: 10%"><i><b>There are No Order Return for this Customer</b></i></div>
                                             @else
                                                 @foreach($customerInfo->returns as $order)
                                                     <div class="row" style="border-bottom: 1px solid #b2b2b2; padding: 10px;background-color: #fefefe;">
@@ -134,7 +142,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-12" style="height: 340px">
+                        <div class="col-md-12">
                             <div class="portlet green box">
                                 <div class="portlet-title">
                                     <div class="caption">
@@ -144,76 +152,33 @@
                                 </div>
                                 <div class="portlet-body">
                                     <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-                                        <li class="nav-item col-md-3">
-                                            <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#address1" role="tab" aria-controls="pills-achievements" aria-selected="true">Address 1</a>
-                                        </li>
-                                        <li class="nav-item col-md-3">
-                                            <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#address2" role="tab" aria-controls="pills-annoucement" aria-selected="false">Address 2</a>
-                                        </li>
-                                        <li class="nav-item col-md-3">
-                                            <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#address3" role="tab" aria-controls="pills-annoucement" aria-selected="false">Address 3</a>
-                                        </li>
+                                        @foreach($customerInfo->address as $key=>$value)
+                                                <li class="nav-item col-md-3">
+                                                    <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#address{{$key}}" role="tab" aria-controls="pills-achievements" aria-selected="true">Address {{$key + 1}}</a>
+                                                </li>
+                                        @endforeach
                                     </ul>
-                                    <div class="tab-content" id="pills-tabContent">
-                                        <div class="tab-pane fade active" id="address1" onscroll="" role="tabpanel" aria-labelledby="pills-home-tab" style="height: 215px;overflow-y: scroll">
-                                            @if(count($customerInfo->address) >= 1)
+                                    <div class="tab-content" id="pills-tabContent" style="height:50%;">
+                                        @foreach($customerInfo->address as $key=>$value)
+                                            <div class="tab-pane fade active" id="address{{$key}}" onscroll="" role="tabpanel" aria-labelledby="pills-home-tab" style="height: 260px;overflow-x: scroll">
                                                 <div class="row" style="border-bottom: 1px solid #b2b2b2; padding: 10px;background-color: #fefefe;">
-                                                    <div class="col-md-12"><i>Full Name : </i> <span style="color: #000000">{{$customerInfo->address['0']->full_name}}</span></div>
-                                                    <div class="col-md-12"><i>Mobile : </i> <span style="color: #000000">{{$customerInfo->address['0']->mobile}}</span></div>
-                                                    <div class="col-md-12"><i>House/Block Number : </i> <span style="color: #000000">{{$customerInfo->address['0']->flat_door_block_house_no}}</span></div>
-                                                    <div class="col-md-12"><i>Name of Premise/Building/Village : </i> <span style="color: #000000">{{$customerInfo->address['0']->name_of_premise_building_village}}</span></div>
-                                                    <div class="col-md-12"><i>Area/Locality : </i> <span style="color: #000000">{{$customerInfo->address['0']->area_locality_wadi}}</span></div>
-                                                    <div class="col-md-12"><i>Road/Street/Lane : </i> <span style="color: #000000">{{$customerInfo->address['0']->road_street_lane}}</span></div>
-                                                    <div class="col-md-12"><i>Post : </i> <span style="color: #000000">{{$customerInfo->address['0']->at_post}}</span></div>
-                                                    <div class="col-md-12"><i>Taluka : </i> <span style="color: #000000">{{$customerInfo->address['0']->taluka}}</span></div>
-                                                    <div class="col-md-12"><i>District : </i> <span style="color: #000000">{{$customerInfo->address['0']->district}}</span></div>
-                                                    <div class="col-md-12"><i>State : </i> <span style="color: #000000">{{$customerInfo->address['0']->state}}</span></div>
-                                                    <div class="col-md-12"><i>Pincode : </i> <span style="color: #000000">{{$customerInfo->address['0']->pincode}}</span></div>
+                                                    <div class="col-md-12"><i>Full Name : </i> <span style="color: #000000">{{$value->full_name}}</span></div>
+                                                    <div class="col-md-12"><i>Mobile : </i> <span style="color: #000000">{{$value->mobile}}</span></div>
+                                                    <div class="col-md-12"><i>House/Block Number : </i> <span style="color: #000000">{{$value->flat_door_block_house_no}}</span></div>
+                                                    <div class="col-md-12"><i>Name of Premise/Building/Village : </i> <span style="color: #000000">{{$value->name_of_premise_building_village}}</span></div>
+                                                    <div class="col-md-12"><i>Area/Locality : </i> <span style="color: #000000">{{$value->area_locality_wadi}}</span></div>
+                                                    <div class="col-md-12"><i>Road/Street/Lane : </i> <span style="color: #000000">{{$value->road_street_lane}}</span></div>
+                                                    <div class="col-md-12"><i>Post : </i> <span style="color: #000000">{{$value->at_post}}</span></div>
+                                                    <div class="col-md-12"><i>Taluka : </i> <span style="color: #000000">{{$value->taluka}}</span></div>
+                                                    <div class="col-md-12"><i>District : </i> <span style="color: #000000">{{$value->district}}</span></div>
+                                                    <div class="col-md-12"><i>State : </i> <span style="color: #000000">{{$value->state}}</span></div>
+                                                    <div class="col-md-12"><i>Pincode : </i> <span style="color: #000000">{{$value->pincode}}</span></div>
                                                 </div>
-                                            @endif
-                                        </div>
-                                        <div class="tab-pane fade" id="address2" role="tabpanel" aria-labelledby="pills-profile-tab" style="height: 215px;overflow-y: scroll">
-                                            @if(count($customerInfo->address) >= 2)
-                                                <div class="row" style="border-bottom: 1px solid #b2b2b2; padding: 10px;background-color: #fefefe;">
-                                                    <div class="col-md-12"><i>Full Name : </i> <span style="color: #000000">{{$customerInfo->address['1']->full_name}}</span></div>
-                                                    <div class="col-md-12"><i>Mobile : </i> <span style="color: #000000">{{$customerInfo->address['1']->mobile}}</span></div>
-                                                    <div class="col-md-12"><i>House/Block Number : </i> <span style="color: #000000">{{$customerInfo->address['1']->flat_door_block_house_no}}</span></div>
-                                                    <div class="col-md-12"><i>Name of Premise/Building/Village : </i> <span style="color: #000000">{{$customerInfo->address['1']->name_of_premise_building_village}}</span></div>
-                                                    <div class="col-md-12"><i>Area/Locality : </i> <span style="color: #000000">{{$customerInfo->address['1']->area_locality_wadi}}</span></div>
-                                                    <div class="col-md-12"><i>Road/Street/Lane : </i> <span style="color: #000000">{{$customerInfo->address['1']->road_street_lane}}</span></div>
-                                                    <div class="col-md-12"><i>Post : </i> <span style="color: #000000">{{$customerInfo->address['1']->at_post}}</span></div>
-                                                    <div class="col-md-12"><i>Taluka : </i> <span style="color: #000000">{{$customerInfo->address['1']->taluka}}</span></div>
-                                                    <div class="col-md-12"><i>District : </i> <span style="color: #000000">{{$customerInfo->address['1']->district}}</span></div>
-                                                    <div class="col-md-12"><i>State : </i> <span style="color: #000000">{{$customerInfo->address['1']->state}}</span></div>
-                                                    <div class="col-md-12"><i>Pincode : </i> <span style="color: #000000">{{$customerInfo->address['1']->pincode}}</span></div>
-                                                </div>
-                                            @endif
-                                        </div>
-                                        <div class="tab-pane fade" id="address3" role="tabpanel" aria-labelledby="pills-profile-tab" style="height: 215px;overflow-y: scroll">
-                                            @if(count($customerInfo->address) >= 3)
-                                                <div class="row" style="border-bottom: 1px solid #b2b2b2; padding: 10px;background-color: #fefefe;">
-                                                    <div class="col-md-12"><i>Full Name : </i> <span style="color: #000000">{{$customerInfo->address['2']->full_name}}</span></div>
-                                                    <div class="col-md-12"><i>Mobile : </i> <span style="color: #000000">{{$customerInfo->address['2']->mobile}}</span></div>
-                                                    <div class="col-md-12"><i>House/Block Number : </i> <span style="color: #000000">{{$customerInfo->address['2']->flat_door_block_house_no}}</span></div>
-                                                    <div class="col-md-12"><i>Name of Premise/Building/Village : </i> <span style="color: #000000">{{$customerInfo->address['2']->name_of_premise_building_village}}</span></div>
-                                                    <div class="col-md-12"><i>Area/Locality : </i> <span style="color: #000000">{{$customerInfo->address['2']->area_locality_wadi}}</span></div>
-                                                    <div class="col-md-12"><i>Road/Street/Lane : </i> <span style="color: #000000">{{$customerInfo->address['2']->road_street_lane}}</span></div>
-                                                    <div class="col-md-12"><i>Post : </i> <span style="color: #000000">{{$customerInfo->address['2']->at_post}}</span></div>
-                                                    <div class="col-md-12"><i>Taluka : </i> <span style="color: #000000">{{$customerInfo->address['2']->taluka}}</span></div>
-                                                    <div class="col-md-12"><i>District : </i> <span style="color: #000000">{{$customerInfo->address['2']->district}}</span></div>
-                                                    <div class="col-md-12"><i>State : </i> <span style="color: #000000">{{$customerInfo->address['2']->state}}</span></div>
-                                                    <div class="col-md-12"><i>Pincode : </i> <span style="color: #000000">{{$customerInfo->address['2']->pincode}}</span></div>
-                                                </div>
-                                            @endif
-                                        </div>
+                                            </div>
+                                        @endforeach
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-md-12">
-                            <button class="col-md-2 col-md-offset-3 btn btn-primary" onclick="chatHistory('{{$id}}','{{$mobile}}')"> Make a Log </button>&nbsp;&nbsp;&nbsp;
-                            <button class="col-md-2 btn btn-primary" id="place_order_button"> Place Order </button>&nbsp;&nbsp;&nbsp;
-                            <button class="col-md-2 btn btn-primary"> Schedule </button>&nbsp;&nbsp;&nbsp;
                         </div>
                     </div>
                     <br><br><br>
@@ -276,7 +241,7 @@
                                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                                     <h4 class="modal-title" style="text-align: center"><b>Place Order</b></h4>
                                     <div>
-                                        <a id="select_product_modal"><h6 style="text-align: right">next</h6></a>
+                                        <a id="select_product_modal"><h4 style="text-align: right">next</h4></a>
                                     </div>
                                 </div>
                                 <div class="modal-body">
@@ -357,10 +322,11 @@
                                                             </div>
                                                         </div>
                                                     </div>
-
+                                                     @if(count($customerInfo->address) < 3)
                                                     <div class="form-group">
                                                         <button type="submit" id="new_address_button" class="btn btn-primary btn-icon">Add new address</button>
                                                     </div>
+                                                     @endif
                                                 </div>
                                             </form>
                                         </div>
@@ -379,8 +345,8 @@
                                                                 </div>
                                                                 <div class="col-md-12 col-sm-4">
                                                                     <div class="edit-delete-btns">
-                                                                        <button class="btn-edit" data-edit="{{$address->id}}">Edit address</button>
-                                                                        <button class="btn-delete" data-delete="{{$address->id}}">delete address</button>
+                                                                        <button type="button" class="btn-edit btn btn-success" data-edit="{{$address->id}}">Edit address</button>
+                                                                        <button type="button" class="btn-delete btn btn-danger" data-delete="{{$address->id}}">delete address</button>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -404,10 +370,10 @@
                                     <h4 class="modal-title" style="text-align: center"><b>Add Products Checkout</b></h4>
                                     <div class="row">
                                         <div class="col-sm-6">
-                                            <a id="place_order_modal"><h6 style="text-align: left">previous</h6></a>
+                                            <a id="place_order_modal"><h4 style="text-align: left">previous</h4></a>
                                         </div>
                                         <div class="col-sm-6">
-                                            <a id="confirm_order_modal"><h6 style="text-align: right">next</h6></a>
+                                            <a id="confirm_order_modal"><h4 style="text-align: right">next</h4></a>
                                         </div>
                                     </div>
                                 </div>
@@ -440,7 +406,7 @@
                                     <h4 class="modal-title" style="text-align: center"><b>Confirm Order</b></h4>
                                     <div class="row">
                                         <div class="col-sm-6">
-                                            <a id="select_order_modal"><h6 style="text-align: left">previous</h6></a>
+                                            <a id="select_order_modal"><h4 style="text-align: left">previous</h4></a>
                                         </div>
                                     </div>
                                 </div>
@@ -897,7 +863,6 @@
         });
 
         function editAddress(id) {
-            alert(id);
             var addressFullName= $('#full_name_'+id).val();
             var addrMobile= $('#mobile_'+id).val();
             var house_block = $('#flat_door_block_house_no_'+id).val();
