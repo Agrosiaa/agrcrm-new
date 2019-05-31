@@ -390,16 +390,11 @@
                                             </div>
                                         </div>
                                     </div>
-                                    {{--<div class="row">
-                                        <div class="col-md-12">
-                                            <button type="submit" id="create_customer" class="btn btn-sm btn-success">Create</button>
-                                            <button class="btn btn-sm btn-danger pull-right" data-dismiss="modal">Cancel</button>
-                                        </div>
-                                    </div>--}}
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <form id="customer_order">
                     <div id="select_products" class="modal fade bs-modal-md" tabindex="-1" role="dialog" style="height: 500%">
                         <div class="modal-dialog modal-md">
                             <!-- Modal content-->
@@ -456,6 +451,15 @@
                                         </div>
                                         <div class="row col-md-offset-2" id="selected_products">
                                         </div>
+                                        <hr>
+                                        <div class="row">
+                                            <div class="col-md-2 col-md-offset-8">
+                                                <h4>Total:</h4>
+                                            </div>
+                                            <div class="col-md-1">
+                                                <h4 class="pull-right" id="order_total"></h4>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="row">
                                         <div class="row">
@@ -464,11 +468,18 @@
                                         <div class="row col-md-offset-2" id="delivery_address">
                                         </div>
                                     </div>
+                                    <br>
+                                    <div class="row">
+                                        <div class="col-md-11">
+                                            <input class="form-control" type="hidden" id="address_id" name="address_id" value="">
+                                        <button type="submit" id="confirm_order_button" class="btn btn-primary btn-icon pull-right" onclick="confirmOrder()">Confirm Order</button>
+                                        </div>
+                                    </div>
                             </div>
                         </div>
                     </div>
                     </div>
-
+                    </form>
                     {{--End of modal for place orders--}}
                     {{--Modal for Profile edit--}}
                     <div id="profile-edit-modal" class="modal fade bs-modal-md" tabindex="-1" role="dialog">
@@ -759,8 +770,19 @@
                                 '<a class="btn" onclick="updateProductQuantity('+POData.id+',true,'+POData.price+')">+</a>'+
                         '</div>'+
                         '<div class="col-md-2"><i class="fa fa-rupee"></i><span id="price_'+POData.id+'">'+POData.price+'</span> &nbsp;&nbsp;<a><span onclick="removeProduct('+POData.id+')">x</span></a></div>'+
+                    '</div>'+
+                        '<input class="form-control product-list" type="hidden" id="product_id_'+POData.id+'" name="product_id[]" value="'+POData.id+'">'+
+                        '<input class="form-control" type="hidden" id="product_qnt'+POData.id+'" name="product_qnt['+POData.id+']" value="1">';
+
+
+                str2 = '<div class="row" id="selected_products_div_'+POData.id+'"><div class="col-md-7"><h5>'+POData.name+'</h5></div>'+
+                    '<div class="col-md-3">'+
+                    '<input class="cart-quantity" type="text" id="selected_product_qnt'+POData.id+'" value="1" style="width: 30px; text-align: center" readonly>'+
+                    '</div>'+
+                    '<div class="col-md-2"><i class="fa fa-rupee"></i><span class="product-price-total" id="products_price_'+POData.id+'">'+POData.price+'</span></div>'+
                     '</div>';
                 $('#check_out_preview').append(str);
+                $('#selected_products').append(str2);
             }).on('typeahead:open', function (obj, datum) {
 
                 });
@@ -772,19 +794,45 @@
                 qnt++;
                 price = price*qnt;
                 $('#price_'+id).text(price);
+                $('#products_price_'+id).text(price);
+                $('#selected_product_qnt'+id).val(qnt);
                 $('#product_'+id).val(qnt);
+                $('#product_qnt'+id).val(qnt);
             } else {
                 qnt--;
                 if(qnt > 0){
                     price = price*qnt;
                     $('#price_'+id).text(price);
+                    $('#products_price_'+id).text(price);
+                    $('#selected_product_qnt'+id).val(qnt);
                     $('#product_'+id).val(qnt);
+                    $('#product_qnt'+id).val(qnt);
                 }
             }
         }
 
         function removeProduct(id) {
             $('#div_'+id).remove();
+            $('#selected_products_div_'+id).remove();
+            $('#product_qnt'+id).remove();
+            $('#product_id_'+id).remove();
+        }
+
+        function confirmOrder() {
+            var frm = $('#customer_order');
+            $.ajax({
+                url: "{{env('BASE_URL')}}/confirm-order",
+                type: 'post',
+                data: frm.serialize(),
+                success: function (data) {
+                    console.log('Submission was successful.');
+                    console.log(data);
+                },
+                error: function (data) {
+                    console.log('An error occurred.');
+                    console.log(data);
+                }
+            })
         }
 
         $('#place_order_button').on('click',function () {
@@ -796,6 +844,7 @@
             $('#place_order').modal('hide');
             var addressId = $('input[name=customer_address_id]:checked').val();
             var str = $('#delivery_address_'+addressId).html();
+            $('#address_id').val(addressId);
             $('#delivery_address').html(str);
         });
 
@@ -807,8 +856,12 @@
         $('#confirm_order_modal').on('click',function () {
             $('#confirm_order').modal('show');
             $('#select_products').modal('hide');
-            var str = $('#check_out_preview').html();
-            $('#selected_products').html(str);
+            var sum = 0;
+            $('.product-price-total').each(function()
+            {
+                sum += parseFloat($(this).text());
+            });
+            $('#order_total').text(sum);
         });
 
         $('#select_order_modal').on('click',function () {
