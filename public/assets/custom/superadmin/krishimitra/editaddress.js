@@ -7,7 +7,7 @@ $(document).ready(function(){
         datumTokenizer: Bloodhound.tokenizers.obj.whitespace('office_name'),
         queryTokenizer: Bloodhound.tokenizers.whitespace,
         remote: {
-            url: "http://agrcrm-api.com/get-pincode?_token="+$("input[name='_token']").val()+"&pincode=%QUERY",
+            url: "http://agrcrm_api.com/get-pincode?_token="+$("input[name='_token']").val()+"&pincode=%QUERY",
             filter: function(x) {
                 return $.map(x, function (data) {
                     return {
@@ -25,7 +25,7 @@ $(document).ready(function(){
         display: 'pincode',
         source: citiList1.ttAdapter(),
         templates: {
-            suggestion: Handlebars.compile('<div><input type="text" class="form-control"  style=" border: solid 1px deepskyblue ;padding-top: 5px ; color: black;" value="{{pincode}}"></div>')
+            suggestion: Handlebars.compile('<div><input type="text" class="form-control pincode-class"  style=" border: solid 1px deepskyblue ;padding-top: 5px ; color: black;" value="{{pincode}}"></div>')
         }
     }).on('typeahead:selected', function (obj, datum) {
         var POData = new Array();
@@ -43,9 +43,9 @@ $(document).ready(function(){
 
     $('.edit-atPost').on('change', function(){
         var postId = $(this).val();
-        var pincode = $(".edit-pincode").val();
+        var pincode = $('.pincode-class').val();
         $.ajax({
-            url:'http://agrcrm-api.com/get-post-office-info/'+postId+"?pincode="+pincode+"&_token="+$("input[name='_token']").val(),
+            url:'http://agrcrm_api.com/get-post-office-info/'+postId+"?pincode="+pincode+"&_token="+$("input[name='_token']").val(),
             method: 'GET',
             async: false,
             success: function(data,textStatus,xhr){

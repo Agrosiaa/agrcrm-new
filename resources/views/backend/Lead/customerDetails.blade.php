@@ -71,11 +71,11 @@
                                             </div>
                                         @endif
                                     </div>
-                                    <div class="scroller-footer">
-                                    </div>
                                     <a href="javascript:void(0);" class="btn blue m-icon" data-toggle="modal" data-target="#profile-edit-modal">
                                         Edit
                                     </a>
+                                    <div class="scroller-footer">
+                                    </div>
                                 </div>
                                 <div class="col-md-6">
 
@@ -92,11 +92,11 @@
                                 </div>
                                 <div class="portlet-body">
                                     <ul class="nav nav-pills mb-12" id="pills-tab" role="tablist">
-                                        <li class="nav-item col-md-5">
-                                            <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#customer-order" role="tab" aria-controls="pills-achievements" aria-selected="true" style="width:213px">Orders</a>
+                                        <li class="nav-item">
+                                            <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#customer-order" role="tab" aria-controls="pills-achievements" aria-selected="true" style="width:255px">Orders</a>
                                         </li>
-                                        <li class="nav-item col-md-5">
-                                            <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#customer-return" role="tab" aria-controls="pills-annoucement" aria-selected="false" style="width:213px">Return</a>
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#customer-return" role="tab" aria-controls="pills-annoucement" aria-selected="false" style="width:255px">Return</a>
                                         </li>
                                     </ul>
                                     <div class="tab-content" id="pills-tabContent">
@@ -181,7 +181,6 @@
                             </div>
                         </div>
                     </div>
-                    <br><br><br>
                     <div id="reply" class="modal" role="dialog" data-dismiss="modal">
                         <div class="modal-dialog">
                             <!-- Modal content-->
@@ -207,7 +206,7 @@
                                         <div class="col-md-12" >
                                             <div class="portlet light" style="background-image: url(/assets/global/img/chat-background.jpg);">
                                                 <div class="portlet-body" >
-                                                    <div class="scroller scro" style="height: 338px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
+                                                    <div id="chat_scroll_div" class="scroller scro" style="height: 338px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
                                                         <div class="general-item-list" id="chat_message">
 
                                                         </div>
@@ -389,7 +388,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <br><hr>
+                                    <hr>
                                     <h4>Checkout Preview</h4>
                                     <div id="check_out_preview">
                                     </div>
@@ -684,13 +683,16 @@
     <script>
 
         $(document).ready(function () {
-
             $('#place_order').modal('hide');
+
+            $('#product_name').on('select',function () {
+                $('#product_name').val('');
+            });
             var productList = new Bloodhound({
                 datumTokenizer: Bloodhound.tokenizers.obj.whitespace('office_name'),
                 queryTokenizer: Bloodhound.tokenizers.whitespace,
                 remote: {
-                    url: "http://agrcrm-api.com/get-products?product_name=%QUERY",
+                    url: "http://agrcrm_api.com/get-products?product_name=%QUERY",
                     filter: function(x) {
                         return $.map(x, function (data) {
                             return {
@@ -1168,12 +1170,13 @@
                                             '&nbsp;&nbsp;&nbsp;<span class="item-label" style="color: #8c8c8e">' + data['time'] + '</span>' +
                                             '</div>' +
                                             '</div>' +
-                                            '<div class="item-body pull-right">' +
+                                            '<div class="item-body pull-right col-md-offset-3" style="margin-top: auto;margin-bottom: 5px;border-radius: 15px !important;background-color: #78e08f;padding: 5px;position: relative;">' +
                                             '<span>' + data['message'] + '</span>' +
                                             '</div>' +
                                             '</div>' +
                                             '<br>';
                                     }else {
+                                        console.log(data['message'].length);
                                         str += '<div class="item">' +
                                             '<div class="item-head">' +
                                             '<div class="item-details">' +
@@ -1181,10 +1184,15 @@
                                             '<span style="color: black">' + data['userName'] + '</span>' +
                                             '&nbsp;&nbsp;&nbsp;<span class="item-label" style="color: #8c8c8e">' + data['time'] + '</span>' +
                                             '</div>' +
-                                            '</div>' +
-                                            '<div class="item-body">' +
-                                            '<span>' + data['message'] + '</span>' +
-                                            '</div>' +
+                                            '</div>';
+                                        if(data['message'].length < 40){
+                                            str +=  '<div class="item-body col-md-9" style="margin-top: 5px;">' +
+                                            '<span style="margin-top: auto;margin-bottom: 5px;border-radius: 15px !important;background-color: #82ccdd;padding: 5px;position: relative;;margin-left: -15px;">' + data['message'] + '</span>';
+                                        } else {
+                                            str +=  '<div class="item-body col-md-9" style="margin-top: auto;margin-bottom: 5px;border-radius: 15px !important;background-color: #82ccdd;padding: 5px;position: relative;">' +
+                                                '<span>' + data['message'] + '</span>';
+                                        }
+                                        str +=   '</div>' +
                                             '</div>' +
                                             '<br>';
                                     }
