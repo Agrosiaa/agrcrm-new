@@ -71,11 +71,11 @@
                                             </div>
                                         @endif
                                     </div>
-                                    <div class="scroller-footer">
-                                    </div>
                                     <a href="javascript:void(0);" class="btn blue m-icon" data-toggle="modal" data-target="#profile-edit-modal">
                                         Edit
                                     </a>
+                                    <div class="scroller-footer">
+                                    </div>
                                 </div>
                                 <div class="col-md-6">
 
@@ -92,11 +92,11 @@
                                 </div>
                                 <div class="portlet-body">
                                     <ul class="nav nav-pills mb-12" id="pills-tab" role="tablist">
-                                        <li class="nav-item col-md-5">
-                                            <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#customer-order" role="tab" aria-controls="pills-achievements" aria-selected="true" style="width:213px">Orders</a>
+                                        <li class="nav-item">
+                                            <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#customer-order" role="tab" aria-controls="pills-achievements" aria-selected="true" style="width:255px">Orders</a>
                                         </li>
-                                        <li class="nav-item col-md-5">
-                                            <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#customer-return" role="tab" aria-controls="pills-annoucement" aria-selected="false" style="width:213px">Return</a>
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#customer-return" role="tab" aria-controls="pills-annoucement" aria-selected="false" style="width:255px">Return</a>
                                         </li>
                                     </ul>
                                     <div class="tab-content" id="pills-tabContent">
@@ -181,7 +181,6 @@
                             </div>
                         </div>
                     </div>
-                    <br><br><br>
                     <div id="reply" class="modal" role="dialog" data-dismiss="modal">
                         <div class="modal-dialog">
                             <!-- Modal content-->
@@ -207,7 +206,7 @@
                                         <div class="col-md-12" >
                                             <div class="portlet light" style="background-image: url(/assets/global/img/chat-background.jpg);">
                                                 <div class="portlet-body" >
-                                                    <div class="scroller scro" style="height: 338px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
+                                                    <div id="chat_scroll_div" class="scroller scro" style="height: 338px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
                                                         <div class="general-item-list" id="chat_message">
 
                                                         </div>
@@ -360,6 +359,7 @@
                             </div>
                         </div>
                     </div>
+                    <form id="customer_order">
                     <div id="select_products" class="modal fade bs-modal-md" tabindex="-1" role="dialog" style="height: 500%">
                         <div class="modal-dialog modal-md">
                             <!-- Modal content-->
@@ -388,7 +388,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <br><hr>
+                                    <hr>
                                     <h4>Checkout Preview</h4>
                                     <div id="check_out_preview">
                                     </div>
@@ -416,6 +416,15 @@
                                         </div>
                                         <div class="row col-md-offset-2" id="selected_products">
                                         </div>
+                                        <hr>
+                                        <div class="row">
+                                            <div class="col-md-2 col-md-offset-8">
+                                                <h4>Total:</h4>
+                                            </div>
+                                            <div class="col-md-1">
+                                                <h4 class="pull-right" id="order_total"></h4>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="row">
                                         <div class="row">
@@ -424,11 +433,18 @@
                                         <div class="row col-md-offset-2" id="delivery_address">
                                         </div>
                                     </div>
+                                    <br>
+                                    <div class="row">
+                                        <div class="col-md-11">
+                                            <input class="form-control" type="hidden" id="address_id" name="address_id" value="">
+                                        <button type="submit" id="confirm_order_button" class="btn btn-primary btn-icon pull-right" onclick="confirmOrder()">Confirm Order</button>
+                                        </div>
+                                    </div>
                             </div>
                         </div>
                     </div>
                     </div>
-
+                    </form>
                     {{--End of modal for place orders--}}
                     {{--Modal for Profile edit--}}
                     <div id="profile-edit-modal" class="modal fade bs-modal-md" tabindex="-1" role="dialog">
@@ -667,13 +683,16 @@
     <script>
 
         $(document).ready(function () {
-
             $('#place_order').modal('hide');
+
+            $('#product_name').on('select',function () {
+                $('#product_name').val('');
+            });
             var productList = new Bloodhound({
                 datumTokenizer: Bloodhound.tokenizers.obj.whitespace('office_name'),
                 queryTokenizer: Bloodhound.tokenizers.whitespace,
                 remote: {
-                    url: "http://agrcrm-api.com/get-products?product_name=%QUERY",
+                    url: "http://agrcrm_api.com/get-products?product_name=%QUERY",
                     filter: function(x) {
                         return $.map(x, function (data) {
                             return {
@@ -719,8 +738,19 @@
                                 '<a class="btn" onclick="updateProductQuantity('+POData.id+',true,'+POData.price+')">+</a>'+
                         '</div>'+
                         '<div class="col-md-2"><i class="fa fa-rupee"></i><span id="price_'+POData.id+'">'+POData.price+'</span> &nbsp;&nbsp;<a><span onclick="removeProduct('+POData.id+')">x</span></a></div>'+
+                    '</div>'+
+                        '<input class="form-control product-list" type="hidden" id="product_id_'+POData.id+'" name="product_id[]" value="'+POData.id+'">'+
+                        '<input class="form-control" type="hidden" id="product_qnt'+POData.id+'" name="product_qnt['+POData.id+']" value="1">';
+
+
+                str2 = '<div class="row" id="selected_products_div_'+POData.id+'"><div class="col-md-7"><h5>'+POData.name+'</h5></div>'+
+                    '<div class="col-md-3">'+
+                    '<input class="cart-quantity" type="text" id="selected_product_qnt'+POData.id+'" value="1" style="width: 30px; text-align: center" readonly>'+
+                    '</div>'+
+                    '<div class="col-md-2"><i class="fa fa-rupee"></i><span class="product-price-total" id="products_price_'+POData.id+'">'+POData.price+'</span></div>'+
                     '</div>';
                 $('#check_out_preview').append(str);
+                $('#selected_products').append(str2);
             }).on('typeahead:open', function (obj, datum) {
 
                 });
@@ -732,19 +762,45 @@
                 qnt++;
                 price = price*qnt;
                 $('#price_'+id).text(price);
+                $('#products_price_'+id).text(price);
+                $('#selected_product_qnt'+id).val(qnt);
                 $('#product_'+id).val(qnt);
+                $('#product_qnt'+id).val(qnt);
             } else {
                 qnt--;
                 if(qnt > 0){
                     price = price*qnt;
                     $('#price_'+id).text(price);
+                    $('#products_price_'+id).text(price);
+                    $('#selected_product_qnt'+id).val(qnt);
                     $('#product_'+id).val(qnt);
+                    $('#product_qnt'+id).val(qnt);
                 }
             }
         }
 
         function removeProduct(id) {
             $('#div_'+id).remove();
+            $('#selected_products_div_'+id).remove();
+            $('#product_qnt'+id).remove();
+            $('#product_id_'+id).remove();
+        }
+
+        function confirmOrder() {
+            var frm = $('#customer_order');
+            $.ajax({
+                url: "{{env('BASE_URL')}}/confirm-order",
+                type: 'post',
+                data: frm.serialize(),
+                success: function (data) {
+                    console.log('Submission was successful.');
+                    console.log(data);
+                },
+                error: function (data) {
+                    console.log('An error occurred.');
+                    console.log(data);
+                }
+            })
         }
 
         $('#place_order_button').on('click',function () {
@@ -756,6 +812,7 @@
             $('#place_order').modal('hide');
             var addressId = $('input[name=customer_address_id]:checked').val();
             var str = $('#delivery_address_'+addressId).html();
+            $('#address_id').val(addressId);
             $('#delivery_address').html(str);
         });
 
@@ -767,8 +824,12 @@
         $('#confirm_order_modal').on('click',function () {
             $('#confirm_order').modal('show');
             $('#select_products').modal('hide');
-            var str = $('#check_out_preview').html();
-            $('#selected_products').html(str);
+            var sum = 0;
+            $('.product-price-total').each(function()
+            {
+                sum += parseFloat($(this).text());
+            });
+            $('#order_total').text(sum);
         });
 
         $('#select_order_modal').on('click',function () {
@@ -1109,12 +1170,13 @@
                                             '&nbsp;&nbsp;&nbsp;<span class="item-label" style="color: #8c8c8e">' + data['time'] + '</span>' +
                                             '</div>' +
                                             '</div>' +
-                                            '<div class="item-body pull-right">' +
+                                            '<div class="item-body pull-right col-md-offset-3" style="margin-top: auto;margin-bottom: 5px;border-radius: 15px !important;background-color: #78e08f;padding: 5px;position: relative;">' +
                                             '<span>' + data['message'] + '</span>' +
                                             '</div>' +
                                             '</div>' +
                                             '<br>';
                                     }else {
+                                        console.log(data['message'].length);
                                         str += '<div class="item">' +
                                             '<div class="item-head">' +
                                             '<div class="item-details">' +
@@ -1122,10 +1184,15 @@
                                             '<span style="color: black">' + data['userName'] + '</span>' +
                                             '&nbsp;&nbsp;&nbsp;<span class="item-label" style="color: #8c8c8e">' + data['time'] + '</span>' +
                                             '</div>' +
-                                            '</div>' +
-                                            '<div class="item-body">' +
-                                            '<span>' + data['message'] + '</span>' +
-                                            '</div>' +
+                                            '</div>';
+                                        if(data['message'].length < 40){
+                                            str +=  '<div class="item-body col-md-9" style="margin-top: 5px;">' +
+                                            '<span style="margin-top: auto;margin-bottom: 5px;border-radius: 15px !important;background-color: #82ccdd;padding: 5px;position: relative;;margin-left: -15px;">' + data['message'] + '</span>';
+                                        } else {
+                                            str +=  '<div class="item-body col-md-9" style="margin-top: auto;margin-bottom: 5px;border-radius: 15px !important;background-color: #82ccdd;padding: 5px;position: relative;">' +
+                                                '<span>' + data['message'] + '</span>';
+                                        }
+                                        str +=   '</div>' +
                                             '</div>' +
                                             '<br>';
                                     }
