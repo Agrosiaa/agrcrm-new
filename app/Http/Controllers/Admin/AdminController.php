@@ -80,7 +80,7 @@ class AdminController extends Controller
     public function manageAgents(Request $request){
         try{
             $user = Auth::User();
-            $saleAgents = User::where('role_id',2)->get()->toArray();
+            $saleAgents = User::where('role_id',2)->where('admin_id',$user['id'])->get()->toArray();
             return view('backend.admin.manageAgents')->with(compact('user','saleAgents'));
         }catch (\Exception $e){
             $data = [

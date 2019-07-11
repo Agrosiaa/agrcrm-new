@@ -194,15 +194,14 @@
                                 </div>
                                 <br>
                                 <div class="row" id="query-form">
-                                    <form action="" role="form">
-                                        <div class="col-md-10">
-                                            <input type="text" name="reply_text" id="reply_text" required="required" maxlength="500" class="form-control" placeholder="reply">
-                                            <input type="hidden" id="customer_detail_id" value="">
-                                        </div>
-                                        <div class="col-md-2">
-                                            <button class="btn btn-sm btn-success table-group-action-submit chat-submit pull-right">Reply</button>
-                                        </div>
-                                    </form>
+                                    <div class="col-md-10">
+                                        <input type="text" name="reply_text" id="reply_text" required="required" class="col-md-10" maxlength="500" placeholder="reply">
+                                        <input type="hidden" id="customer_detail_id" value="">
+                                        <input type="hidden" id="customer_detail_mobile" value="">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button class="btn btn-sm btn-success table-group-action-submit chat-submit pull-right">Reply</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -214,7 +213,7 @@
                         <div class="modal-content">
                             <div class="modal-header">
                                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                <h4 class="modal-title" style="text-align: center"><b>Set Reminder</b></h4>
+                                <h4 class="modal-title" style="text-align: center"><b>Set Reminder for Next Call</b></h4>
                             </div>
                             <form class="form-horizontal" method="post" role="form" action="/leads/set-reminder">
                                 <div class="modal-body">
@@ -270,7 +269,7 @@
                                    </div>
                                     <div class="row">
                                         <div class="col-md-4 col-md-offset-8">
-                                            <button type="submit" class="btn btn-sm btn-success">Create</button>
+                                            <button type="submit" class="btn btn-sm btn-success">Assign</button>
                                             <button class="btn btn-sm btn-danger" data-dismiss="modal">Cancel</button>
                                         </div>
                                     </div>
@@ -521,7 +520,7 @@
     <script type="text/javascript" src="/assets/frontend/custom/registration/js/handlebars-v3.0.3.js"></script>
     <script src="/assets/pages/scripts/components-date-time-pickers.min.js" type="text/javascript"></script>
     <script src="/assets/custom/superadmin/krishimitra/addresses.js"></script>
-    <script src="/assets/pages/scripts/superadmin/order/ecommerce-orders.min.js" type="text/javascript"></script>
+    <script src="/assets/pages/scripts/superadmin/leads/ecommerce-orders.min.js" type="text/javascript"></script>
     <script src="/assets/global/plugins/jquery-validation/js/jquery.validate.min.js" type="text/javascript"></script>
 
     <!-- END PAGE LEVEL SCRIPTS -->
@@ -533,7 +532,6 @@
     <script>
         $( document ).ready(function() {
            $('#address-div').hide();
-
             jQuery(document).ready(function() {
                 //Assign number to sale agent validation
                 jQuery("#assign_num_form").validate({
@@ -630,6 +628,7 @@
         function passId(id,number) {
             $('#reply').modal('show');
             $('#customer_detail_id').val(id);
+            $('#customer_detail_mobile').val(number);
             $('#customer_status_detail_id').val(id);
             $('.reply-title').text("Chat History - " +number);
             $('.call_back').hide();
@@ -700,7 +699,7 @@
                                             '&nbsp;&nbsp;&nbsp;<span class="item-label" style="color: #8c8c8e">' + data['time'] + '</span>' +
                                             '</div>' +
                                             '</div>' +
-                                            '<div class="item-body pull-right">' +
+                                            '<div class="item-body pull-right col-md-offset-3" style="margin-top: auto;margin-bottom: 5px;border-radius: 15px !important;background-color: #78e08f;padding: 5px;position: relative;">' +
                                             '<span>' + data['message'] + '</span>' +
                                             '</div>' +
                                             '</div>' +
@@ -713,10 +712,15 @@
                                             '<span style="color: black">' + data['userName'] + '</span>' +
                                             '&nbsp;&nbsp;&nbsp;<span class="item-label" style="color: #8c8c8e">' + data['time'] + '</span>' +
                                             '</div>' +
-                                            '</div>' +
-                                            '<div class="item-body">' +
-                                            '<span>' + data['message'] + '</span>' +
-                                            '</div>' +
+                                            '</div>';
+                                        if(data['message'].length < 40){
+                                            str +=  '<div class="item-body col-md-9" style="margin-top: 5px;">' +
+                                                '<span style="margin-top: auto;margin-bottom: 5px;border-radius: 15px !important;background-color: #82ccdd;padding: 5px;position: relative;;margin-left: -15px;">' + data['message'] + '</span>';
+                                        } else {
+                                            str +=  '<div class="item-body col-md-9" style="margin-top: auto;margin-bottom: 5px;border-radius: 15px !important;background-color: #82ccdd;padding: 5px;position: relative;">' +
+                                                '<span>' + data['message'] + '</span>';
+                                        }
+                                        str +=   '</div>' +
                                             '</div>' +
                                             '<br>';
                                     }
@@ -729,14 +733,35 @@
                     $('#chat_message').html(str);
                 },
                 error: function (responce) {
-                    console.log(responce);
                 }
             });
         }
 
         function setReminder(callId) {
-            $('#reminder_modal').modal('show');
-            $('#call_back_id').val(callId);
+            if(callId == 3){
+                var customer= $('#customer_detail_id').val();
+                var customerNumber = $('#customer_detail_mobile').val();
+                $.ajaxSetup({ headers: { 'X-CSRF-TOKEN' : '<?php echo e(csrf_token()); ?>' } });
+                $.ajax({
+                    url: '/leads/set-reminder',
+                    type: 'POST',
+                    dataType: 'array',
+                    data: {
+                        'call_back_id' : callId,
+                        'customer_status_detail_id' : customer,
+                        'reminder_time' : ''
+                    },
+                    success: function (responce) {
+                        passId(customer,customerNumber);
+                    },
+                    error: function (responce) {
+                        passId(customer,customerNumber);
+                    }
+                })
+            }else {
+                $('#reminder_modal').modal('show');
+                $('#call_back_id').val(callId);
+            }
         }
 
         function createCustomer(mobile) {
@@ -752,6 +777,7 @@
         $(document).on("click",".chat-submit",function (e) {
             var  message= $('#reply_text').val();
             var customer= $('#customer_detail_id').val();
+            var customerNumber = $('#customer_detail_mobile').val();
             $.ajax({
                 url: '/leads/sales-chat',
                 type: 'POST',
@@ -761,8 +787,12 @@
                     'customer_id' : customer
                 },
                 success: function (responce) {
+                    document.getElementById("reply_text").value = "";
+                    passId(customer,customerNumber);
                 },
                 error: function (responce) {
+                    document.getElementById("reply_text").value = "";
+                    passId(customer,customerNumber);
                 }
             })
         });
@@ -770,6 +800,7 @@
         $('#select-call-status').on('change',function () {
             var statusId = $(this).val();
             var customer= $('#customer_detail_id').val();
+            var customerNumber = $('#customer_detail_mobile').val();
             $.ajax({
                 url: '/leads/sales-chat',
                 type: 'POST',
@@ -779,12 +810,10 @@
                     'customer_id' : customer
                 },
                 success: function (responce) {
-                    $('#reply').modal('toggle');
-                    location.reload();
+                    passId(customer,customerNumber);
                 },
                 error: function (responce) {
-                    location.reload();
-                    $('#reply').modal('toggle');
+                    passId(customer,customerNumber);
                 }
             })
         });
@@ -834,12 +863,10 @@
                                 'taluka': taluka
                             },
                             success: function (responce) {
-                                console.log(responce);
                                 $('#create-customer-modal').modal('toggle');
                                 location.reload();
                             },
                             error: function (responce) {
-                                console.log(responce);
                                  location.reload();
                                 $('#create-customer-modal').modal('toggle');
                             }
@@ -869,12 +896,10 @@
                             'taluka': taluka
                         },
                         success: function (responce) {
-                            console.log(responce);
                             $('#create-customer-modal').modal('toggle');
                             location.reload();
                         },
                         error: function (responce) {
-                            console.log(responce);
                              location.reload();
                             $('#create-customer-modal').modal('toggle');
                         }

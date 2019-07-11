@@ -34,12 +34,13 @@ Route::group(['prefix' => '/leads'], function () {
     Route::get('/export-customer-number',array('uses' => 'Lead\LeadController@exportCustomerView'));
     Route::post('/export-customer-numbers',array('uses' => 'Lead\LeadController@exportCustomerSheet'));
     Route::post('/assign-customer',array('uses' => 'Lead\LeadController@assignCustomerNumber'));
-    Route::post('/sales-admin-listing/{status}',array('uses' => 'Lead\LeadController@saleAdminListing'));
+    Route::post('/sales-lead-listing/{status}',array('uses' => 'Lead\LeadController@saleLeadListing'));
     Route::get('/sales-chat-listing/{id}',array('uses' => 'Lead\LeadController@saleChatListing'));
     Route::post('/sales-chat',array('uses' => 'Lead\LeadController@saleChat'));
     Route::post('/set-reminder',array('uses' => 'Lead\LeadController@setReminder'));
     Route::get('/call-back-status/{custDetailId}',array('uses' => 'Lead\LeadController@callBackStatus'));
-    Route::get('/customer-details/{id}',array('uses' => 'Lead\LeadController@CustomerDetailsView'));
+    Route::get('/customer-details/{mobile}/{id}',array('uses' => 'Lead\LeadController@CustomerDetailsView'));
+    Route::post('/customer-order-listing/{mobile}',array('uses' => 'Lead\LeadController@customerOrderListing'));
 });
 Route::get('refresh-csrf', function(){
     return csrf_token();

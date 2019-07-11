@@ -12,10 +12,10 @@ class CrmController extends Controller
 {
     public function manage(Request $request){
         try{
-            dd("crm Page under process");
+            return view('backend.crm.manage');
         }catch(\Exception $exception){
             $data =[
-                'action' => 'get Lead manage page',
+                'action' => 'get crm manage page',
                 'exception' => $exception->getMessage()
             ];
             Log::critical(json_encode($data));
