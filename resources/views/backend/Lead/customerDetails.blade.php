@@ -32,7 +32,19 @@
                     <!-- BEGIN PAGE CONTENT INNER -->
                     {{--<div class="page-content-inner">--}}
                     <div class="row">
-                        <div class="col-md-12 col-md-offset-9">
+                        <div class="col-md-12 col-md-offset-8">
+                            @if($id == 'null' && $user['role_id'] == 2)
+                                <a href="/crm/create-lead/{{$user['id']}}/{{$mobile}}" class="btn green">Create Lead</a>
+                            @endif
+                                @if($id == 'null' && $user['role_id'] == 1)
+                                    <input type="hidden" id="createCustomerLead" value="{{$mobile}}">
+                                    <select id="select-agent" class="" style="-webkit-appearance: menulist; align-self: center">
+                                        <option>Select agent</option>
+                                        @foreach($saleAgents as $saleAgent)
+                                            <option value="{!! $saleAgent['id'] !!}">{!! $saleAgent['name'] !!}</option>
+                                        @endforeach
+                                    </select>
+                                @endif
                             <a href="#" onclick="chatHistory('{{$id}}','{{$mobile}}')" class="btn yellow">Make a Log </a>
                             <a href="#" id="place_order_button" class="btn blue">Place Order </a>
                             <a href="#" class="btn red-intense">Schedule </a>
@@ -1184,6 +1196,20 @@
             })
         });
 
+        $('#select-agent').on('change',function () {
+            var customerId = $(this).val();
+            var customerNumber = $('#createCustomerLead').val();
+            alert(customerNumber);
+            alert(customerId);
+            $.ajax({
+                url: '/crm/create-lead/'+customerId+'/'+customerNumber,
+                type: 'get',
+                success: function (responce) {
+                },
+                error: function (responce) {
+                }
+            })
+        });
 
         function chatHistory(id,number) {
             $('#reply').modal('show');
@@ -1233,40 +1259,43 @@
                                 }
                             }else {
                                 if(data['status'] == null) {
-                                    if(data['user'] == true){
-                                        str += '<div class="item">' +
-                                            '<div class="item-head">' +
-                                            '<div class="item-details pull-right">' +
-                                            '<img class="item-pic rounded" height="35" width="35" src="/assets/layouts/layout3/img/avatar.png">' +
-                                            '<span style="color: black">' + data['userName'] + '</span>' +
-                                            '&nbsp;&nbsp;&nbsp;<span class="item-label" style="color: #8c8c8e">' + data['time'] + '</span>' +
-                                            '</div>' +
-                                            '</div>' +
-                                            '<div class="item-body pull-right col-md-offset-3" style="margin-top: auto;margin-bottom: 5px;border-radius: 15px !important;background-color: #78e08f;padding: 5px;position: relative;">' +
-                                            '<span>' + data['message'] + '</span>' +
-                                            '</div>' +
-                                            '</div>' +
-                                            '<br>';
+                                    if(data['message'] == null){
+                                        str += '<div class="item" style="text-align: center"><span class="tag label label-info" style="font-size: 90%;">'+ data['userName'] +' viewed profile @ ' +data['time']+'</span></div><br>';
                                     }else {
-                                        console.log(data['message'].length);
-                                        str += '<div class="item">' +
-                                            '<div class="item-head">' +
-                                            '<div class="item-details">' +
-                                            '<img class="item-pic rounded" height="35" width="35" src="/assets/layouts/layout3/img/avatar.png">' +
-                                            '<span style="color: black">' + data['userName'] + '</span>' +
-                                            '&nbsp;&nbsp;&nbsp;<span class="item-label" style="color: #8c8c8e">' + data['time'] + '</span>' +
-                                            '</div>' +
-                                            '</div>';
-                                        if(data['message'].length < 40){
-                                            str +=  '<div class="item-body col-md-9" style="margin-top: 5px;">' +
-                                            '<span style="margin-top: auto;margin-bottom: 5px;border-radius: 15px !important;background-color: #82ccdd;padding: 5px;position: relative;;margin-left: -15px;">' + data['message'] + '</span>';
-                                        } else {
-                                            str +=  '<div class="item-body col-md-9" style="margin-top: auto;margin-bottom: 5px;border-radius: 15px !important;background-color: #82ccdd;padding: 5px;position: relative;">' +
-                                                '<span>' + data['message'] + '</span>';
+                                        if(data['user'] == true){
+                                            str += '<div class="item">' +
+                                                '<div class="item-head">' +
+                                                '<div class="item-details pull-right">' +
+                                                '<img class="item-pic rounded" height="35" width="35" src="/assets/layouts/layout3/img/avatar.png">' +
+                                                '<span style="color: black">' + data['userName'] + '</span>' +
+                                                '&nbsp;&nbsp;&nbsp;<span class="item-label" style="color: #8c8c8e">' + data['time'] + '</span>' +
+                                                '</div>' +
+                                                '</div>' +
+                                                '<div class="item-body pull-right col-md-offset-3" style="margin-top: auto;margin-bottom: 5px;border-radius: 15px !important;background-color: #78e08f;padding: 5px;position: relative;">' +
+                                                '<span>' + data['message'] + '</span>' +
+                                                '</div>' +
+                                                '</div>' +
+                                                '<br>';
+                                        }else {
+                                            str += '<div class="item">' +
+                                                '<div class="item-head">' +
+                                                '<div class="item-details">' +
+                                                '<img class="item-pic rounded" height="35" width="35" src="/assets/layouts/layout3/img/avatar.png">' +
+                                                '<span style="color: black">' + data['userName'] + '</span>' +
+                                                '&nbsp;&nbsp;&nbsp;<span class="item-label" style="color: #8c8c8e">' + data['time'] + '</span>' +
+                                                '</div>' +
+                                                '</div>';
+                                            if(data['message'].length < 40){
+                                                str +=  '<div class="item-body col-md-9" style="margin-top: 5px;">' +
+                                                    '<span style="margin-top: auto;margin-bottom: 5px;border-radius: 15px !important;background-color: #82ccdd;padding: 5px;position: relative;;margin-left: -15px;">' + data['message'] + '</span>';
+                                            } else {
+                                                str +=  '<div class="item-body col-md-9" style="margin-top: auto;margin-bottom: 5px;border-radius: 15px !important;background-color: #82ccdd;padding: 5px;position: relative;">' +
+                                                    '<span>' + data['message'] + '</span>';
+                                            }
+                                            str +=   '</div>' +
+                                                '</div>' +
+                                                '<br>';
                                         }
-                                        str +=   '</div>' +
-                                            '</div>' +
-                                            '<br>';
                                     }
                                 } else {
                                     str += '<div class="item" style="text-align: center"><span class="tag label label-info" style="font-size: 90%;">'+ data['status'] +' @ ' +data['time'] + ' by ' + data['userName'] + '</span></div><br>';

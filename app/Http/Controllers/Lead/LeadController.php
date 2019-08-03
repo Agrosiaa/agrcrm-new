@@ -15,6 +15,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Ixudra\Curl\Facades\Curl;
@@ -572,9 +573,21 @@ class LeadController extends Controller
         try{
             $user = Auth::user();
             $callStatuses = CallStatus::get()->toArray();
+            if($id == 'null'){
+                $id = CustomerNumberStatusDetails::where('number','=',$mobile)->value('id');
+                if(empty($id)){
+                    $id = 'null';
+                }
+            }
+            if($id != 'null'){
+                $inProfileData['user_id'] = $user['id'];
+                $inProfileData['customer_number_details_id'] = $id;
+                SalesChat::create($inProfileData);
+            }
+            $saleAgents = User::where('role_id','=',2)->select('id','name')->get()->toArray();
             $customerInfo = Curl::to(env('BASE_URL')."/customer-profile")
                 ->withData( array( 'mobile' => $mobile))->asJson()->get();
-            return view('backend.Lead.customerDetails')->with(compact('user','id','callStatuses','mobile','customerInfo'));
+            return view('backend.Lead.customerDetails')->with(compact('user','id','callStatuses','mobile','customerInfo','saleAgents'));
         }catch(\Exception $exception){
             $data =[
                 'action' => 'customer detail',

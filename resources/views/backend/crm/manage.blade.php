@@ -1,20 +1,26 @@
 @extends('backend.seller.layouts.master')
 @section('title','Agrosiaa | Leads')
-@include('backend.partials.common.nav')
 @section('css')
     <style>
     </style>
     <!-- BEGIN PAGE LEVEL PLUGINS -->
+    <link href='https://fonts.googleapis.com/css?family=Raleway:100,700,800' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="/assets/custom/crm/fonts/font-awesome-4.2.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="/assets/custom/crm/css/normalize.css" />
+    <link rel="stylesheet" type="text/css" href="/assets/custom/crm/css/demo.css" />
+    <link rel="stylesheet" type="text/css" href="/assets/custom/crm/css/component.css" />
     <link rel="stylesheet" type="text/css" href="/assets/frontend/global/css/bootstrap.css">
     <link rel="stylesheet" type="text/css" href="/assets/frontend/global/css/mCustomScrollbar.min.css">
-    <link rel="stylesheet" type="text/css" href="/assets/frontend/global/css/styles/style.css">
-    <link href="/assets/global/plugins/datatables/datatables.min.css" rel="stylesheet" type="text/css" />
+    {{--<link rel="stylesheet" type="text/css" href="/assets/frontend/global/css/styles/style.css">
+    --}}<link href="/assets/global/plugins/datatables/datatables.min.css" rel="stylesheet" type="text/css" />
     <link href="/assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.css" rel="stylesheet" type="text/css" />
     <link href="/assets/global/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css" rel="stylesheet" type="text/css" />
     <link href="/assets/global/plugins/fancybox/source/jquery.fancybox.css" rel="stylesheet" type="text/css" />
     <link href="/assets/global/css/plugins.min.css" rel="stylesheet" type="text/css" />
     <link href="/assets/global/plugins/jstree/dist/themes/default/style.css" rel="stylesheet" type="text/css" />
     <link href="/assets/global/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <!--[if IE]>
     <!-- END PAGE LEVEL PLUGINS -->
     <script type="text/css">
     </script>
@@ -22,7 +28,7 @@
 @section('content')
     <!-- BEGIN PAGE CONTENT BODY -->
     <!-- BEGIN PAGE CONTENT BODY -->
-    <div class="page-content">
+    <div>
         <div class="container">
             <!-- BEGIN PAGE CONTENT INNER -->
             <div class="page-content-inner">
@@ -30,7 +36,7 @@
                     @include('backend.partials.error-messages')
                     <div class="col-md-8 col-md-offset-2">
                         <!-- Begin: life time stats -->
-                        <div class="logo-wrap">
+                        {{--<div class="logo-wrap">
                             <div class=container>
                                 <div class="menu clearfix">
                                     <ul class="clearfix">
@@ -40,8 +46,21 @@
                                     </ul>
                                 </div>
                             </div>
-                        </div>
+                        </div>--}}
                     </div>
+                    <div id="morphsearch" class="morphsearch">
+                        <form class="morphsearch-form">
+                            <input class="morphsearch-input typeahead" id="customer_data" type="search" placeholder="Search..."/>
+                            <button class="morphsearch-submit" type="submit">Search</button>
+                        </form>
+                        <div class="morphsearch-content">
+                        </div><!-- /morphsearch-content -->
+                        <span class="morphsearch-close"></span>
+                    </div><!-- /morphsearch -->
+                    <header class="codrops-header">
+                        <h1>CRM Search<span>A search input that morphs into a fullscreen search page.</span></h1>
+                    </header>
+                    <div class="overlay"></div>
                     <!-- End: life time stats -->
                 </div>
             </div>
@@ -85,6 +104,59 @@
     <script src="/assets/layouts/layout3/scripts/demo.min.js" type="text/javascript"></script>
 
     <!-- END THEME LAYOUT SCRIPTS -->
+    <script src="/assets/custom/crm/js/classie.js"></script>
+    <script>
+        (function() {
+            var morphSearch = document.getElementById( 'morphsearch' ),
+                input = morphSearch.querySelector( 'input.morphsearch-input' ),
+                ctrlClose = morphSearch.querySelector( 'span.morphsearch-close' ),
+                isOpen = isAnimating = false,
+                // show/hide search area
+                toggleSearch = function(evt) {
+                    // return if open and the input gets focused
+                    if( evt.type.toLowerCase() === 'focus' && isOpen ) return false;
+
+                    var offsets = morphsearch.getBoundingClientRect();
+                    if( isOpen ) {
+                        classie.remove( morphSearch, 'open' );
+
+                        // trick to hide input text once the search overlay closes
+                        // todo: hardcoded times, should be done after transition ends
+                        if( input.value !== '' ) {
+                            setTimeout(function() {
+                                classie.add( morphSearch, 'hideInput' );
+                                setTimeout(function() {
+                                    classie.remove( morphSearch, 'hideInput' );
+                                    input.value = '';
+                                }, 300 );
+                            }, 500);
+                        }
+
+                        input.blur();
+                    }
+                    else {
+                        classie.add( morphSearch, 'open' );
+                    }
+                    isOpen = !isOpen;
+                };
+
+            // events
+            input.addEventListener( 'focus', toggleSearch );
+            ctrlClose.addEventListener( 'click', toggleSearch );
+            // esc key closes search overlay
+            // keyboard navigation events
+            document.addEventListener( 'keydown', function( ev ) {
+                var keyCode = ev.keyCode || ev.which;
+                if( keyCode === 27 && isOpen ) {
+                    toggleSearch(ev);
+                }
+            } );
+
+
+            /***** for demo purposes only: don't allow to submit the form *****/
+            morphSearch.querySelector( 'button[type="submit"]' ).addEventListener( 'click', function(ev) { ev.preventDefault(); } );
+        })();
+    </script>
     <script>
         $(document).ready(function () {
             var customerList = new Bloodhound({
@@ -121,7 +193,7 @@
                         'Unable to find any Result that match the current query',
                         '</div>'
                     ].join('\n'),
-                    suggestion: Handlebars.compile('<a class="default" href="/leads/customer-details/@{{ mobile }}/@{{ url_param }}"><div style="text-transform: capitalize;"><strong>@{{fname}}</strong>&nbsp<strong>@{{lname}}</strong>&nbsp<span class="@{{btn_class}}">@{{email}}</span>&nbsp@{{ mobile }}</div></a>')
+                    suggestion: Handlebars.compile('<h1><a class="default" href="/leads/customer-details/@{{ mobile }}/@{{ url_param }}"><div style="text-transform: capitalize;"><strong>@{{fname}}</strong>&nbsp<strong>@{{lname}}</strong>&nbsp<span class="@{{btn_class}}">@{{email}}</span>&nbsp@{{ mobile }}</div></a></h1>')
                 }
             }).on('typeahead:selected', function (obj, datum) {
                 var POData = new Array();

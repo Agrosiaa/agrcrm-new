@@ -128,7 +128,7 @@
     <script>
         function changeStatus(id) {
             $.ajax({
-                url: 'change-agent-status/' + id,
+                url: '/agents/change-agent-status/' + id,
                 type: 'get',
 
                 success: function(responce) {

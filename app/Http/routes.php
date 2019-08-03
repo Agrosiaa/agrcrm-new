@@ -28,6 +28,7 @@ Route::post('password/update', 'Auth\PasswordController@updatePassword');
 Route::get('confirm/{token}', 'Auth\AuthController@confirm');
 Route::group(['prefix' => '/crm'], function () {
     Route::get('/manage',array('uses' => 'Crm\CrmController@manage'));
+    Route::get('/create-lead/{userId}/{number}',array('uses' => 'Crm\CrmController@createLead'));
 });
 Route::group(['prefix' => '/leads'], function () {
     Route::get('/manage/{type}',array('uses' => 'Lead\LeadController@manage'));
@@ -45,6 +46,8 @@ Route::group(['prefix' => '/leads'], function () {
 Route::get('refresh-csrf', function(){
     return csrf_token();
 });
-Route::get('manage-agents',array('uses' => 'Admin\AdminController@manageAgents'));
-Route::post('sales-agent-listing',array('uses' => 'Admin\AdminController@salesAgentListing'));
-Route::get('change-agent-status/{id}', array('uses' => 'Admin\AdminController@changeAgentStatus'));
+Route::group(['prefix' => '/agents'], function () {
+    Route::get('manage-agents',array('uses' => 'Admin\AdminController@manageAgents'));
+    Route::post('sales-agent-listing',array('uses' => 'Admin\AdminController@salesAgentListing'));
+    Route::get('change-agent-status/{id}', array('uses' => 'Admin\AdminController@changeAgentStatus'));
+});

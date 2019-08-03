@@ -38,7 +38,7 @@
                                 </li>
                                 @if(Auth::user()->role_id == 1)
                                 <li>
-                                    <a href="/manage-agents">
+                                    <a href="/agents/manage-agents">
                                         <i class="icon-settings"></i> Settings </a>
                                 </li>
                                 @endif
