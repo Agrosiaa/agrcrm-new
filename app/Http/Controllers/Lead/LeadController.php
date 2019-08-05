@@ -324,11 +324,15 @@ class LeadController extends Controller
                             $chatHistoryData[$i]['callTime'] = date('d F Y H:i:s',strtotime($value['created_at']));
                             $chatHistoryData[$i]['nextCall'] = CallBack::where('slug','call-back-3')->value('name');
                             $chatHistoryData[$i]['reminder'] = date('d F Y H:i:s',strtotime($value['reminder_time']));
-                        }else{
+                        }elseif($callBack == 'call-back-3'){
                             $chatHistoryData[$i]['reminder_time'] = true;
                             $chatHistoryData[$i]['call'] = CallBack::where('slug','call-back-3')->value('name');
                             $chatHistoryData[$i]['callTime'] = date('d F Y H:i:s',strtotime($value['created_at']));
                             $chatHistoryData[$i]['reminder'] = null;
+                        }else{
+                            $chatHistoryData[$i]['reminder_time'] = false;
+                            $chatHistoryData[$i]['is_schedule'] = true;
+                            $chatHistoryData[$i]['reminder'] = date('d F Y H:i:s',strtotime($value['reminder_time']));
                         }
                     }else{
                         $chatHistoryData[$i]['reminder_time'] = false;
@@ -410,7 +414,6 @@ class LeadController extends Controller
 
     public function setReminder(Request $request){
         try{
-            Log::info(json_encode($request->all()));
             $inputDate = str_replace('-','',$request->reminder_time);
             if($request->reminder_time != ''){
                 $data['reminder_time'] = Carbon::parse($inputDate);

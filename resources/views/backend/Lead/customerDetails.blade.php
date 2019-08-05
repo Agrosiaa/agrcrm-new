@@ -5,6 +5,7 @@
     <link rel="stylesheet" type="text/css" href="/assets/frontend/global/css/bootstrap.css">
     <link rel="stylesheet" type="text/css" href="/assets/frontend/global/css/mCustomScrollbar.min.css">
     <link rel="stylesheet" type="text/css" href="/assets/frontend/global/css/styles/style.css">
+    <link href="/assets/global/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css" rel="stylesheet" type="text/css" />
 
 @endsection
 @section('content')
@@ -32,11 +33,13 @@
                     <!-- BEGIN PAGE CONTENT INNER -->
                     {{--<div class="page-content-inner">--}}
                     <div class="row">
-                        <div class="col-md-12 col-md-offset-8">
-                            @if($id == 'null' && $user['role_id'] == 2)
+                        @if($id == 'null' && $user['role_id'] == 2)
+                            <div class="col-md-12 col-md-offset-11">
                                 <a href="/crm/create-lead/{{$user['id']}}/{{$mobile}}" class="btn green">Create Lead</a>
-                            @endif
-                                @if($id == 'null' && $user['role_id'] == 1)
+                            </div>
+                        @endif
+                        @if($id == 'null' && $user['role_id'] == 1)
+                                <div class="col-md-12 col-md-offset-11">
                                     <input type="hidden" id="createCustomerLead" value="{{$mobile}}">
                                     <select id="select-agent" class="" style="-webkit-appearance: menulist; align-self: center">
                                         <option>Select agent</option>
@@ -44,11 +47,15 @@
                                             <option value="{!! $saleAgent['id'] !!}">{!! $saleAgent['name'] !!}</option>
                                         @endforeach
                                     </select>
-                                @endif
-                            <a href="#" onclick="chatHistory('{{$id}}','{{$mobile}}')" class="btn yellow">Make a Log </a>
-                            <a href="#" id="place_order_button" class="btn blue">Place Order </a>
-                            <a href="#" class="btn red-intense">Schedule </a>
-                        </div>
+                                </div>
+                            @endif
+                            @if($id != 'null')
+                                <div class="col-md-12 col-md-offset-9">
+                                    <a href="#" onclick="chatHistory('{{$id}}','{{$mobile}}')" class="btn yellow">Make a Log </a>
+                                    <a href="#" id="place_order_button" class="btn blue">Place Order </a>
+                                    <a href="#" id="schedule-button" class="btn red-intense">Schedule </a>
+                                </div>
+                            @endif
                     </div>
                     <hr>
                     <div class="row">
@@ -253,6 +260,42 @@
                                     <div class="scroller-footer">
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="schedule_modal" class="modal fade bs-modal-md" tabindex="-1" role="dialog">
+                        <div class="modal-dialog modal-md">
+                            <!-- Modal content-->
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title" style="text-align: center"><b>Set Schedule for Next Call</b></h4>
+                                </div>
+                                <form class="form-horizontal" method="post" role="form" action="/crm/set-schedule">
+                                    <input type="hidden" name="cust_detail_id" value="{{$id}}">
+                                    <div class="modal-body">
+                                        <div class="form-group">
+                                            {{csrf_field()}}
+                                            <label class="control-label col-sm-4">Reminder Time</label>
+                                            <div class="col-md-8">
+                                                <div class="input-group date form_datetime input-large">
+                                                    <input type="text" size="16" name="reminder_time" class="form-control">
+                                                    <span class="input-group-btn">
+                                                        <button class="btn default date-set" type="button">
+                                                            <i class="fa fa-calendar"></i>
+                                                        </button>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-8 col-md-offset-4">
+                                                <button type="submit" class="btn btn-sm btn-success">Create</button>
+                                                <button class="btn btn-sm btn-danger" data-dismiss="modal">Cancel</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -892,7 +935,9 @@
         $('#place_order_button').on('click',function () {
             $('#place_order').modal('show');
         });
-
+        $('#schedule-button').on('click',function () {
+            $('#schedule_modal').modal('show');
+        })
         $('#select_product_modal').on('click',function () {
             $('#select_products').modal('show');
             $('#place_order').modal('hide');
@@ -1230,6 +1275,13 @@
                             str += '<div class="item" style="text-align: center">' +
                                 '<span class="tag label label-info" style="font-size: 90%;">' +
                                 data['number'] +' was allocated to ' +data['sale_agent'] + ' on '+ data['time'] +
+                                '</span>' +
+                                '</div> '+
+                                '<br>';
+                        }else if(data['is_schedule'] == true){
+                            str += '<div class="item" style="text-align: center">' +
+                                '<span class="tag label label-info" style="font-size: 90%;">'
+                                +'Schedule to call back is set on ' +data['reminder'] +
                                 '</span>' +
                                 '</div> '+
                                 '<br>';

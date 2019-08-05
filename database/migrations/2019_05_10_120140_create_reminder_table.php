@@ -18,6 +18,7 @@ class CreateReminderTable extends Migration
             $table->foreign('call_back_id')->references('id')->on('call_back')->onUpdate('cascade')->onDelete('cascade');
             $table->unsignedInteger('customer_number_status_details_id')->nullable();
             $table->foreign('customer_number_status_details_id')->references('id')->on('customer_number_status_details')->onUpdate('cascade')->onDelete('cascade');
+            $table->boolean('is_schedule')->default(0);;
             $table->timestamp('reminder_time')->nullable();
             $table->timestamps();
         });

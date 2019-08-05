@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Crm;
 
 use App\CustomerNumberStatus;
 use App\CustomerNumberStatusDetails;
+use App\Reminder;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -50,6 +52,25 @@ class CrmController extends Controller
         }catch (\Exception $exception){
             $data = [
                 'action' => 'Assign Customer Number to Agent',
+                'exception' => $exception->getMessage()
+            ];
+            Log::critical(json_encode($data));
+            abort(500,$exception->getMessage());
+        }
+    }
+    public function setSchedule(Request $request){
+        try{
+            $inputDate = str_replace('-','',$request->reminder_time);
+            if($request->reminder_time != ''){
+                $data['reminder_time'] = Carbon::parse($inputDate);
+            }
+            $data['customer_number_status_details_id'] = $request->cust_detail_id;
+            $data['is_schedule'] = true;
+            Reminder::create($data);
+            return back();
+        }catch (\Exception $exception){
+            $data = [
+                'action' => 'Set Schedule',
                 'exception' => $exception->getMessage()
             ];
             Log::critical(json_encode($data));

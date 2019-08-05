@@ -29,6 +29,7 @@ Route::get('confirm/{token}', 'Auth\AuthController@confirm');
 Route::group(['prefix' => '/crm'], function () {
     Route::get('/manage',array('uses' => 'Crm\CrmController@manage'));
     Route::get('/create-lead/{userId}/{number}',array('uses' => 'Crm\CrmController@createLead'));
+    Route::post('/set-schedule',array('uses' => 'Crm\CrmController@setSchedule'));
 });
 Route::group(['prefix' => '/leads'], function () {
     Route::get('/manage/{type}',array('uses' => 'Lead\LeadController@manage'));
