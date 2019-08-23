@@ -6,6 +6,12 @@
     <link rel="stylesheet" type="text/css" href="/assets/frontend/global/css/mCustomScrollbar.min.css">
     <link rel="stylesheet" type="text/css" href="/assets/frontend/global/css/styles/style.css">
     <link href="/assets/global/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css" rel="stylesheet" type="text/css" />
+    <link href="/assets/global/plugins/datatables/datatables.min.css" rel="stylesheet" type="text/css" />
+    <link href="/assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.css" rel="stylesheet" type="text/css" />
+    <link href="/assets/global/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css" rel="stylesheet" type="text/css" />
+    <link href="/assets/global/plugins/fancybox/source/jquery.fancybox.css" rel="stylesheet" type="text/css" />
+    <link href="/assets/global/css/plugins.min.css" rel="stylesheet" type="text/css" />
+    <link href="/assets/global/plugins/jstree/dist/themes/default/style.css" rel="stylesheet" type="text/css" />
 
 @endsection
 @section('content')
@@ -221,22 +227,6 @@
                                                 </thead>
                                                 <tbody></tbody>
                                             </table>
-                                            {{--@if($customerInfo->orders == null)
-                                                <div class="col-md-12" style="text-align: center;margin-top: 10%;"><i><b>There are No Orders for this Customer</b></i></div>
-                                            @else
-                                                @foreach($customerInfo->orders as $order)
-                                                    <div class="row" style="border-bottom: 1px solid #b2b2b2; padding: 10px;background-color: #fefefe;">
-                                                        <div class="col-md-12" style="text-align: right; color: lightcoral"><i>{!! date('dS M Y',strtotime($order->created_at)) !!}</i></div>
-                                                        <div class="col-md-12"><i>Order Number : </i> <span style="color: #000000">{{$order->id}}</span></div>
-                                                        <div class="col-md-12"><i>Product : </i> {{$order->product_name}}</div>
-                                                        <div class="col-md-12"><i>Qty : </i><span style="color: #007AFF">{{$order->quantity}}</span> </div>
-                                                        <div class="col-md-12"><i>Status : </i><span style="color: #007AFF">{{$order->status}}</span></div>
-                                                        <div class="col-md-12"><i>Consignment Number : </i> {{$order->consignment_number}}</div>
-                                                        <div class="col-md-12"><i>Payment Mode : </i> {{$order->payment_mode}}</div>
-                                                        <div class="col-md-12"><i>Grand Total : </i> {{$order->subtotal}}</div>
-                                                    </div>
-                                                @endforeach
-                                            @endif--}}
                                         </div>
                                         <div class="tab-pane fade" id="customer-return" role="tabpanel" aria-labelledby="pills-profile-tab" style="height: 200px;overflow-y: scroll">
                                             @if($customerInfo->returns == null)
@@ -258,6 +248,77 @@
                                         </div>
                                     </div>
                                     <div class="scroller-footer">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="portlet blue box">
+                                <div class="portlet-title">
+                                    <div class="caption">
+                                        <i class="icon- font-violet"></i>
+                                        <span class="caption-subject font-violet bold uppercase">Abandoned Cart Listing</span>
+                                        <input type="hidden" id="customer_mobile" value="{{$customerInfo->profile->mobile}}">
+                                    </div>
+                                </div>
+                                <div class="portlet-body">
+                                    <div class="table-container">
+                                        <table class="table table-striped table-bordered table-hover table-checkable" id="abandoned_cart_listing">
+                                            <thead>
+                                            <tr role="row" class="heading">
+                                                <th width="15%"> Registered From </th>
+                                                <th width="20%"> Created On </th>
+                                                <th width="20%"> Updated On </th>
+                                                <th width="10%"> Action </th>
+                                            </tr>
+                                            <tr role="row" class="filter">
+                                                <td>
+                                                </td>
+                                                <td>
+                                                    <div class="input-group date date-picker">
+                                                        <input type="text" size="16" class="form-control form-filter" name="toDate" id="toDate" placeholder="to date">
+                                                        <span class="input-group-btn">
+                                                     <button class="btn default date-set" type="button">
+                                                         <i class="fa fa-calendar"></i>
+                                                     </button>
+                                                 </span>
+                                                    </div>
+                                                    <div class="input-group date date-picker">
+                                                        <input type="text" size="16" class="form-control form-filter" name="fromDate" id="fromDate" placeholder="from date">
+                                                        <span class="input-group-btn">
+                                                     <button class="btn default date-set" type="button">
+                                                         <i class="fa fa-calendar"></i>
+                                                     </button>
+                                                 </span>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="input-group date date-picker">
+                                                        <input type="text" size="16" class="form-control form-filter" name="toUpdatedDate" id="toUpdatedDate" placeholder="to date">
+                                                        <span class="input-group-btn">
+                                                     <button class="btn default date-set" type="button">
+                                                         <i class="fa fa-calendar"></i>
+                                                     </button>
+                                                 </span>
+                                                    </div>
+                                                    <div class="input-group date date-picker">
+                                                        <input type="text" size="16" class="form-control form-filter" name="fromUpdatedDate" id="fromUpdatedDate" placeholder="from date">
+                                                        <span class="input-group-btn">
+                                                     <button class="btn default date-set" type="button">
+                                                         <i class="fa fa-calendar"></i>
+                                                     </button>
+                                                 </span>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <button class="btn btn-xs blue filter-submit"> Search <i class="fa fa-search"></i> </button>
+                                                    <button class="btn btn-xs default filter-cancel"> Reset <i class="fa fa-undo"></i> </button>
+                                                </td>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>
@@ -765,6 +826,22 @@
                     @endif
 
                     {{--End of Modal for Edit Address--}}
+                    {{--Modal For Abandoned Details--}}
+                    <div id="AbandonedDetailModal" class="modal container fade" tabindex="-1">
+                            <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                                <h4 class="modal-title">Abandoned Cart Details</h4>
+                            </div>
+                            <div class="modal-body">
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" data-dismiss="modal" class="btn btn-outline dark">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                {{--End Modal--}}
                 <!-- END PAGE CONTENT INNER -->
             </div>
         </div>
@@ -806,6 +883,7 @@
     <script src="/assets/custom/superadmin/krishimitra/editaddress.js"></script>
     <script src="/assets/global/plugins/jquery-validation/js/jquery.validate.min.js" type="text/javascript"></script>
         <script src="/assets/pages/scripts/superadmin/order/ecommerce-orders.min.js" type="text/javascript"></script>
+        <script src="/assets/pages/scripts/superadmin/abandonedCart/ecommerce-orders.min.js" type="text/javascript"></script>
 
         <!-- END PAGE LEVEL SCRIPTS -->
     <!-- BEGIN THEME LAYOUT SCRIPTS -->
@@ -1389,4 +1467,21 @@
             })
         });
     </script>
+        <script>
+            function openCustomerDetails(id) {
+                $.ajax({
+                    url: '/crm/abandoned-cart-detail/'+id+'',
+                    type: 'GET',
+                    async: true,
+                    success: function(data,textStatus,xhr){
+                        $("#AbandonedDetailModal .modal-body").html(data);
+                        $("#AbandonedDetailModal").modal('show');
+                    },
+                    error:function(errorData){
+                        alert('Something went wrong');
+                    }
+
+                });
+            }
+        </script>
 @endsection

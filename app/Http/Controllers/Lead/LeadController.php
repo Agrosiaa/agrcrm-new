@@ -223,12 +223,21 @@ class LeadController extends Controller
                 for($i=0,$j = $iDisplayStart; $j < $end; $i++,$j++) {
                     if ($user['role_id'] == 1) {
                         if(in_array($limitedProducts[$j]['number'],$createdCustomers)){
-                            $records["data"][] = array(
-                                '<a href="/leads/customer-details/'.$limitedProducts[$j]['number'].'/'.$limitedProducts[$j]['id'].'">'.$limitedProducts[$j]['number'].'</a>',
-                                User::where('id',$limitedProducts[$j]['user_id'])->pluck('name'),
-                                date('d F Y H:i:s',strtotime($limitedProducts[$j]['created_at'])),
-                                '<a href="#" class="btn btn-sm btn-default btn-circle btn-editable chat_reply" onclick="passId('.$limitedProducts[$j]['id'].','.$limitedProducts[$j]['number'].')"><i class="fa fa-pencil"></i> Log</a>',
-                            );
+                            if($limitedProducts[$j]['is_abandoned'] == true){
+                                $records["data"][] = array(
+                                    '<a href="/crm/customer-details/'.$limitedProducts[$j]['number'].'/'.$limitedProducts[$j]['id'].'">'.$limitedProducts[$j]['number'].'</a>'.'<br><br>'.'<span class="tag label label-info" style="font-size: 90%;">'.'Abandoned Cart'.'</span>',
+                                    User::where('id',$limitedProducts[$j]['user_id'])->pluck('name'),
+                                    date('d F Y H:i:s',strtotime($limitedProducts[$j]['created_at'])),
+                                    '<a href="#" class="btn btn-sm btn-default btn-circle btn-editable chat_reply" onclick="passId('.$limitedProducts[$j]['id'].','.$limitedProducts[$j]['number'].')"><i class="fa fa-pencil"></i> Log</a>',
+                                );
+                            }else{
+                                $records["data"][] = array(
+                                    '<a href="/crm/customer-details/'.$limitedProducts[$j]['number'].'/'.$limitedProducts[$j]['id'].'">'.$limitedProducts[$j]['number'].'</a>',
+                                    User::where('id',$limitedProducts[$j]['user_id'])->pluck('name'),
+                                    date('d F Y H:i:s',strtotime($limitedProducts[$j]['created_at'])),
+                                    '<a href="#" class="btn btn-sm btn-default btn-circle btn-editable chat_reply" onclick="passId('.$limitedProducts[$j]['id'].','.$limitedProducts[$j]['number'].')"><i class="fa fa-pencil"></i> Log</a>',
+                                );
+                            }
                             $mobileNumber = CustomerNumberStatusDetails::where('number',$limitedProducts[$j]['number'])->get()->toArray();
                             if(count($mobileNumber) == 1){
                                 if($limitedProducts[$j]['customer_number_status_id'] != $completeStatusId){
@@ -246,11 +255,19 @@ class LeadController extends Controller
                         }
                     } else {
                         if(in_array($limitedProducts[$j]['number'],$createdCustomers)){
-                            $records["data"][] = array(
-                                '<a href="/leads/customer-details/'.$limitedProducts[$j]['number'].'/'.$limitedProducts[$j]['id'].'">'.$limitedProducts[$j]['number'].'</a>',
-                                date('d F Y H:i:s', strtotime($limitedProducts[$j]['created_at'])),
-                                '<a class="btn btn-sm btn-default btn-circle btn-editable chat_reply" onclick="passId(' . $limitedProducts[$j]['id'] . ',' . $limitedProducts[$j]['number'] . ')"><i class="fa fa-pencil"></i> Log</a>'
-                            );
+                            if($limitedProducts[$j]['is_abandoned'] == true){
+                                $records["data"][] = array(
+                                    '<a href="/crm/customer-details/'.$limitedProducts[$j]['number'].'/'.$limitedProducts[$j]['id'].'">'.$limitedProducts[$j]['number'].'</a>'.'<br><br>'.'<span class="tag label label-info" style="font-size: 90%;">'.'Abandoned Cart'.'</span>',
+                                    date('d F Y H:i:s', strtotime($limitedProducts[$j]['created_at'])),
+                                    '<a class="btn btn-sm btn-default btn-circle btn-editable chat_reply" onclick="passId(' . $limitedProducts[$j]['id'] . ',' . $limitedProducts[$j]['number'] . ')"><i class="fa fa-pencil"></i> Log</a>'
+                                );
+                            }else{
+                                $records["data"][] = array(
+                                    '<a href="/crm/customer-details/'.$limitedProducts[$j]['number'].'/'.$limitedProducts[$j]['id'].'">'.$limitedProducts[$j]['number'].'</a>',
+                                    date('d F Y H:i:s', strtotime($limitedProducts[$j]['created_at'])),
+                                    '<a class="btn btn-sm btn-default btn-circle btn-editable chat_reply" onclick="passId(' . $limitedProducts[$j]['id'] . ',' . $limitedProducts[$j]['number'] . ')"><i class="fa fa-pencil"></i> Log</a>'
+                                );
+                            }
                             $mobileNumber = CustomerNumberStatusDetails::where('number',$limitedProducts[$j]['number'])->get()->toArray();
                             if(count($mobileNumber) == 1){
                                 if($limitedProducts[$j]['customer_number_status_id'] != $completeStatusId){
@@ -472,128 +489,22 @@ class LeadController extends Controller
         }
     }
 
-    public function customerOrderListing(Request $request, $mobile){
+    public function syncAbandonedCart(Request $request){
         try{
-            $user = Auth::user();
-            $customerOrders = Curl::to(env('BASE_URL')."/customer-orders")
-                ->withData( array( 'mobile' => $mobile, 'retrieve' => 'ids'))->asJson()->get();
-            $tableData = $request->all();
-            $searchData = NULL;
-            $orderName=null;
-            if(!empty($customerOrders->orders)){
-                $resultFlag = true;
-                // Search customer mobile number
-                if($request->has('order_no') && $tableData['order_no']!=""){
-                    $customerOrders = Curl::to(env('BASE_URL')."/customer-orders")
-                        ->withData( array( 'mobile' => $mobile, 'filter' => true , 'order_no' => $tableData['order_no'],'ids' => $customerOrders->orders))->asJson()->get();
-                    if(empty($customerOrders->orders)){
-                        $resultFlag = false;
-                    }
-                }
-                // Filter Customer listing with respect to sales parson name
-                if($resultFlag == true && $request->has('product') && $tableData['product']!=""){
-                    $customerOrders = Curl::to(env('BASE_URL')."/customer-orders")
-                        ->withData( array( 'mobile' => $mobile, 'filter' => true,'product' => $tableData['product'],'ids' => $customerOrders->orders))->asJson()->get();
-                    if(empty($customerOrders->orders)){
-                        $resultFlag = false;
-                    }
-                }
-
-                if($resultFlag == true && $request->has('quantity') && $tableData['quantity']!=""){
-                    $customerOrders = Curl::to(env('BASE_URL')."/customer-orders")
-                        ->withData( array( 'mobile' => $mobile, 'filter' => true,'quantity' => $tableData['quantity'], 'ids' => $customerOrders->orders))->asJson()->get();
-                    if(empty($customerOrders->orders)){
-                        $resultFlag = false;
-                    }
-                }
-
-                if($resultFlag == true && $request->has('skuid') && $tableData['skuid']!=""){
-                    $customerOrders = Curl::to(env('BASE_URL')."/customer-orders")
-                        ->withData( array( 'mobile' => $mobile, 'filter' => true,'skuid' => $tableData['skuid'],'ids' => $customerOrders->orders))->asJson()->get();
-                    if(empty($customerOrders->orders)){
-                        $resultFlag = false;
-                    }
-                }
-
-                if($resultFlag == true && $request->has('status') && $tableData['status']!=""){
-                    $customerOrders = Curl::to(env('BASE_URL')."/customer-orders")
-                        ->withData( array( 'mobile' => $mobile,'filter' => true, 'status' => $tableData['status'], 'ids' => $customerOrders->orders))->asJson()->get();
-                    if(empty($customerOrders->orders)){
-                        $resultFlag = false;
-                    }
-                }
-
-                if($resultFlag == true && $request->has('awb_no') && $tableData['awb_no']!=""){
-                    $customerOrders = Curl::to(env('BASE_URL')."/customer-orders")
-                        ->withData( array( 'mobile' => $mobile,'filter' => true, 'awb_no' => $tableData['awb_no'], 'ids' => $customerOrders->orders))->asJson()->get();
-                    if(empty($customerOrders->orders)){
-                        $resultFlag = false;
-                    }
-                }
-
-                $iTotalRecords = count($customerOrders->orders);
-                $iDisplayLength = intval($request->length);
-                $iDisplayLength = $iDisplayLength < 0 ? $iTotalRecords : $iDisplayLength;
-                $iDisplayStart = intval($request->start);
-                $sEcho = intval($request->draw);
-                $records = array();
-                $records["data"] = array();
-                $end = $iDisplayStart + $iDisplayLength;
-                $end = $end > $iTotalRecords ? $iTotalRecords : $end;
-                $limitedOrders = $customerOrders = Curl::to(env('BASE_URL')."/customer-orders")
-                    ->withData( array( 'mobile' => $mobile, 'retrieve' => 'data','filteredIds' => $customerOrders->orders))->asJson()->get();
-                //$limitedOrders = CustomerNumberStatusDetails::where('customer_number_status_id',$statusId['id'])->whereIn('id',$customerId)->take($iDisplayLength)->skip($iDisplayStart)->orderBy('created_at','desc')->get()->toArray();
-                for($i=0,$j = $iDisplayStart; $j < $end; $i++,$j++) {
-                    $records["data"][] = array(
-                        'AGR'.str_pad($limitedOrders[$j]->id, 9, "0", STR_PAD_LEFT),
-                        $limitedOrders[$j]->created_at,
-                        $limitedOrders[$j]->product_name,
-                        $limitedOrders[$j]->quantity,
-                        $limitedOrders[$j]->seller_sku,
-                        $limitedOrders[$j]->status,
-                        $limitedOrders[$j]->consignment_number,
-                        $limitedOrders[$j]->subtotal,
-                        );
-
-                }
-                if (isset($request->customActionType) && $request->customActionType == "group_action") {
-                    $records["customActionStatus"] = "OK"; // pass custom message(useful for getting status of group actions)
-                    $records["customActionMessage"] = "Group action successfully has been completed. Well done!"; // pass custom message(useful for getting status of group actions)
-                }
-                $records["draw"] = $sEcho;
-                $records["recordsTotal"] = $iTotalRecords;
-                $records["recordsFiltered"] = $iTotalRecords;
-            }else{
-                $records = '';
-            }
-        }catch(\Exception $e){
-            $records = $e->getMessage();
-        }
-        return response()->json($records);
-    }
-
-    public function CustomerDetailsView(Request $request, $mobile, $id){
-        try{
-            $user = Auth::user();
-            $callStatuses = CallStatus::get()->toArray();
-            if($id == 'null'){
-                $id = CustomerNumberStatusDetails::where('number','=',$mobile)->value('id');
-                if(empty($id)){
-                    $id = 'null';
+            $abandonedData= Curl::to(env('BASE_URL')."/get-abandoned-cart-data")->asJson()->get();
+            $userId = User::where('is_abandoned_cart_agent',true)->value('id');
+            foreach ($abandonedData as $abandonedDatum){
+                $custNumberStatDetail = CustomerNumberStatusDetails::where('number',$abandonedDatum->mobile)->value('id');
+                if(empty($custNumberStatDetail)){
+                    CustomerNumberStatusDetails::create(['customer_number_status_id' => 1, 'user_id' => $userId, 'number' => $abandonedDatum->mobile, 'is_abandoned' => true]);
+                }else{
+                    CustomerNumberStatusDetails::where('id',$custNumberStatDetail)->update(['user_id' => $userId, 'is_abandoned' => true]);
                 }
             }
-            if($id != 'null'){
-                $inProfileData['user_id'] = $user['id'];
-                $inProfileData['customer_number_details_id'] = $id;
-                SalesChat::create($inProfileData);
-            }
-            $saleAgents = User::where('role_id','=',2)->select('id','name')->get()->toArray();
-            $customerInfo = Curl::to(env('BASE_URL')."/customer-profile")
-                ->withData( array( 'mobile' => $mobile))->asJson()->get();
-            return view('backend.Lead.customerDetails')->with(compact('user','id','callStatuses','mobile','customerInfo','saleAgents'));
+            return back();
         }catch(\Exception $exception){
             $data =[
-                'action' => 'customer detail',
+                'action' => 'Abandoned cart lead',
                 'exception' => $exception->getMessage()
             ];
             Log::critical(json_encode($data));

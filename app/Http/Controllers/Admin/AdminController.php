@@ -168,4 +168,18 @@ class AdminController extends Controller
             Log::critical(json_encode($data));
         }
     }
+
+    public function assignAbandonedCartAgent(Request $request, $id){
+        try{
+            User::where('is_abandoned_cart_agent',true)->update(['is_abandoned_cart_agent' => false]);
+            User::where('id',$id)->update(['is_abandoned_cart_agent' => true]);
+        }catch (\Exception $e){
+            $data = [
+                'action' => 'Assign agent for abandoned cart customers',
+                'request' => $request->all(),
+                'exception' => $e->getMessage()
+            ];
+            Log::critical(json_encode($data));
+        }
+    }
 }

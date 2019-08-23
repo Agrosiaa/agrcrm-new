@@ -131,7 +131,7 @@
                     'Unable to find any Result that match the current query',
                     '</div>'
                 ].join('\n'),
-                suggestion: Handlebars.compile('<a class="default" href="/leads/customer-details/@{{ mobile }}/@{{ url_param }}"><div style="text-transform: capitalize;"><strong>@{{fname}}</strong>&nbsp<strong>@{{lname}}</strong>&nbsp<span class="@{{btn_class}}">@{{email}}</span>&nbsp@{{ mobile }}</div></a>')
+                suggestion: Handlebars.compile('<a class="default" href="/crm/customer-details/@{{ mobile }}/@{{ url_param }}"><div style="text-transform: capitalize;"><strong>@{{fname}}</strong>&nbsp<strong>@{{lname}}</strong>&nbsp<span class="@{{btn_class}}">@{{email}}</span>&nbsp@{{ mobile }}</div></a>')
             }
         }).on('typeahead:selected', function (obj, datum) {
             var POData = new Array();

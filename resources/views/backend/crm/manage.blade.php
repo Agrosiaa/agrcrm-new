@@ -50,7 +50,7 @@
                     </div>
                     <div id="morphsearch" class="morphsearch">
                         <form class="morphsearch-form">
-                            <input class="morphsearch-input typeahead" id="customer_data" type="search" placeholder="Search..."/>
+                            <input class="morphsearch-input typeahead" id="customer_data" type="search" placeholder="Search..." style="width: 100%;padding: 14px 40px;display: inline-block;border: 1px solid #ccc;border-radius: 4px;box-sizing: border-box;"/>
                             <button class="morphsearch-submit" type="submit">Search</button>
                         </form>
                         <div class="morphsearch-content">
@@ -154,7 +154,31 @@
 
 
             /***** for demo purposes only: don't allow to submit the form *****/
-            morphSearch.querySelector( 'button[type="submit"]' ).addEventListener( 'click', function(ev) { ev.preventDefault(); } );
+            morphSearch.querySelector( 'button[type="submit"]' ).addEventListener( 'click', function(ev) { ev.preventDefault();
+            var mobile = $('#customer_data').val();
+                $.ajax({
+                    url: '/crm/customer-details/'+mobile+'/null',
+                    type: 'get',
+                    dataType: 'array',
+                    data: {
+                        'is_crm_search': true
+                    },
+                    success: function (responce) {
+                        if(responce['responseText'] == 'true'){
+                            window.location.href = '/crm/customer-details/'+mobile+'/null'
+                        }else {
+                            alert('There is no user register with this number');
+                        }
+                    },
+                    error: function (responce) {
+                        if(responce['responseText'] == 'true'){
+                            window.location.href = '/crm/customer-details/'+mobile+'/null'
+                        }else {
+                            alert('There is no user register with this number');
+                        }
+                    }
+                })
+            } );
         })();
     </script>
     <script>
@@ -193,7 +217,7 @@
                         'Unable to find any Result that match the current query',
                         '</div>'
                     ].join('\n'),
-                    suggestion: Handlebars.compile('<h1><a class="default" href="/leads/customer-details/@{{ mobile }}/@{{ url_param }}"><div style="text-transform: capitalize;"><strong>@{{fname}}</strong>&nbsp<strong>@{{lname}}</strong>&nbsp<span class="@{{btn_class}}">@{{email}}</span>&nbsp@{{ mobile }}</div></a></h1>')
+                    suggestion: Handlebars.compile('<h1><a class="default" href="/crm/customer-details/@{{ mobile }}/@{{ url_param }}"><div style="text-transform: capitalize;"><strong>@{{fname}}</strong>&nbsp<strong>@{{lname}}</strong>&nbsp<span class="@{{btn_class}}">@{{email}}</span>&nbsp@{{ mobile }}</div></a></h1>')
                 }
             }).on('typeahead:selected', function (obj, datum) {
                 var POData = new Array();

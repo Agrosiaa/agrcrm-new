@@ -8,6 +8,9 @@
         }
     </style>
     <!-- BEGIN PAGE LEVEL PLUGINS -->
+    <link rel="stylesheet" type="text/css" href="/assets/frontend/global/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/assets/frontend/global/css/mCustomScrollbar.min.css">
+    <link rel="stylesheet" type="text/css" href="/assets/frontend/global/css/styles/style.css">
     <link href="/assets/global/plugins/datatables/datatables.min.css" rel="stylesheet" type="text/css" />
     <link href="/assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.css" rel="stylesheet" type="text/css" />
     <link href="/assets/global/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css" rel="stylesheet" type="text/css" />
@@ -71,9 +74,14 @@
                                                 Upload Sheet
                                             </a>
                                         </div>
-                                        <div class="col-md-2 pull-right" style="padding-top: 15px;">
+                                        <div class="col-md-2" style="padding-top: 15px;">
                                             <a href="javascript:void(0);" class="btn blue m-icon" data-toggle="modal" data-target="#assign-to-agents-modal">
                                                 Assign
+                                            </a>
+                                        </div>
+                                        <div class="col-md-2" style="padding-top: 15px;">
+                                            <a href="/leads/sync-abandoned-cart" class="btn blue" style="margin-left: 30%">
+                                                sync cart
                                             </a>
                                         </div>
                                     @endif

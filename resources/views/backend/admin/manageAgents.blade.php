@@ -81,6 +81,25 @@
                                         </tbody>
                                     </table>
                             </div>
+                            <div class="portlet-title">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="caption">
+                                            <i class="icon-settings font-green"></i>
+                                            <span class="caption-subject font-green sbold uppercase"> Abandoned Cart Agent </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <span> Please select agent for abandoned cart</span>
+                                        <select id="select-agent" class="" style="-webkit-appearance: menulist; align-self: center">
+                                            <option>Assign Agent</option>
+                                            @foreach($saleAgents as $saleAgent)
+                                                <option value="{!! $saleAgent['id'] !!}">{!! $saleAgent['name'] !!}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <!-- End: life time stats -->
@@ -141,5 +160,21 @@
                 }
             })
         }
+    </script>
+    <script>
+        $('#select-agent').on('change',function () {
+            var agent = this.value;
+            alert(agent);
+            $.ajax({
+                url: '/agents/assign-abandoned-cart-agent/' + agent,
+                type: 'get',
+
+                success: function(responce) {
+                },
+                error: function(responce) {
+
+                }
+            })
+        })
     </script>
 @endsection

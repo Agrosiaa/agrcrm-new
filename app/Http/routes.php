@@ -29,7 +29,11 @@ Route::get('confirm/{token}', 'Auth\AuthController@confirm');
 Route::group(['prefix' => '/crm'], function () {
     Route::get('/manage',array('uses' => 'Crm\CrmController@manage'));
     Route::get('/create-lead/{userId}/{number}',array('uses' => 'Crm\CrmController@createLead'));
+    Route::get('/customer-details/{mobile}/{id}',array('uses' => 'Crm\CrmController@CustomerDetailsView'));
     Route::post('/set-schedule',array('uses' => 'Crm\CrmController@setSchedule'));
+    Route::post('/customer-order-listing/{mobile}',array('uses' => 'Crm\CrmController@customerOrderListing'));
+    Route::post('/abandoned-cart/{mobile}',array('uses' => 'Crm\CrmController@abandonedCartListing'));
+    Route::get('/abandoned-cart-detail/{id}',array('uses' => 'Crm\CrmController@cartDetails'));
 });
 Route::group(['prefix' => '/leads'], function () {
     Route::get('/manage/{type}',array('uses' => 'Lead\LeadController@manage'));
@@ -41,8 +45,7 @@ Route::group(['prefix' => '/leads'], function () {
     Route::post('/sales-chat',array('uses' => 'Lead\LeadController@saleChat'));
     Route::post('/set-reminder',array('uses' => 'Lead\LeadController@setReminder'));
     Route::get('/call-back-status/{custDetailId}',array('uses' => 'Lead\LeadController@callBackStatus'));
-    Route::get('/customer-details/{mobile}/{id}',array('uses' => 'Lead\LeadController@CustomerDetailsView'));
-    Route::post('/customer-order-listing/{mobile}',array('uses' => 'Lead\LeadController@customerOrderListing'));
+    Route::get('/sync-abandoned-cart',array('uses' => 'Lead\LeadController@syncAbandonedCart'));
 });
 Route::get('refresh-csrf', function(){
     return csrf_token();
@@ -51,4 +54,5 @@ Route::group(['prefix' => '/agents'], function () {
     Route::get('manage-agents',array('uses' => 'Admin\AdminController@manageAgents'));
     Route::post('sales-agent-listing',array('uses' => 'Admin\AdminController@salesAgentListing'));
     Route::get('change-agent-status/{id}', array('uses' => 'Admin\AdminController@changeAgentStatus'));
+    Route::get('assign-abandoned-cart-agent/{id}', array('uses' => 'Admin\AdminController@assignAbandonedCartAgent'));
 });
