@@ -330,7 +330,7 @@
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                    <h4 class="modal-title" style="text-align: center"><b>Set Schedule for Next Call</b></h4>
+                        <h4 class="modal-title" style="text-align: center"><b>Set Schedule for Next Call</b></h4>
                                 </div>
                                 <form class="form-horizontal" method="post" role="form" action="/crm/set-schedule">
                                     <input type="hidden" name="cust_detail_id" value="{{$id}}">
@@ -397,7 +397,7 @@
                                     <br>
                                     <div class="row" id="query-form">
                                         <div class="col-md-10">
-                                            <input type="text" name="reply_text" id="reply_text" class="col-md-10" required="required" maxlength="500"  placeholder="reply">
+                                            <input type="text" name="reply_text" id="reply_text" class="col-md-10" maxlength="500"  placeholder="reply" required>
                                             <input type="hidden" id="customer_detail_id" value="">
                                             <input type="hidden" id="customer_detail_mobile" value="">
                                         </div>
@@ -1279,23 +1279,25 @@
             var  message= $('#reply_text').val();
             var customer= $('#customer_detail_id').val();
             var customerNumber = $('#customer_detail_mobile').val();
-            $.ajax({
-                url: '/leads/sales-chat',
-                type: 'POST',
-                dataType: 'array',
-                data: {
-                    'reply_message' : message,
-                    'customer_id' : customer
-                },
-                success: function (responce) {
-                    document.getElementById("reply_text").value = "";
-                    chatHistory(customer,customerNumber);
-                },
-                error: function (responce) {
-                    document.getElementById("reply_text").value = "";
-                    chatHistory(customer,customerNumber);
-                }
-            })
+            if(message != '') {
+                $.ajax({
+                    url: '/leads/sales-chat',
+                    type: 'POST',
+                    dataType: 'array',
+                    data: {
+                        'reply_message' : message,
+                        'customer_id' : customer
+                    },
+                    success: function (responce) {
+                        document.getElementById("reply_text").value = "";
+                        chatHistory(customer,customerNumber);
+                    },
+                    error: function (responce) {
+                        document.getElementById("reply_text").value = "";
+                        chatHistory(customer,customerNumber);
+                    }
+                })
+            }
         });
 
         $('#select-call-status').on('change',function () {
@@ -1392,39 +1394,41 @@
                                     if(data['message'] == null){
                                         str += '<div class="item" style="text-align: center"><span class="tag label label-info" style="font-size: 90%;">'+ data['userName'] +' viewed profile @ ' +data['time']+'</span></div><br>';
                                     }else {
-                                        if(data['user'] == true){
-                                            str += '<div class="item">' +
-                                                '<div class="item-head">' +
-                                                '<div class="item-details pull-right">' +
-                                                '<img class="item-pic rounded" height="35" width="35" src="/assets/layouts/layout3/img/avatar.png">' +
-                                                '<span style="color: black">' + data['userName'] + '</span>' +
-                                                '&nbsp;&nbsp;&nbsp;<span class="item-label" style="color: #8c8c8e">' + data['time'] + '</span>' +
-                                                '</div>' +
-                                                '</div>' +
-                                                '<div class="item-body pull-right col-md-offset-3" style="margin-top: auto;margin-bottom: 5px;border-radius: 15px !important;background-color: #78e08f;padding: 5px;position: relative;">' +
-                                                '<span>' + data['message'] + '</span>' +
-                                                '</div>' +
-                                                '</div>' +
-                                                '<br>';
-                                        }else {
-                                            str += '<div class="item">' +
-                                                '<div class="item-head">' +
-                                                '<div class="item-details">' +
-                                                '<img class="item-pic rounded" height="35" width="35" src="/assets/layouts/layout3/img/avatar.png">' +
-                                                '<span style="color: black">' + data['userName'] + '</span>' +
-                                                '&nbsp;&nbsp;&nbsp;<span class="item-label" style="color: #8c8c8e">' + data['time'] + '</span>' +
-                                                '</div>' +
-                                                '</div>';
-                                            if(data['message'].length < 40){
-                                                str +=  '<div class="item-body col-md-9" style="margin-top: 5px;">' +
-                                                    '<span style="margin-top: auto;margin-bottom: 5px;border-radius: 15px !important;background-color: #82ccdd;padding: 5px;position: relative;;margin-left: -15px;">' + data['message'] + '</span>';
-                                            } else {
-                                                str +=  '<div class="item-body col-md-9" style="margin-top: auto;margin-bottom: 5px;border-radius: 15px !important;background-color: #82ccdd;padding: 5px;position: relative;">' +
-                                                    '<span>' + data['message'] + '</span>';
+                                        if(data['message'] != ''){
+                                            if(data['user'] == true){
+                                                str += '<div class="item">' +
+                                                    '<div class="item-head">' +
+                                                    '<div class="item-details pull-right">' +
+                                                    '<img class="item-pic rounded" height="35" width="35" src="/assets/layouts/layout3/img/avatar.png">' +
+                                                    '<span style="color: black">' + data['userName'] + '</span>' +
+                                                    '&nbsp;&nbsp;&nbsp;<span class="item-label" style="color: #8c8c8e">' + data['time'] + '</span>' +
+                                                    '</div>' +
+                                                    '</div>' +
+                                                    '<div class="item-body pull-right col-md-offset-3" style="margin-top: auto;margin-bottom: 5px;border-radius: 15px !important;background-color: #78e08f;padding: 5px;position: relative;">' +
+                                                    '<span>' + data['message'] + '</span>' +
+                                                    '</div>' +
+                                                    '</div>' +
+                                                    '<br>';
+                                            }else {
+                                                str += '<div class="item">' +
+                                                    '<div class="item-head">' +
+                                                    '<div class="item-details">' +
+                                                    '<img class="item-pic rounded" height="35" width="35" src="/assets/layouts/layout3/img/avatar.png">' +
+                                                    '<span style="color: black">' + data['userName'] + '</span>' +
+                                                    '&nbsp;&nbsp;&nbsp;<span class="item-label" style="color: #8c8c8e">' + data['time'] + '</span>' +
+                                                    '</div>' +
+                                                    '</div>';
+                                                if(data['message'].length < 40){
+                                                    str +=  '<div class="item-body col-md-9" style="margin-top: 5px;">' +
+                                                        '<span style="margin-top: auto;margin-bottom: 5px;border-radius: 15px !important;background-color: #82ccdd;padding: 5px;position: relative;;margin-left: -15px;">' + data['message'] + '</span>';
+                                                } else {
+                                                    str +=  '<div class="item-body col-md-9" style="margin-top: auto;margin-bottom: 5px;border-radius: 15px !important;background-color: #82ccdd;padding: 5px;position: relative;">' +
+                                                        '<span>' + data['message'] + '</span>';
+                                                }
+                                                str +=   '</div>' +
+                                                    '</div>' +
+                                                    '<br>';
                                             }
-                                            str +=   '</div>' +
-                                                '</div>' +
-                                                '<br>';
                                         }
                                     }
                                 } else {

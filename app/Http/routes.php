@@ -46,6 +46,7 @@ Route::group(['prefix' => '/leads'], function () {
     Route::post('/set-reminder',array('uses' => 'Lead\LeadController@setReminder'));
     Route::get('/call-back-status/{custDetailId}',array('uses' => 'Lead\LeadController@callBackStatus'));
     Route::get('/sync-abandoned-cart',array('uses' => 'Lead\LeadController@syncAbandonedCart'));
+    Route::get('/remove-lead/{id}',array('uses' => 'Lead\LeadController@removeLead'));
 });
 Route::get('refresh-csrf', function(){
     return csrf_token();

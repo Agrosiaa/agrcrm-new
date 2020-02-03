@@ -221,67 +221,90 @@ class LeadController extends Controller
                 $end = $end > $iTotalRecords ? $iTotalRecords : $end;
                 $limitedProducts = CustomerNumberStatusDetails::where('customer_number_status_id',$statusId['id'])->whereIn('id',$customerId)->take($iDisplayLength)->skip($iDisplayStart)->orderBy('created_at','desc')->get()->toArray();
                 for($i=0,$j = $iDisplayStart; $j < $end; $i++,$j++) {
+                    $chat = SalesChat::where('customer_number_details_id',$limitedProducts[$j]['id'])->first();
+                    $reminder = Reminder::where('customer_number_status_details_id',$limitedProducts[$j]['id'])->first();
                     if ($user['role_id'] == 1) {
                         if(in_array($limitedProducts[$j]['number'],$createdCustomers)){
                             if($limitedProducts[$j]['is_abandoned'] == true){
                                 $records["data"][] = array(
-                                    '<a href="/crm/customer-details/'.$limitedProducts[$j]['number'].'/'.$limitedProducts[$j]['id'].'">'.$limitedProducts[$j]['number'].'</a>'.'<br><br>'.'<span class="tag label label-info" style="font-size: 90%;">'.'Abandoned Cart'.'</span>',
+                                    '<a target="_blank" href="/crm/customer-details/'.$limitedProducts[$j]['number'].'/'.$limitedProducts[$j]['id'].'">'.$limitedProducts[$j]['number'].'</a>'.'<br><br>'.'<span class="tag label label-info" style="font-size: 90%;">'.'Abandoned Cart'.'</span>',
                                     User::where('id',$limitedProducts[$j]['user_id'])->pluck('name'),
                                     date('d F Y H:i:s',strtotime($limitedProducts[$j]['created_at'])),
                                     '<a href="#" class="btn btn-sm btn-default btn-circle btn-editable chat_reply" onclick="passId('.$limitedProducts[$j]['id'].','.$limitedProducts[$j]['number'].')"><i class="fa fa-pencil"></i> Log</a>',
                                 );
                             }else{
                                 $records["data"][] = array(
-                                    '<a href="/crm/customer-details/'.$limitedProducts[$j]['number'].'/'.$limitedProducts[$j]['id'].'">'.$limitedProducts[$j]['number'].'</a>',
+                                    '<a target="_blank" href="/crm/customer-details/'.$limitedProducts[$j]['number'].'/'.$limitedProducts[$j]['id'].'">'.$limitedProducts[$j]['number'].'</a>',
                                     User::where('id',$limitedProducts[$j]['user_id'])->pluck('name'),
                                     date('d F Y H:i:s',strtotime($limitedProducts[$j]['created_at'])),
                                     '<a href="#" class="btn btn-sm btn-default btn-circle btn-editable chat_reply" onclick="passId('.$limitedProducts[$j]['id'].','.$limitedProducts[$j]['number'].')"><i class="fa fa-pencil"></i> Log</a>',
                                 );
                             }
-                            $mobileNumber = CustomerNumberStatusDetails::where('number',$limitedProducts[$j]['number'])->get()->toArray();
+                            /*$mobileNumber = CustomerNumberStatusDetails::where('number',$limitedProducts[$j]['number'])->get()->toArray();
                             if(count($mobileNumber) == 1){
                                 if($limitedProducts[$j]['customer_number_status_id'] != $completeStatusId){
                                     $updateStatus['customer_number_status_id'] = $completeStatusId;
                                     CustomerNumberStatusDetails::where('id',$limitedProducts[$j]['id'])->update($updateStatus);
                                 }
-                            }
+                            }*/
                         }else {
-                            $records["data"][] = array(
-                                $limitedProducts[$j]['number'],
-                                User::where('id',$limitedProducts[$j]['user_id'])->pluck('name'),
-                                date('d F Y H:i:s',strtotime($limitedProducts[$j]['created_at'])),
-                                '<a href="#" class="btn btn-sm btn-default btn-circle btn-editable chat_reply" onclick="passId('.$limitedProducts[$j]['id'].','.$limitedProducts[$j]['number'].')"><i class="fa fa-pencil"></i> Log</a>',
-                            );
+                            if($chat == null && $reminder == null){
+                                $records["data"][] = array(
+                                    $limitedProducts[$j]['number'].'<span class="tag label label-info" style="font-size: 90%;">'.'new'.'</span>',
+                                    User::where('id',$limitedProducts[$j]['user_id'])->pluck('name'),
+                                    date('d F Y H:i:s',strtotime($limitedProducts[$j]['created_at'])),
+                                    '<a href="#" class="btn btn-sm btn-default btn-circle btn-editable chat_reply" onclick="passId('.$limitedProducts[$j]['id'].','.$limitedProducts[$j]['number'].')"><i class="fa fa-pencil"></i> Log</a>
+                                <a href="/leads/remove-lead/'.$limitedProducts[$j]['id'].'" class="btn btn-sm btn-default btn-circle btn-editable"><i class="fa fa-pencil"></i> Remove</a>',
+                                );
+                            }else{
+                                $records["data"][] = array(
+                                    $limitedProducts[$j]['number'],
+                                    User::where('id',$limitedProducts[$j]['user_id'])->pluck('name'),
+                                    date('d F Y H:i:s',strtotime($limitedProducts[$j]['created_at'])),
+                                    '<a href="#" class="btn btn-sm btn-default btn-circle btn-editable chat_reply" onclick="passId('.$limitedProducts[$j]['id'].','.$limitedProducts[$j]['number'].')"><i class="fa fa-pencil"></i> Log</a>
+                                <a href="/leads/remove-lead/'.$limitedProducts[$j]['id'].'" class="btn btn-sm btn-default btn-circle btn-editable"><i class="fa fa-pencil"></i> Remove</a>',
+                                );
+                            }
                         }
                     } else {
                         if(in_array($limitedProducts[$j]['number'],$createdCustomers)){
                             if($limitedProducts[$j]['is_abandoned'] == true){
                                 $records["data"][] = array(
-                                    '<a href="/crm/customer-details/'.$limitedProducts[$j]['number'].'/'.$limitedProducts[$j]['id'].'">'.$limitedProducts[$j]['number'].'</a>'.'<br><br>'.'<span class="tag label label-info" style="font-size: 90%;">'.'Abandoned Cart'.'</span>',
+                                    '<a target="_blank" href="/crm/customer-details/'.$limitedProducts[$j]['number'].'/'.$limitedProducts[$j]['id'].'">'.$limitedProducts[$j]['number'].'</a>'.'<br><br>'.'<span class="tag label label-info" style="font-size: 90%;">'.'Abandoned Cart'.'</span>',
                                     date('d F Y H:i:s', strtotime($limitedProducts[$j]['created_at'])),
                                     '<a class="btn btn-sm btn-default btn-circle btn-editable chat_reply" onclick="passId(' . $limitedProducts[$j]['id'] . ',' . $limitedProducts[$j]['number'] . ')"><i class="fa fa-pencil"></i> Log</a>'
                                 );
                             }else{
                                 $records["data"][] = array(
-                                    '<a href="/crm/customer-details/'.$limitedProducts[$j]['number'].'/'.$limitedProducts[$j]['id'].'">'.$limitedProducts[$j]['number'].'</a>',
+                                    '<a target="_blank" href="/crm/customer-details/'.$limitedProducts[$j]['number'].'/'.$limitedProducts[$j]['id'].'">'.$limitedProducts[$j]['number'].'</a>',
                                     date('d F Y H:i:s', strtotime($limitedProducts[$j]['created_at'])),
                                     '<a class="btn btn-sm btn-default btn-circle btn-editable chat_reply" onclick="passId(' . $limitedProducts[$j]['id'] . ',' . $limitedProducts[$j]['number'] . ')"><i class="fa fa-pencil"></i> Log</a>'
                                 );
                             }
-                            $mobileNumber = CustomerNumberStatusDetails::where('number',$limitedProducts[$j]['number'])->get()->toArray();
+                            /*$mobileNumber = CustomerNumberStatusDetails::where('number',$limitedProducts[$j]['number'])->get()->toArray();
                             if(count($mobileNumber) == 1){
                                 if($limitedProducts[$j]['customer_number_status_id'] != $completeStatusId){
                                     $updateStatus['customer_number_status_id'] = $completeStatusId;
                                     CustomerNumberStatusDetails::where('id',$limitedProducts[$j]['id'])->update($updateStatus);
                                 }
-                            }
+                            }*/
                         }else {
-                            $records["data"][] = array(
-                                $limitedProducts[$j]['number'],
-                                date('d F Y H:i:s', strtotime($limitedProducts[$j]['created_at'])),
-                                '<a class="btn btn-sm btn-default btn-circle btn-editable chat_reply" onclick="passId(' . $limitedProducts[$j]['id'] . ',' . $limitedProducts[$j]['number'] . ')"><i class="fa fa-pencil"></i> Log</a>
-                            <a class="btn btn-sm btn-default btn-circle btn-editable" onclick="createCustomer(' . $limitedProducts[$j]['number'] . ')"><i class="fa fa-pencil"></i> Create</a>',
-                            );
+                            if($chat == null && $reminder == null){
+                                $records["data"][] = array(
+                                    $limitedProducts[$j]['number'].'<span class="tag label label-info" style="font-size: 90%;">'.'new'.'</span>',
+                                    date('d F Y H:i:s', strtotime($limitedProducts[$j]['created_at'])),
+                                    '<a class="btn btn-sm btn-default btn-circle btn-editable chat_reply" onclick="passId(' . $limitedProducts[$j]['id'] . ',' . $limitedProducts[$j]['number'] . ')"><i class="fa fa-pencil"></i> Log</a>
+                                    <a class="btn btn-sm btn-default btn-circle btn-editable" onclick="createCustomer(' . $limitedProducts[$j]['number'] . ')"><i class="fa fa-pencil"></i> Create</a>',
+                                );
+                            }else{
+                                $records["data"][] = array(
+                                    $limitedProducts[$j]['number'],
+                                    date('d F Y H:i:s', strtotime($limitedProducts[$j]['created_at'])),
+                                    '<a class="btn btn-sm btn-default btn-circle btn-editable chat_reply" onclick="passId(' . $limitedProducts[$j]['id'] . ',' . $limitedProducts[$j]['number'] . ')"><i class="fa fa-pencil"></i> Log</a>
+                                    <a class="btn btn-sm btn-default btn-circle btn-editable" onclick="createCustomer(' . $limitedProducts[$j]['number'] . ')"><i class="fa fa-pencil"></i> Create</a>',
+                                );
+                            }
+
                         }
                     }
                 }
@@ -318,6 +341,7 @@ class LeadController extends Controller
             $chatData = SalesChat::whereIn('customer_number_details_id',$custDetailIds)->orderBy('created_at','asc')->get()->toArray();
             $chatRemainderData = array_merge($chatData,$reminderDetails);
             $chatRemainderAllocationData = array_merge($allocationData,$chatRemainderData);
+            $chatRemainderAllocationData = collect($chatRemainderAllocationData)->sortBy('created_at');
             $i = 0;
             foreach ($chatRemainderAllocationData as $value){
                 if(array_key_exists('number',$value)){
@@ -400,7 +424,6 @@ class LeadController extends Controller
             $connectStatusId = CallStatus::where('slug','connected')->value('id');
             if($connectStatusId == $request['reply_status_id']){
                 $mobileNumber = CustomerNumberStatusDetails::where('id',$request['customer_id'])->value('number');
-                $mobileNumbers = CustomerNumberStatusDetails::where('number',$mobileNumber)->get()->toArray();
                     $createdCustomers = Curl::to(env('BASE_URL')."/created-customers")->asJson()->get();
                     if(in_array($mobileNumber,$createdCustomers)){
                         $completeStatusId = CustomerNumberStatus::where('slug','complete')->value('id');
@@ -418,7 +441,7 @@ class LeadController extends Controller
                 }
             }
 
-            //return back();
+            return back();
         }catch(\Exception $e){
             $data = [
                 'action' => 'Create Chat',
@@ -509,6 +532,20 @@ class LeadController extends Controller
             ];
             Log::critical(json_encode($data));
             abort(500,$exception->getMessage());
+        }
+    }
+
+    public function removeLead(Request $request, $id){
+        try{
+            CustomerNumberStatusDetails::where('id',$id)->delete();
+            return back();
+        }catch(\Exception $e){
+            $data = [
+                'action' => 'Remove lead',
+                'exception' => $e->getMessage()
+            ];
+            Log::critical(json_encode($data));
+            abort(500,$e->getMessage());
         }
     }
 }
