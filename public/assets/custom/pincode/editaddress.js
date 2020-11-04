@@ -3,11 +3,12 @@
  */
 
 $(document).ready(function(){
+    var baseUrl = $('#base_url').val();
     var citiList1 = new Bloodhound({
         datumTokenizer: Bloodhound.tokenizers.obj.whitespace('office_name'),
         queryTokenizer: Bloodhound.tokenizers.whitespace,
         remote: {
-            url: "http://agrcrm_api.com/get-pincode?_token="+$("input[name='_token']").val()+"&pincode=%QUERY",
+            url: baseUrl + "/get-pincode?_token="+$("input[name='_token']").val()+"&pincode=%QUERY",
             filter: function(x) {
                 return $.map(x, function (data) {
                     return {
@@ -45,7 +46,7 @@ $(document).ready(function(){
         var postId = $(this).val();
         var pincode = $('.pincode-class').val();
         $.ajax({
-            url:'http://agrcrm_api.com/get-post-office-info/'+postId+"?pincode="+pincode+"&_token="+$("input[name='_token']").val(),
+            url: baseUrl+'/get-post-office-info/'+postId+"?pincode="+pincode+"&_token="+$("input[name='_token']").val(),
             method: 'GET',
             async: false,
             success: function(data,textStatus,xhr){

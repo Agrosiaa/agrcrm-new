@@ -28,6 +28,8 @@ Route::post('password/update', 'Auth\PasswordController@updatePassword');
 Route::get('confirm/{token}', 'Auth\AuthController@confirm');
 Route::group(['prefix' => '/crm'], function () {
     Route::get('/manage',array('uses' => 'Crm\CrmController@manage'));
+    Route::get('/csr-orders',array('uses' => 'Crm\CrmController@csrOrders'));
+    Route::post('/csr-orders',array('uses' => 'Crm\CrmController@CsrOrderListing'));
     Route::get('/create-lead/{userId}/{number}',array('uses' => 'Crm\CrmController@createLead'));
     Route::get('/customer-details/{mobile}/{id}',array('uses' => 'Crm\CrmController@CustomerDetailsView'));
     Route::post('/set-schedule',array('uses' => 'Crm\CrmController@setSchedule'));
@@ -56,4 +58,7 @@ Route::group(['prefix' => '/agents'], function () {
     Route::post('sales-agent-listing',array('uses' => 'Admin\AdminController@salesAgentListing'));
     Route::get('change-agent-status/{id}', array('uses' => 'Admin\AdminController@changeAgentStatus'));
     Route::get('assign-abandoned-cart-agent/{id}', array('uses' => 'Admin\AdminController@assignAbandonedCartAgent'));
+});
+Route::group(['prefix' => '/report'], function () {
+    Route::get('/view',array('uses' => 'Report\ReportController@view'));
 });

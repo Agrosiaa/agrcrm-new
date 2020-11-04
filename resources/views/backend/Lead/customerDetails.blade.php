@@ -1,5 +1,5 @@
 @extends('backend.seller.layouts.master')
-@section('title','Agrosiaa | Dashboard')
+@section('title','Agrosiaa | Customer')
 @include('backend.partials.common.nav')
 @section('css')
     <link rel="stylesheet" type="text/css" href="/assets/frontend/global/css/bootstrap.css">
@@ -39,6 +39,7 @@
                     <!-- BEGIN PAGE CONTENT INNER -->
                     {{--<div class="page-content-inner">--}}
                     <div class="row">
+                        <input type="hidden" id="base_url" value="{{env('BASE_URL')}}">
                         @if($id == 'null' && $user['role_id'] == 2)
                             <div class="col-md-12 col-md-offset-11">
                                 <a href="/crm/create-lead/{{$user['id']}}/{{$mobile}}" class="btn green">Create Lead</a>
@@ -416,9 +417,9 @@
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                    <h4 class="modal-title" style="text-align: center"><b>Place Order</b></h4>
+                                    <h4 class="modal-title" style="text-align: center"><b>Step 1- Enter Address Information</b></h4>
                                     <div>
-                                        <a id="select_product_modal"><h4 style="text-align: right">next</h4></a>
+                                        <a id="select_product_modal"><h4 style="text-align: right">Next</h4></a>
                                     </div>
                                 </div>
                                 <div class="modal-body">
@@ -539,18 +540,18 @@
                     </div>
                     <form id="customer_order">
                     <div id="select_products" class="modal fade bs-modal-md" tabindex="-1" role="dialog" style="height: 500%">
-                        <div class="modal-dialog modal-md">
+                        <div class="modal-dialog modal-lg">
                             <!-- Modal content-->
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                    <h4 class="modal-title" style="text-align: center"><b>Add Products Checkout</b></h4>
+                                    <h4 class="modal-title" style="text-align: center"><b>Step 2- Add Products For Checkout</b></h4>
                                     <div class="row">
                                         <div class="col-sm-6">
-                                            <a id="place_order_modal"><h4 style="text-align: left">previous</h4></a>
+                                            <a id="place_order_modal"><h4 style="text-align: left">Previous</h4></a>
                                         </div>
                                         <div class="col-sm-6">
-                                            <a id="confirm_order_modal"><h4 style="text-align: right">next</h4></a>
+                                            <a id="confirm_order_modal"><h4 style="text-align: right">Next</h4></a>
                                         </div>
                                     </div>
                                 </div>
@@ -570,6 +571,9 @@
                                     <h4>Checkout Preview</h4>
                                     <div id="check_out_preview">
                                     </div>
+                                    <div id="no_product_div" style="text-align: center">
+                                        <h5>No Product Added for Checkout Yet</h5>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -580,10 +584,10 @@
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                    <h4 class="modal-title" style="text-align: center"><b>Confirm Order</b></h4>
+                                    <h4 class="modal-title" style="text-align: center"><b>Step 3- Confirm Order</b></h4>
                                     <div class="row">
                                         <div class="col-sm-6">
-                                            <a id="select_order_modal"><h4 style="text-align: left">previous</h4></a>
+                                            <a id="select_order_modal"><h4 style="text-align: left">Previous</h4></a>
                                         </div>
                                     </div>
                                 </div>
@@ -592,7 +596,7 @@
                                         <div class="row">
                                             <h4 class="col-md-offset-1">Order Summery</h4>
                                         </div>
-                                        <div class="row col-md-offset-2" id="selected_products">
+                                        <div class="row col-md-offset-1" id="selected_products">
                                         </div>
                                         <hr>
                                         <div class="row">
@@ -608,7 +612,7 @@
                                         <div class="row">
                                             <h4 class="col-md-offset-1">Delivery Address</h4>
                                         </div>
-                                        <div class="row col-md-offset-2" id="delivery_address">
+                                        <div class="row col-md-offset-1" id="delivery_address">
                                         </div>
                                     </div>
                                     <hr>
@@ -616,7 +620,7 @@
                                         <div class="row">
                                             <h4 class="col-md-offset-1">Referral Code</h4>
                                         </div>
-                                        <div class="row col-md-offset-2">
+                                        <div class="row col-md-offset-1">
                                             <div class="col-md-5">
                                                 <input type="text" class="form-control" id="referral_code" name="referral_code" placeholder="Enter referral code" style=""/>
                                             </div>
@@ -879,11 +883,11 @@
     <script type="text/javascript" src="/assets/frontend/custom/registration/js/typeahead.bundle.js"></script>
     <script type="text/javascript" src="/assets/frontend/custom/registration/js/handlebars-v3.0.3.js"></script>
     <script src="/assets/pages/scripts/components-date-time-pickers.min.js" type="text/javascript"></script>
-    <script src="/assets/custom/superadmin/krishimitra/addresses.js"></script>
-    <script src="/assets/custom/superadmin/krishimitra/editaddress.js"></script>
+    <script src="/assets/custom/pincode/addresses.js"></script>
+    <script src="/assets/custom/pincode/editaddress.js"></script>
     <script src="/assets/global/plugins/jquery-validation/js/jquery.validate.min.js" type="text/javascript"></script>
-        <script src="/assets/pages/scripts/superadmin/order/ecommerce-orders.min.js" type="text/javascript"></script>
-        <script src="/assets/pages/scripts/superadmin/abandonedCart/ecommerce-orders.min.js" type="text/javascript"></script>
+        <script src="/assets/pages/scripts/customer/order/ecommerce-orders.min.js" type="text/javascript"></script>
+        <script src="/assets/pages/scripts/customer/abandonedCart/ecommerce-orders.min.js" type="text/javascript"></script>
 
         <!-- END PAGE LEVEL SCRIPTS -->
     <!-- BEGIN THEME LAYOUT SCRIPTS -->
@@ -907,6 +911,7 @@
                             return {
                                 id: data.id,
                                 name: data.name,
+                                company: data.company,
                                 translated_name: data.translated_name,
                                 position: data.position,
                                 slug: data.slug,
@@ -940,7 +945,9 @@
                 var POData = new Array();
                 POData = $.parseJSON(JSON.stringify(datum));
                 POData.name = POData.name.replace(/\&/g,'%26');
-                str = '<div class="row" id="div_'+POData.id+'"><div class="col-md-7"><h5>'+POData.name+'</h5></div>'+
+                str = '<div class="row" id="div_'+POData.id+'">'+
+                        '<div class="col-md-7"><h5>'+POData.name+'<span class="tag label label-info" style="margin-left: 2px">'+POData.company+'</span></h5>'+
+                        '</div>'+
                         '<div class="col-md-3">'+
                                 '<a class="btn" onclick="updateProductQuantity('+POData.id+',false,'+POData.price+')" >-</a>'+
                                 '<input class="cart-quantity" type="text" id="product_'+POData.id+'" value="1" style="width: 30px; text-align: center" readonly>'+
@@ -952,7 +959,7 @@
                         '<input class="form-control" type="hidden" id="product_qnt'+POData.id+'" name="product_qnt['+POData.id+']" value="1">';
 
 
-                str2 = '<div class="row" id="selected_products_div_'+POData.id+'"><div class="col-md-7"><h5>'+POData.name+'</h5></div>'+
+                str2 = '<div class="row" id="selected_products_div_'+POData.id+'"><div class="col-md-7"><h5>'+POData.name+'<span class="tag label label-info" style="margin-left: 2px">'+POData.company+'</span></h5></div>'+
                     '<div class="col-md-3">'+
                     '<input class="cart-quantity" type="text" id="selected_product_qnt'+POData.id+'" value="1" style="width: 30px; text-align: center" readonly>'+
                     '</div>'+
@@ -960,6 +967,7 @@
                     '</div>';
                 $('#check_out_preview').append(str);
                 $('#selected_products').append(str2);
+                $('#no_product_div').hide();
             }).on('typeahead:open', function (obj, datum) {
 
                 });
@@ -993,6 +1001,9 @@
             $('#selected_products_div_'+id).remove();
             $('#product_qnt'+id).remove();
             $('#product_id_'+id).remove();
+            if ( $('#check_out_preview').children().length == 0 ) {
+                $('#no_product_div').show();
+            }
         }
 
         function confirmOrder() {

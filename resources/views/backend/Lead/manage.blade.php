@@ -32,6 +32,7 @@
                 <div class="row">
                     @include('backend.partials.error-messages')
                     <div class="col-md-12">
+                        <input type="hidden" id="base_url" value="{{env('BASE_URL')}}">
                         <!-- Begin: life time stats -->
                         <?php $totalRecords = CustomerNumberHelper::orderCount(); ?>
                         <div class="portlet light portlet-fit portlet-datatable ">
@@ -69,17 +70,17 @@
                                         </div>
                                     <input type="hidden" name="current_status" id="current_status" value="{{Route::current()->getParameter('type')}}" />
                                    @if($user['role_id'] == 1)
-                                        <div class="col-md-2" style="padding-top: 15px;">
+                                        {{--<div class="col-md-2" style="padding-top: 15px;">
                                             <a href="/leads/export-customer-number" class="btn blue" style="margin-left: 30%">
                                                 Upload Sheet
                                             </a>
-                                        </div>
+                                        </div>--}}
                                         <div class="col-md-1" style="padding-top: 15px;">
                                             <a href="javascript:void(0);" class="btn blue m-icon" data-toggle="modal" data-target="#assign-to-agents-modal">
                                                 Assign
                                             </a>
                                         </div>
-                                        <div class="col-md-2" style="padding-top: 15px;">
+                                        <div class="col-md-1" style="padding-top: 15px;">
                                             <a href="/leads/sync-abandoned-cart" class="btn blue" style="margin-left: 30%">
                                                 sync cart
                                             </a>
@@ -527,8 +528,8 @@
     <script type="text/javascript" src="/assets/frontend/custom/registration/js/typeahead.bundle.js"></script>
     <script type="text/javascript" src="/assets/frontend/custom/registration/js/handlebars-v3.0.3.js"></script>
     <script src="/assets/pages/scripts/components-date-time-pickers.min.js" type="text/javascript"></script>
-    <script src="/assets/custom/superadmin/krishimitra/addresses.js"></script>
-    <script src="/assets/pages/scripts/superadmin/leads/ecommerce-orders.min.js" type="text/javascript"></script>
+    <script src="/assets/custom/pincode/addresses.js"></script>
+    <script src="/assets/pages/scripts/csr/leads/ecommerce-orders.min.js" type="text/javascript"></script>
     <script src="/assets/global/plugins/jquery-validation/js/jquery.validate.min.js" type="text/javascript"></script>
 
     <!-- END PAGE LEVEL SCRIPTS -->

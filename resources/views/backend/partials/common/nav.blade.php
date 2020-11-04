@@ -65,10 +65,10 @@
                 <div class="hor-menu">
                     <ul class="nav navbar-nav">
                         <li class="menu-dropdown classic-menu-dropdown">
-                            <a href="/dashboard"> Dashboard</a>
+                            <a href="/dashboard">Dashboard</a>
                         </li>
                         <li class="menu-dropdown classic-menu-dropdown">
-                            <a href="/crm/manage"> CRM</a>
+                            <a href="/crm/manage">CRM</a>
                                 <ul class="dropdown-menu pull-left">
                                     <li class=" ">
                                         <?php $status = \App\CustomerNumberStatus::where('slug','new')->first();?>
@@ -78,6 +78,16 @@
                                     </li>
                                 </ul>
                         </li>
+                        @if(Auth::user()->role_id == 1)
+                            <li class="menu-dropdown classic-menu-dropdown">
+                                <a href="/report/view">Report</a>
+                            </li>
+                        @endif
+                        @if(Auth::user()->role_id == 2)
+                            <li class="menu-dropdown classic-menu-dropdown">
+                                <a href="/crm/csr-orders">My Orders</a>
+                            </li>
+                        @endif
                     </ul>
                 </div>
                 <!-- END MEGA MENU -->
