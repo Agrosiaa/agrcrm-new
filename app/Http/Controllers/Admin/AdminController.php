@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\CustomerNumberStatusDetails;
+use App\CrmCustomer;
 use App\Reminder;
 use App\User;
 use App\UserRoles;
@@ -21,6 +21,7 @@ class AdminController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+        $this->middleware('logged-customer-profile',['except'=>array('CustomerDetailsView')]);
         //$this->middleware('admin');
         if(!Auth::guest()) {
             $this->user = Auth::user();
@@ -53,17 +54,17 @@ class AdminController extends Controller
             $response = Curl::to(env('BASE_URL')."/order-detail")
                 ->withData( array( 'role_id' => $user['role_id'] ,'sales_id' => $user['id']) )->asJson()->get();
             if($user['role_id'] == 2){
-                $custDetailIds = CustomerNumberStatusDetails::where('user_id',$user['id'])->lists('id');
-                $callBackReminders = User::join('customer_number_status_details','customer_number_status_details.user_id','=','users.id')
-                    ->join('reminder','reminder.customer_number_status_details_id','=','customer_number_status_details.id')
-                    ->whereIn('reminder.customer_number_status_details_id',$custDetailIds)
+                $custDetailIds = CrmCustomer::where('user_id',$user['id'])->lists('id');
+                $callBackReminders = User::join('crm_customer','crm_customer.user_id','=','users.id')
+                    ->join('reminder','reminder.crm_customer_id','=','crm_customer.id')
+                    ->whereIn('reminder.crm_customer_id',$custDetailIds)
                     ->where('reminder.reminder_time','>=',$currentDateTime)
-                    ->select('customer_number_status_details.number','reminder.reminder_time','reminder.call_back_id')->get()->toArray();
+                    ->select('crm_customer.number','reminder.reminder_time','reminder.call_back_id')->get()->toArray();
             }else{
-                $callBackReminders = User::join('customer_number_status_details','customer_number_status_details.user_id','=','users.id')
-                    ->join('reminder','reminder.customer_number_status_details_id','=','customer_number_status_details.id')
+                $callBackReminders = User::join('crm_customer','crm_customer.user_id','=','users.id')
+                    ->join('reminder','reminder.crm_customer_id','=','crm_customer.id')
                     ->where('reminder.reminder_time','>=',$currentDateTime)
-                    ->select('customer_number_status_details.number','reminder.reminder_time','reminder.call_back_id','users.name')->get()->toArray();
+                    ->select('crm_customer.number','reminder.reminder_time','reminder.call_back_id','users.name')->get()->toArray();
             }
             return view('backend.admin.home')->with(compact('response','callBackReminders'));
         }catch(\Exception $e){

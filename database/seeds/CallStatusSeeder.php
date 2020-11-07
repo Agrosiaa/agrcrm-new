@@ -48,6 +48,18 @@ class CallStatusSeeder extends Seeder
                 'slug' => 'mobile-switched-off',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
+            ],
+            [
+                'name' => 'No Requirement',
+                'slug' => 'no-requirement',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'name' => 'Customer Complaint',
+                'slug' => 'customer-complaint',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
             ]
         ]);
     }

@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateSalesChatTable extends Migration
+class CreateCustomerTagRelationTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,15 +12,12 @@ class CreateSalesChatTable extends Migration
      */
     public function up()
     {
-        Schema::create('sales_chat', function (Blueprint $table) {
+        Schema::create('customer_tag_relation', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
             $table->unsignedInteger('crm_customer_id');
             $table->foreign('crm_customer_id')->references('id')->on('crm_customer')->onUpdate('cascade')->onDelete('cascade');
-            $table->unsignedInteger('call_status_id')->nullable();
-            $table->foreign('call_status_id')->references('id')->on('call_status')->onUpdate('cascade')->onDelete('cascade');
-            $table->text('message')->nullable();
+            $table->unsignedInteger('tag_cloud_id');
+            $table->foreign('tag_cloud_id')->references('id')->on('tag_cloud')->onUpdate('cascade')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -32,6 +29,6 @@ class CreateSalesChatTable extends Migration
      */
     public function down()
     {
-        Schema::drop('sales_chat');
+        Schema::drop('customer_tag_relation');
     }
 }

@@ -4,9 +4,9 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class CustomerNumberStatusDetails extends Model
+class CrmCustomer extends Model
 {
-    protected $table = 'customer_number_status_details';
+    protected $table = 'crm_customer';
 
     protected $fillable = ['customer_number_status_id','user_id','number','is_abandoned'];
 }

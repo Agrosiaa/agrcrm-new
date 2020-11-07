@@ -1485,7 +1485,7 @@
         <script>
             function openCustomerDetails(id) {
                 $.ajax({
-                    url: '/crm/abandoned-cart-detail/'+id+'',
+                    url: '/customer/abandoned-cart-detail/'+id+'',
                     type: 'GET',
                     async: true,
                     success: function(data,textStatus,xhr){

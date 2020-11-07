@@ -23,7 +23,7 @@
                     <!-- BEGIN PAGE CONTENT INNER -->
                     <div class="page-content-inner">
                         <!-- </div> -->
-                        <form action="{{env('BASE_URL')}}/generate-report" method="GET" class="form-horizontal form-bordered" enctype="multipart/form-data" id="report">
+                        <form action="/report/generate" method="POST" class="form-horizontal form-bordered" enctype="multipart/form-data" id="report">
                             {!! csrf_field() !!}
                             <div class="form-body" id="report-list">
                                 <div class="row">

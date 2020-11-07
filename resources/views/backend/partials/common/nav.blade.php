@@ -65,7 +65,7 @@
                 <div class="hor-menu">
                     <ul class="nav navbar-nav">
                         <li class="menu-dropdown classic-menu-dropdown">
-                            <a href="/dashboard">Dashboard</a>
+                            <a href="/home">Dashboard</a>
                         </li>
                         <li class="menu-dropdown classic-menu-dropdown">
                             <a href="/crm/manage">CRM</a>
@@ -79,6 +79,9 @@
                                 </ul>
                         </li>
                         @if(Auth::user()->role_id == 1)
+                            <li class="menu-dropdown classic-menu-dropdown">
+                                <a href="/tag/manage">Tag</a>
+                            </li>
                             <li class="menu-dropdown classic-menu-dropdown">
                                 <a href="/report/view">Report</a>
                             </li>

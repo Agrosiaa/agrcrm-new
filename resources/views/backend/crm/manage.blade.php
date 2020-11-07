@@ -19,7 +19,6 @@
     <link href="/assets/global/css/plugins.min.css" rel="stylesheet" type="text/css" />
     <link href="/assets/global/plugins/jstree/dist/themes/default/style.css" rel="stylesheet" type="text/css" />
     <link href="/assets/global/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css" rel="stylesheet" type="text/css" />
-    <script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <!--[if IE]>
     <!-- END PAGE LEVEL PLUGINS -->
     <script type="text/css">
@@ -62,6 +61,83 @@
                     </header>
                     <div class="overlay"></div>
                     <!-- End: life time stats -->
+                    <div id="create-customer-modal" class="modal fade bs-modal-lg" tabindex="-1" role="dialog">
+                        <div class="modal-dialog modal-lg">
+                            <!-- Modal content-->
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title" style="text-align: center"><b>Create Customer</b></h4>
+                                </div>
+                                <hr>
+                                <form id="create-customer-form">
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label class="col-md-4 control-label">First Name : <span class="required">*</span></label>
+                                                    <div class="col-md-4">
+                                                        <input type="text" class="form-control" id="fname" name="fname" required>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label class="col-md-4 control-label">Last Name : <span class="required">*</span></label>
+                                                    <div class="col-md-4">
+                                                        <input type="text" class="form-control" id="lname" name="lname" required>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label class="col-md-4 control-label">Birth date : </label>
+                                                    <div class="col-md-4">
+                                                        <input type="date" class="form-control" id="birthdate" name="birthdate">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label class="col-md-4 control-label">Email id : </label>
+                                                    <div class="col-md-4">
+                                                        <input type="text" class="form-control" id="email" name="email">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label class="col-md-4 control-label">Mobile Number : <span class="required">*</span></label>
+                                                    <div class="col-md-4">
+                                                        <input type="text" class="form-control" id="cust_mobile_number" name="mobile_number" required>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <button type="submit" id="create_customer" class="btn btn-sm btn-success">Create</button>
+                                                <button class="btn btn-sm btn-danger pull-right" data-dismiss="modal">Cancel</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -110,6 +186,7 @@
             var morphSearch = document.getElementById( 'morphsearch' ),
                 input = morphSearch.querySelector( 'input.morphsearch-input' ),
                 ctrlClose = morphSearch.querySelector( 'span.morphsearch-close' ),
+                ctrlCloseButton = morphSearch.querySelector( 'button.morphsearch-submit' ),
                 isOpen = isAnimating = false,
                 // show/hide search area
                 toggleSearch = function(evt) {
@@ -157,7 +234,7 @@
             morphSearch.querySelector( 'button[type="submit"]' ).addEventListener( 'click', function(ev) { ev.preventDefault();
             var mobile = $('#customer_data').val();
                 $.ajax({
-                    url: '/crm/customer-details/'+mobile+'/null',
+                    url: '/customer/customer-details/'+mobile+'/null',
                     type: 'get',
                     dataType: 'array',
                     data: {
@@ -165,16 +242,26 @@
                     },
                     success: function (responce) {
                         if(responce['responseText'] == 'true'){
-                            window.location.href = '/crm/customer-details/'+mobile+'/null'
+                            window.location.href = '/customer/customer-details/'+mobile+'/null'
                         }else {
-                            alert('There is no user register with this number');
+                            if(mobile.length == 10){
+                                createCustomer(mobile);
+                                classie.remove( morphSearch, 'open' );
+                            }else {
+                                alert('Please enter valid 10 digit number')
+                            }
                         }
                     },
                     error: function (responce) {
                         if(responce['responseText'] == 'true'){
-                            window.location.href = '/crm/customer-details/'+mobile+'/null'
+                            window.location.href = '/customer/customer-details/'+mobile+'/null'
                         }else {
-                            alert('There is no user register with this number');
+                            if(mobile.length == 10){
+                                createCustomer(mobile);
+                                classie.remove( morphSearch, 'open' );
+                            }else {
+                                alert('Please enter valid 10 digit number')
+                            }
                         }
                     }
                 })
@@ -217,7 +304,7 @@
                         'Unable to find any Result that match the current query',
                         '</div>'
                     ].join('\n'),
-                    suggestion: Handlebars.compile('<h1><a class="default" href="/crm/customer-details/@{{ mobile }}/@{{ url_param }}"><div style="text-transform: capitalize;"><strong>@{{fname}}</strong>&nbsp<strong>@{{lname}}</strong>&nbsp<span class="@{{btn_class}}">@{{email}}</span>&nbsp@{{ mobile }}</div></a></h1>')
+                    suggestion: Handlebars.compile('<h1><a class="default" href="/customer/customer-details/@{{ mobile }}/@{{ url_param }}"><div style="text-transform: capitalize;"><strong>@{{fname}}</strong>&nbsp<strong>@{{lname}}</strong>&nbsp<span class="@{{btn_class}}">@{{email}}</span>&nbsp@{{ mobile }}</div></a></h1>')
                 }
             }).on('typeahead:selected', function (obj, datum) {
                 var POData = new Array();
@@ -227,5 +314,40 @@
             });
         });
 
+        function createCustomer(mobile) {
+            $('#create-customer-modal').modal('show');
+            $('#cust_mobile_number').val(mobile);
+        }
+    </script>
+    <script>
+        $(document).on("click","#create_customer",function (e) {
+            e.stopPropagation();
+            var fname = $('#fname').val();
+            var lname = $('#lname').val();
+            var dob = $('#birthdate').val();
+            var email = $('#email').val();
+            var mobile = $('#cust_mobile_number').val();
+            if(fname != '' && lname != '' && mobile != ''){
+                $.ajax({
+                    url: "{{env('BASE_URL')}}/create-customer",
+                    type: 'POST',
+                    async: false,
+                    dataType: 'array',
+                    data: {
+                        'fname': fname,
+                        'lname': lname,
+                        'dob': dob,
+                        'email': email,
+                        'mobile': mobile
+                    },
+                    success: function (status) {
+                        window.location.href= "/customer/customer-details/"+mobile+"/null";
+                    },
+                    error: function (status) {
+                        window.location.href = "/customer/customer-details/"+mobile+"/null";
+                    }
+                })
+            }
+        });
     </script>
 @endsection
