@@ -51,7 +51,7 @@
                                         <th width="12%"> Products </th>
                                         <th width="5%"> Qnt </th>
                                         <th width="8%"> Status </th>
-                                        <th width="10%"> AWB NO </th>
+                                        <th width="10%"> Shipment Name </th>
                                         <th width="10%"> Total </th>
                                     </tr>
                                     <tr role="row" class="filter">
@@ -67,7 +67,7 @@
                                         <td>
                                             <input type="text" class="form-control form-filter input-sm" name="status"> </td>
                                         <td>
-                                            <input type="text" class="form-control form-filter input-sm" name="awb_no"> </td>
+                                            <input type="text" class="form-control form-filter input-sm" name="shipment"> </td>
                                         <td>
                                             <div class="margin-bottom-5">
                                                 <button class="btn btn-sm btn-success filter-submit margin-bottom">

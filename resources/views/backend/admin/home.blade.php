@@ -55,7 +55,7 @@
                                                 </div>
                                             </div>
                                             <li id="" style="background-color: white">
-                                                @if($user['id'] == 1)
+                                                @if($user['role_id'] == 1)
                                                     @foreach($callBackReminders as $callBackReminder)
                                                         <div class="row">
                                                             <div class="col-md-1">

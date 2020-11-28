@@ -35,17 +35,7 @@
                     @include('backend.partials.error-messages')
                     <div class="col-md-8 col-md-offset-2">
                         <!-- Begin: life time stats -->
-                        {{--<div class="logo-wrap">
-                            <div class=container>
-                                <div class="menu clearfix">
-                                    <ul class="clearfix">
-                                        <li class="select-category" id="search_header_main">
-                                            <input type="text" id="customer_data" class="typeahead" placeholder="Enter Customers mobile/name" style=""/>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>--}}
+                        <input type="hidden" id="user_role" value="{{$role}}">
                     </div>
                     <div id="morphsearch" class="morphsearch">
                         <form class="morphsearch-form">
@@ -61,83 +51,86 @@
                     </header>
                     <div class="overlay"></div>
                     <!-- End: life time stats -->
-                    <div id="create-customer-modal" class="modal fade bs-modal-lg" tabindex="-1" role="dialog">
-                        <div class="modal-dialog modal-lg">
-                            <!-- Modal content-->
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                    <h4 class="modal-title" style="text-align: center"><b>Create Customer</b></h4>
-                                </div>
-                                <hr>
-                                <form id="create-customer-form">
-                                    <div class="modal-body">
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label class="col-md-4 control-label">First Name : <span class="required">*</span></label>
-                                                    <div class="col-md-4">
-                                                        <input type="text" class="form-control" id="fname" name="fname" required>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <br>
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label class="col-md-4 control-label">Last Name : <span class="required">*</span></label>
-                                                    <div class="col-md-4">
-                                                        <input type="text" class="form-control" id="lname" name="lname" required>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <br>
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label class="col-md-4 control-label">Birth date : </label>
-                                                    <div class="col-md-4">
-                                                        <input type="date" class="form-control" id="birthdate" name="birthdate">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <br>
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label class="col-md-4 control-label">Email id : </label>
-                                                    <div class="col-md-4">
-                                                        <input type="text" class="form-control" id="email" name="email">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <br>
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label class="col-md-4 control-label">Mobile Number : <span class="required">*</span></label>
-                                                    <div class="col-md-4">
-                                                        <input type="text" class="form-control" id="cust_mobile_number" name="mobile_number" required>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <br>
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <button type="submit" id="create_customer" class="btn btn-sm btn-success">Create</button>
-                                                <button class="btn btn-sm btn-danger pull-right" data-dismiss="modal">Cancel</button>
-                                            </div>
-                                        </div>
+                    @if($role == 'sales_employee')
+                        <div id="create-customer-modal" class="modal fade bs-modal-lg" tabindex="-1" role="dialog">
+                            <div class="modal-dialog modal-lg">
+                                <!-- Modal content-->
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        <h4 class="modal-title" style="text-align: center"><b>Create Customer</b></h4>
                                     </div>
-                                </form>
+                                    <hr>
+                                    <form id="create-customer-form">
+                                        {{ csrf_field()  }}
+                                        <div class="modal-body">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label class="col-md-4 control-label">First Name : <span class="required">*</span></label>
+                                                        <div class="col-md-4">
+                                                            <input type="text" class="form-control" id="fname" name="fname" required>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <br>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label class="col-md-4 control-label">Last Name : <span class="required">*</span></label>
+                                                        <div class="col-md-4">
+                                                            <input type="text" class="form-control" id="lname" name="lname" required>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <br>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label class="col-md-4 control-label">Birth date : </label>
+                                                        <div class="col-md-4">
+                                                            <input type="date" class="form-control" id="dob" name="dob">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <br>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label class="col-md-4 control-label">Email id : </label>
+                                                        <div class="col-md-4">
+                                                            <input type="text" class="form-control" id="email" name="email">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <br>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label class="col-md-4 control-label">Mobile Number : <span class="required">*</span></label>
+                                                        <div class="col-md-4">
+                                                            <input type="text" class="form-control" id="cust_mobile_number" name="mobile" required>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <br>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <button type="submit" id="create_customer" class="btn btn-sm btn-success">Create</button>
+                                                    <button class="btn btn-sm btn-danger pull-right" data-dismiss="modal">Cancel</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -233,6 +226,7 @@
             /***** for demo purposes only: don't allow to submit the form *****/
             morphSearch.querySelector( 'button[type="submit"]' ).addEventListener( 'click', function(ev) { ev.preventDefault();
             var mobile = $('#customer_data').val();
+            var role = $('#user_role').val();
                 $.ajax({
                     url: '/customer/customer-details/'+mobile+'/null',
                     type: 'get',
@@ -245,8 +239,10 @@
                             window.location.href = '/customer/customer-details/'+mobile+'/null'
                         }else {
                             if(mobile.length == 10){
-                                createCustomer(mobile);
-                                classie.remove( morphSearch, 'open' );
+                                if(role == 'sales_employee'){
+                                    createCustomer(mobile);
+                                    classie.remove( morphSearch, 'open' );
+                                }
                             }else {
                                 alert('Please enter valid 10 digit number')
                             }
@@ -322,29 +318,18 @@
     <script>
         $(document).on("click","#create_customer",function (e) {
             e.stopPropagation();
-            var fname = $('#fname').val();
-            var lname = $('#lname').val();
-            var dob = $('#birthdate').val();
-            var email = $('#email').val();
-            var mobile = $('#cust_mobile_number').val();
-            if(fname != '' && lname != '' && mobile != ''){
+            if($('#fname').val() != '' && $('#lname').val() != '' && $('#cust_mobile_number').val() != ''){
                 $.ajax({
-                    url: "{{env('BASE_URL')}}/create-customer",
+                    url: "/customer/create-customer",
                     type: 'POST',
                     async: false,
                     dataType: 'array',
-                    data: {
-                        'fname': fname,
-                        'lname': lname,
-                        'dob': dob,
-                        'email': email,
-                        'mobile': mobile
-                    },
+                    data: $('#create-customer-form').serialize(),
                     success: function (status) {
-                        window.location.href= "/customer/customer-details/"+mobile+"/null";
+                        //window.location.href= "/customer/customer-details/"+mobile+"/null";
                     },
                     error: function (status) {
-                        window.location.href = "/customer/customer-details/"+mobile+"/null";
+                       // window.location.href = "/customer/customer-details/"+mobile+"/null";
                     }
                 })
             }

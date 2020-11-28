@@ -28,7 +28,9 @@ class CrmController extends Controller
     }
     public function manage(Request $request){
         try{
-            return view('backend.crm.manage');
+            $user = Auth::user();
+            $role = UserRoles::where('id',$user['role_id'])->value('slug');
+            return view('backend.crm.manage')->with(compact('user','role'));
         }catch(\Exception $exception){
             $data =[
                 'action' => 'get crm manage page',
@@ -56,20 +58,7 @@ class CrmController extends Controller
     public function createLead(Request $request, $agentId, $number){
         try{
             $user = Auth::User();
-            /*$agentId = User::join('crm_customer','crm_customer.user_id','=','users.id')
-                ->where('crm_customer.number',$request->mobile_number)
-                ->where('users.is_active',true)
-                ->select('users.id')->first();*/
-            if($agentId != null){
-                $customerData['user_id'] = $agentId;
-            } else{
-                $lastRecord = CrmCustomer::orderBy('id','desc')->first();
-                $saleAgents = User::where('id','>',$lastRecord['user_id'])->where('admin_id',$user['id'])->where('role_id',2)->where('is_active',true)->first();
-                if($saleAgents == null) {
-                    $saleAgents = User::where('id', '<=', $lastRecord['user_id'])->where('admin_id',$user['id'])->where('role_id', 2)->where('is_active', true)->first();
-                }
-                $customerData['user_id'] = $saleAgents['id'];
-            }
+            $customerData['user_id'] = $agentId;
             $customerData['customer_number_status_id'] = CustomerNumberStatus::where('slug', 'new')->value('id');
             $customerData['number'] = $number;
             CrmCustomer::create($customerData);
@@ -162,6 +151,13 @@ class CrmController extends Controller
                         $resultFlag = false;
                     }
                 }
+                if($resultFlag == true && $request->has('shipment') && $tableData['shipment']!=""){
+                    $customerOrders = Curl::to(env('BASE_URL')."/csr-orders")
+                        ->withData( array( 'csr_id' => $user['id'],'filter' => true, 'shipment' => $tableData['shipment'], 'ids' => $customerOrders->orders))->asJson()->get();
+                    if(empty($customerOrders->orders)){
+                        $resultFlag = false;
+                    }
+                }
 
                 $iTotalRecords = count($customerOrders->orders);
                 $iDisplayLength = intval($request->length);
@@ -178,11 +174,11 @@ class CrmController extends Controller
                     $records["data"][] = array(
                         'AGR'.str_pad($limitedOrders[$j]->id, 9, "0", STR_PAD_LEFT),
                         $limitedOrders[$j]->created_at,
-                        $limitedOrders[$j]->full_name,
+                        $limitedOrders[$j]->full_name.'<br>'.$limitedOrders[$j]->mobile,
                         $limitedOrders[$j]->product_name,
                         $limitedOrders[$j]->quantity,
                         $limitedOrders[$j]->status,
-                        $limitedOrders[$j]->consignment_number,
+                        $limitedOrders[$j]->shipment.'<br>'.$limitedOrders[$j]->consignment_number,
                         $limitedOrders[$j]->subtotal,
                     );
 

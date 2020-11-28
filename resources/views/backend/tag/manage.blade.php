@@ -35,15 +35,18 @@
                         <input type="hidden" id="base_url" value="{{env('BASE_URL')}}">
                         <!-- Begin: life time stats -->
                         <div class="portlet light portlet-fit portlet-datatable ">
-                            <div class="portlet-title">
-                                <div class="caption">
+                            <div class="portlet-title row">
+                                <div class="caption col-sm-9">
                                     <i class="icon-settings font-green"></i>
                                     <span class="caption-subject font-green sbold uppercase"> Tag Listing </span>
                                 </div>
-                                <div class="col-md-offset-10" style="padding-top: 15px;">
+                                <div class="col-sm-1" style="padding-top: 8px;">
                                     <a href="javascript:void(0);" class="btn blue m-icon" data-toggle="modal" data-target="#create-tag-modal">
                                         Create Tag
                                     </a>
+                                </div>
+                                <div class="col-sm-1" style="padding-top: 8px; margin-left: 5px">
+                                    <a href="/tag/sync-tag" class="btn green m-icon">Sync Tag</a>
                                 </div>
                             </div>
                             <div class="portlet-body">
@@ -99,7 +102,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-4 col-md-offset-8">
-                                            <button type="submit" class="btn btn-sm btn-success">Create</button>
+                                            <button type="submit" class="btn btn-sm btn-success">Save</button>
                                             <button class="btn btn-sm btn-danger" data-dismiss="modal">Cancel</button>
                                         </div>
                                     </div>

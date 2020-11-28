@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Customer;
 
 use App\CustomerNumberStatus;
 use App\CrmCustomer;
+use App\CustomerTagRelation;
 use App\LoggedCustomerProfile;
 use App\Reminder;
+use App\TagCloud;
 use App\UserRoles;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -135,12 +137,7 @@ class CustomerController extends Controller
                     $id = 'null';
                 }
             }
-            /*if($id != 'null' && $user['role_id'] != $admin){
-                $inProfileData['user_id'] = $user['id'];
-                $inProfileData['customer_number_details_id'] = $id;
-                SalesChat::create($inProfileData);
-            }*/
-            $saleAgents = User::where('role_id','=',2)->select('id','name')->get()->toArray();
+
             $customerInfo = Curl::to(env('BASE_URL')."/customer-profile")
                 ->withData( array( 'mobile' => $mobile))->asJson()->get();
             if($request->has('is_crm_search')){
@@ -150,6 +147,11 @@ class CustomerController extends Controller
                     return 'false';
                 }
             }
+            $customerTags = CrmCustomer::join('customer_tag_relation','customer_tag_relation.crm_customer_id','=','crm_customer.id')
+                        ->join('tag_cloud','customer_tag_relation.tag_cloud_id','=','tag_cloud.id')
+                        ->where('crm_customer.number','=',$mobile)
+                        ->where('is_deleted','!=',true)
+                        ->select('customer_tag_relation.tag_cloud_id','tag_cloud.name','customer_tag_relation.crm_customer_id')->get()->toArray();
             if($user['role_id'] != $admin){
                 $sessionUrl = '/customer/customer-details/'.$mobile.'/'.$id;
                 $loggedCustomer = LoggedCustomerProfile::where('user_id',$user['id'])->first();
@@ -161,7 +163,7 @@ class CustomerController extends Controller
                     LoggedCustomerProfile::create(['user_id' => $user['id'], 'session_url' => $sessionUrl]);
                 }
             }
-            return view('backend.Lead.customerDetails')->with(compact('user','id','callStatuses','mobile','customerInfo','saleAgents'));
+            return view('backend.Lead.customerDetails')->with(compact('user','id','callStatuses','mobile','customerInfo','customerTags'));
         }catch(\Exception $exception){
             $data =[
                 'action' => 'customer detail',
@@ -249,5 +251,91 @@ class CustomerController extends Controller
             abort(500,$e->getMessage());
         }
     }
+    public function removeTag(Request $request ,$tagId, $crmCustId){
+        try{
+            $user = Auth::user();
+            $dateTime = Carbon::now();
+            $updateData['deleted_tag_user'] = $user['id'];
+            $updateData['deleted_datetime'] = $dateTime;
+            $updateData['is_deleted'] = true;
+            if(is_numeric($tagId)){
+                CustomerTagRelation::where('crm_customer_id',$crmCustId)->where('tag_cloud_id',$tagId)->update($updateData);
+            }else{
+                $tagName = trim($tagId);
+                Log::info($tagName);
+                $tag = TagCloud::where('name',$tagName)->value('id');
+                Log::info($tag);
+                Log::info($crmCustId);
+                CustomerTagRelation::where('crm_customer_id',$crmCustId)->where('tag_cloud_id',$tag)->update($updateData);
+            }
+            return back();
+        }catch (\Exception $e){
+            abort(500,$e->getMessage());
+        }
+    }
+    public function createCustomer(Request $request){
+        try{
+            $data = $request->all();
+            $response = Curl::to(env('BASE_URL')."/create-customer")->withData($data)->asJson()->get();
+            if($response == 200){
+                $newRequestObject = new Request();
+                $request->session()->flash('success','Customer created successfully');
+                $this->CustomerDetailsView($newRequestObject,$data['mobile'],'null');
+            }else{
+                $request->session()->flash('error','Customer not created');
+                return back();
+            }
+        }catch (\Exception $e){
+            abort(500,$e->getMessage());
+        }
+    }
+    public function editCustomer(Request $request){
+        try{
+            $user = Auth::user();
+            $data['f_name'] = $request->f_name;
+            $data['l_name'] = $request->l_name;
+            $data['dob'] = $request->dob;
+            $data['mobile'] = $request->profile_mobile;
+            $data['id'] = $request->user_id;
+            $data['email'] = $request->profile_email;
+            $response = Curl::to(env('BASE_URL')."/edit-profile")->withData($data)->asJson()->get();
+            if($response == 200){
+                if($request->has('create_lead') && $request->create_lead == 'true'){
+                    $customerData['user_id'] = $user['id'];
+                    $customerData['customer_number_status_id'] = CustomerNumberStatus::where('slug', 'new')->value('id');
+                    $customerData['number'] = $request->profile_mobile;
+                    CrmCustomer::create($customerData);
+                    $request->session()->flash('success','Lead created successfully');
+                }else{
+                    $request->session()->flash('success','Customer edited successfully');
+                }
+                return back();
+            }else{
+                $request->session()->flash('error','Customer not created');
+                return back();
+            }
+        }catch (\Exception $e){
+            abort(500,$e->getMessage());
+        }
+    }
 
+    public function createAssignTag(Request $request){
+        try{
+            $status = 200;
+            $user = Auth::User();
+            if($request->has('tag_name') && $request->tag_name != null){
+                $tag = TagCloud::create(['name' => $request->tag_name,'user_id' => $user['id']]);
+                CustomerTagRelation::create(['tag_cloud_id' => $tag->id, 'crm_customer_id' => $request->customer_id,'user_id' => $user['id']]);
+            }
+        }catch (\Exception $exception){
+            $status = 500;
+            $data = [
+                'action' => 'Create/Edit new tag',
+                'exception' => $exception->getMessage()
+            ];
+            Log::critical(json_encode($data));
+            abort(500,$exception->getMessage());
+        }
+        return response()->json($status);
+    }
 }

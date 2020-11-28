@@ -265,13 +265,23 @@
                             </div>
                            <form class="form-horizontal" id="assign_num_form" method="post" role="form" action="/leads/assign-customer">
                                <div class="modal-body">
+                                   {{csrf_field()}}
                                    <div class="row">
                                        <div class="col-md-12">
                                            <div class="form-group">
-                                               {{csrf_field()}}
                                                <label class="col-md-4 control-label">Mobile Number</label>
                                                <div class="col-md-4">
                                                    <input type="number" class="form-control" id="mobile_number" name="mobile_number" required>
+                                               </div>
+                                           </div>
+                                       </div>
+                                   </div>
+                                   <div class="row">
+                                       <div class="col-md-12">
+                                           <div class="form-group">
+                                               <label class="col-md-4 control-label">Source</label>
+                                               <div class="col-md-4">
+                                                   <input type="text" class="form-control" id="lead_source" name="lead_source">
                                                </div>
                                            </div>
                                        </div>
@@ -297,6 +307,7 @@
                             </div>
                             <hr>
                             <form id="create-customer-form">
+                                {{ csrf_field() }}
                                 <div class="modal-body">
                                     <div class="row">
                                         <div class="col-md-12">
@@ -325,7 +336,7 @@
                                             <div class="form-group">
                                                 <label class="col-md-4 control-label">Birth date : </label>
                                                 <div class="col-md-4">
-                                                    <input type="date" class="form-control" id="birthdate" name="birthdate">
+                                                    <input type="date" class="form-control" id="dob" name="dob">
                                                 </div>
                                             </div>
                                         </div>
@@ -347,7 +358,7 @@
                                             <div class="form-group">
                                                 <label class="col-md-4 control-label">Mobile Number : <span class="required">*</span></label>
                                                 <div class="col-md-4">
-                                                    <input type="text" class="form-control" id="cust_mobile_number" name="mobile_number" required>
+                                                    <input type="text" class="form-control" id="cust_mobile_number" name="mobile" required>
                                                 </div>
                                             </div>
                                         </div>
@@ -381,7 +392,7 @@
                                                 <div class="form-group">
                                                     <label class="col-md-4 control-label">Mobile Number : <span class="required">*</span></label>
                                                     <div class="col-md-4">
-                                                        <input type="number" class="form-control address" id="address_mobile_number" name="address_mobile_number" required>
+                                                        <input type="number" class="form-control address" id="address_mobile" name="address_mobile" required>
                                                     </div>
                                                 </div>
                                             </div>
@@ -392,7 +403,7 @@
                                                 <div class="form-group">
                                                     <label class="col-md-4 control-label">Flat/Door/Blockno./House : <span class="required">*</span></label>
                                                     <div class="col-md-4">
-                                                        <input type="text" class="form-control address" id="flat_house_no" name="flat_house_no" required>
+                                                        <input type="text" class="form-control address" id="house_block" name="house_block" required>
                                                     </div>
                                                 </div>
                                             </div>
@@ -403,7 +414,7 @@
                                                 <div class="form-group">
                                                     <label class="col-md-4 control-label">Name of Premises/Building/Village : <span class="required">*</span></label>
                                                     <div class="col-md-4">
-                                                        <input type="text" class="form-control address" id="village" name="village" required>
+                                                        <input type="text" class="form-control address" id="village_premises" name="village_premises" required>
                                                     </div>
                                                 </div>
                                             </div>
@@ -422,7 +433,7 @@
                                                 <div class="form-group">
                                                     <label class="col-md-5 control-label">Road Street Lane : <span class="required">*</span></label>
                                                     <div class="col-md-5">
-                                                        <input type="text" class="form-control address" id="road" name="road" required>
+                                                        <input type="text" class="form-control address" id="road_street" name="road" required>
                                                     </div>
                                                 </div>
                                             </div>
@@ -467,7 +478,7 @@
                                                 <div class="form-group">
                                                     <label class="col-md-5 control-label">District : <span class="required">*</span></label>
                                                     <div class="col-md-5">
-                                                        <input type="text" class="form-control address" id="district" name="district" required>
+                                                        <input type="text" class="form-control address" id="district" name="dist" required>
                                                     </div>
                                                 </div>
                                             </div>
@@ -576,8 +587,8 @@
                         village: 'required',
                         area: 'required',
                         road: 'required',
-                        pin_code: 'required',
-                        post: 'required',
+                        pincode: 'required',
+                        at_post: 'required',
                         state: 'required',
                         dist: 'required',
                         taluka: 'required',
@@ -844,90 +855,44 @@
 
         $(document).on("click","#create_customer",function (e) {
             e.stopPropagation();
-            var fname = $('#fname').val();
-            var lname = $('#lname').val();
-            var dob = $('#birthdate').val();
-            var email = $('#email').val();
-            var mobile = $('#cust_mobile_number').val();
-            var addressFullName= $('#address_fname').val();
-            var addrMobile= $('#address_mobile_number').val();
-            var house_block = $('#flat_house_no').val();
-            var village_premises = $('#village').val();
-            var area = $('#area').val();
-            var road_street = $('#road').val();
-            var pin = $('#pin_code').val();
-            var post = $('#post').val();
-            var state = $('#state').val();
-            var dist = $('#dist').val();
-            var taluka = $('#taluka').val();
-            if(fname != '' && lname != '' && mobile != ''){
+            if($('#fname').val() != '' && $('#lname').val() != '' && $('#cust_mobile_number').val() != ''){
+                var mob = $('#cust_mobile_number').val();
                 if($('#address-div').is(":visible")){
-                    if(house_block != '' && village_premises != '' && area != '' && road_street != '' && pin != '' && post != '' && state != '' && dist != '' && taluka != '')
-                    {
+                    if( $('#stateName').val() != '' && $('#district').val() != '' && $('#taluka').val() != '' &&
+                        $('#area').val() != '' && $('#village_premises').val() != '' && $('#house_block').val() != '' &&
+                        $('#address_mobile').val() != '' && $('#address_fname').val() != '' && $('#pincode').val() != '' &&
+                        $('#atPost').val() != '' && $('#road_street').val() != ''
+                    ){
                         $.ajax({
-                            url: "{{env('BASE_URL')}}/create-customer",
+                            url: "/customer/create-customer",
                             type: 'POST',
                             dataType: 'array',
-                            data: {
-                                'fname': fname,
-                                'lname': lname,
-                                'dob': dob,
-                                'email': email,
-                                'mobile': mobile,
-                                'address_fname': addressFullName,
-                                'address_mobile': addrMobile,
-                                'house_block': house_block,
-                                'village_premises': village_premises,
-                                'area': area,
-                                'road_street': road_street,
-                                'pin': pin,
-                                'at_post': post,
-                                'state': state,
-                                'dist': dist,
-                                'taluka': taluka
-                            },
+                            data: $('#create-customer-form').serialize(),
                             success: function (responce) {
                                 $('#create-customer-modal').modal('toggle');
-                                location.reload();
+                                window.location.href('/customer/customer-details/'+mob+'/null');
                             },
                             error: function (responce) {
-                                 location.reload();
+                                location.reload();
                                 $('#create-customer-modal').modal('toggle');
                             }
-                        })
+                        });
                     }
-                } else{
+                } else {
                     $.ajax({
-                        url: "{{env('BASE_URL')}}/create-customer",
+                        url: "/customer/create-customer",
                         type: 'POST',
                         dataType: 'array',
-                        data: {
-                            'fname': fname,
-                            'lname': lname,
-                            'dob': dob,
-                            'email': email,
-                            'mobile': mobile,
-                            'address_fname': addressFullName,
-                            'address_mobile': addrMobile,
-                            'house_block': house_block,
-                            'village_premises': village_premises,
-                            'area': area,
-                            'road_street': road_street,
-                            'pin': pin,
-                            'at_post': post,
-                            'state': state,
-                            'dist': dist,
-                            'taluka': taluka
-                        },
+                        data: $('#create-customer-form').serialize(),
                         success: function (responce) {
                             $('#create-customer-modal').modal('toggle');
-                            location.reload();
+                            window.location.href('/customer/customer-details/'+mob+'/null');
                         },
                         error: function (responce) {
-                             location.reload();
+                            location.reload();
                             $('#create-customer-modal').modal('toggle');
                         }
-                    })
+                    });
                 }
             }
         });

@@ -81,7 +81,7 @@
                                         </tbody>
                                     </table>
                             </div>
-                            <div class="portlet-title">
+                            {{--<div class="portlet-title">
                                 <div class="row">
                                     <div class="col-md-3">
                                         <div class="caption">
@@ -99,6 +99,56 @@
                                         </select>
                                     </div>
                                 </div>
+                            </div>--}}
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <!-- Begin: life time stats -->
+                        <div class="portlet light portlet-fit portlet-datatable ">
+                            <div class="portlet-title">
+                                <div class="caption">
+                                    <i class="icon-settings font-green"></i>
+                                    <span class="caption-subject font-green sbold uppercase"> Abandoned Cart Agents </span>
+                                </div>
+                            </div>
+                            <div class="portlet-body">
+                                <table class="table table-striped table-bordered table-hover table-checkable" id="sales_agent_list">
+                                    <thead>
+                                    <tr role="row" class="heading">
+                                        <th width="30%"> Agent Name </th>
+                                        <th width="30%"> Actions </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    @foreach($saleAgents as $saleAgent)
+                                        @if($saleAgent['is_active'] == true)
+                                            @if($saleAgent['is_abandoned_cart_agent'] == true)
+                                                <tr role="row">
+                                                    <td class="sorting_1">{{$saleAgent['name']}}</td>
+                                                    <td>
+                                                        <div class="bootstrap-switch bootstrap-switch-wrapper bootstrap-switch-small bootstrap-switch-animate bootstrap-switch-on" style="width: 90px;">
+                                                            <div class="bootstrap-switch-container" onclick="changeIsAbandonedStatus({{$saleAgent['id']}})" style="width: 132px; margin-left: 0px;">
+                                                                <span class="bootstrap-switch-handle-on bootstrap-switch-primary" style="width: 44px;">ON</span>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @else
+                                                <tr role="row">
+                                                    <td class="sorting_1">{{$saleAgent['name']}}</td>
+                                                    <td>
+                                                        <div class="bootstrap-switch bootstrap-switch-wrapper bootstrap-switch-small bootstrap-switch-animate bootstrap-switch-off" style="width: 90px;">
+                                                            <div class="bootstrap-switch-container" onclick="changeIsAbandonedStatus({{$saleAgent['id']}})" style="width: 132px; margin-left: 0px;">
+                                                                <span class="bootstrap-switch-handle-off bootstrap-switch-default" style="width: 44px;margin-left: 44px;">OFF</span>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @endif
+                                        @endif
+                                    @endforeach
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
@@ -160,21 +210,20 @@
                 }
             })
         }
-    </script>
-    <script>
-        $('#select-agent').on('change',function () {
-            var agent = this.value;
-            alert(agent);
+        function changeIsAbandonedStatus(id) {
             $.ajax({
-                url: '/agents/assign-abandoned-cart-agent/' + agent,
+                url: '/agents/assign-abandoned-cart-agent/' + id,
                 type: 'get',
 
                 success: function(responce) {
+                    console.log(responce);
+                    location.reload();
                 },
                 error: function(responce) {
-
+                    console.log(responce);
+                    location.reload();
                 }
             })
-        })
+        }
     </script>
 @endsection

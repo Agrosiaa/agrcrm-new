@@ -28,18 +28,20 @@ class ReportController extends Controller
 
     public function generateReport(Request $request){
         try{
-            $row = 0;
-            $ps_count = 0;
+            $data = array();
             $orderData = Curl::to(env('BASE_URL')."/report-data")
                 ->withData( array( 'report' => $request->report, 'from_date' => $request->from_date,'to_date' => $request->to_date))->asJson()->get();
+            foreach ($orderData as $key => $orderDatum){
+                $data[$key] = (array)$orderDatum;
+            }
             switch($request->report) {
                 case 'sales-orders':
                     $curr_date = Carbon::now();
-                    Excel::create("Sales_Order_Report"."_".$curr_date, function($excel) use($orderData) {
+                    Excel::create("Sales_Order_Report"."_".$curr_date, function($excel) use($data) {
                         $excel->getDefaultStyle()
                             ->getAlignment()
                             ->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-                        $excel->sheet("Sales Order Report", function($sheet) use($orderData) {
+                        $excel->sheet("Sales Order Report", function($sheet) use($data) {
                             $sheet->setAutoSize(true);
                             $sheet->setAllBorders('thin');
                             $sheet->cells('A1:J1', function ($cells) {

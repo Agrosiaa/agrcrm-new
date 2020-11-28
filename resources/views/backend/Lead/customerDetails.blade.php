@@ -39,23 +39,20 @@
                     <!-- BEGIN PAGE CONTENT INNER -->
                     {{--<div class="page-content-inner">--}}
                     <div class="row">
+                        @include('backend.partials.error-messages')
                         <input type="hidden" id="base_url" value="{{env('BASE_URL')}}">
+                        <input type="hidden" id="crm_customer_id" value="{{$id}}">
                         @if($id == 'null' && $user['role_id'] == 2)
                             <div class="col-md-12 col-md-offset-11">
-                                <a href="/crm/create-lead/{{$user['id']}}/{{$mobile}}" class="btn green">Create Lead</a>
+                                @if($customerInfo->profile->first_name != null || $customerInfo->profile->last_name != null)
+                                    <a href="/crm/create-lead/{{$user['id']}}/{{$mobile}}" class="btn green">Create Lead</a>
+                                @else
+                                    <a href="javascript:void(0);" class="btn green" data-toggle="modal" data-target="#profile-edit-modal">
+                                        Create Lead
+                                    </a>
+                                @endif
                             </div>
                         @endif
-                        @if($id == 'null' && $user['role_id'] == 1)
-                                <div class="col-md-12 col-md-offset-11">
-                                    <input type="hidden" id="createCustomerLead" value="{{$mobile}}">
-                                    <select id="select-agent" class="" style="-webkit-appearance: menulist; align-self: center">
-                                        <option>Select agent</option>
-                                        @foreach($saleAgents as $saleAgent)
-                                            <option value="{!! $saleAgent['id'] !!}">{!! $saleAgent['name'] !!}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            @endif
                             @if($id != 'null')
                                 <div class="col-md-12 col-md-offset-9">
                                     <a href="#" onclick="chatHistory('{{$id}}','{{$mobile}}')" class="btn yellow">Make a Log </a>
@@ -117,55 +114,89 @@
                                     </div>
                                 </div>
                                 <div class="portlet-body">
-                                    <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-                                        @foreach($customerInfo->address as $key=>$value)
-                                            @if($key == 0)
-                                                <li class="nav-item col-md-3 active">
-                                                    <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#address{{$key}}" role="tab" aria-controls="pills-achievements" aria-selected="true">Address {{$key + 1}}</a>
-                                                </li>
-                                            @else
-                                                <li class="nav-item col-md-3">
-                                                    <a class="nav-link" id="pills-home-tab" data-toggle="pill" href="#address{{$key}}" role="tab" aria-controls="pills-achievements" aria-selected="true">Address {{$key + 1}}</a>
-                                                </li>
-                                            @endif
-                                        @endforeach
-                                    </ul>
-                                    <div class="tab-content" id="pills-tabContent" style="height:50%;">
-                                        @foreach($customerInfo->address as $key=>$value)
-                                            @if($key == 0)
-                                                <div class="tab-pane fade active in" id="address{{$key}}" onscroll="" role="tabpanel" aria-labelledby="pills-home-tab" style="height: 260px;overflow-x: scroll">
-                                                    <div class="row" style="border-bottom: 1px solid #b2b2b2; padding: 10px;background-color: #fefefe;">
-                                                        <div class="col-md-12"><i>Full Name : </i> <span style="color: #000000">{{$value->full_name}}</span></div>
-                                                        <div class="col-md-12"><i>Mobile : </i> <span style="color: #000000">{{$value->mobile}}</span></div>
-                                                        <div class="col-md-12"><i>House/Block Number : </i> <span style="color: #000000">{{$value->flat_door_block_house_no}}</span></div>
-                                                        <div class="col-md-12"><i>Name of Premise/Building/Village : </i> <span style="color: #000000">{{$value->name_of_premise_building_village}}</span></div>
-                                                        <div class="col-md-12"><i>Area/Locality : </i> <span style="color: #000000">{{$value->area_locality_wadi}}</span></div>
-                                                        <div class="col-md-12"><i>Road/Street/Lane : </i> <span style="color: #000000">{{$value->road_street_lane}}</span></div>
-                                                        <div class="col-md-12"><i>Post : </i> <span style="color: #000000">{{$value->at_post}}</span></div>
-                                                        <div class="col-md-12"><i>Taluka : </i> <span style="color: #000000">{{$value->taluka}}</span></div>
-                                                        <div class="col-md-12"><i>District : </i> <span style="color: #000000">{{$value->district}}</span></div>
-                                                        <div class="col-md-12"><i>State : </i> <span style="color: #000000">{{$value->state}}</span></div>
-                                                        <div class="col-md-12"><i>Pincode : </i> <span style="color: #000000">{{$value->pincode}}</span></div>
+                                    @if(empty($customerInfo->address))
+                                        <div id="no_product_div" style="text-align: center">
+                                            <h5>No address added yet</h5>
+                                        </div>
+                                    @else
+                                        <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                                            @foreach($customerInfo->address as $key=>$value)
+                                                @if($key == 0)
+                                                    <li class="nav-item col-md-3 active">
+                                                        <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#address{{$key}}" role="tab" aria-controls="pills-achievements" aria-selected="true">Address {{$key + 1}}</a>
+                                                    </li>
+                                                @else
+                                                    <li class="nav-item col-md-3">
+                                                        <a class="nav-link" id="pills-home-tab" data-toggle="pill" href="#address{{$key}}" role="tab" aria-controls="pills-achievements" aria-selected="true">Address {{$key + 1}}</a>
+                                                    </li>
+                                                @endif
+                                            @endforeach
+                                        </ul>
+                                        <div class="tab-content" id="pills-tabContent" style="height:50%;">
+                                            @foreach($customerInfo->address as $key=>$value)
+                                                @if($key == 0)
+                                                    <div class="tab-pane fade active in" id="address{{$key}}" onscroll="" role="tabpanel" aria-labelledby="pills-home-tab" style="height: 260px;overflow-x: scroll">
+                                                        <div class="row" style="border-bottom: 1px solid #b2b2b2; padding: 10px;background-color: #fefefe;">
+                                                            <div class="col-md-12"><i>Full Name : </i> <span style="color: #000000">{{$value->full_name}}</span></div>
+                                                            <div class="col-md-12"><i>Mobile : </i> <span style="color: #000000">{{$value->mobile}}</span></div>
+                                                            <div class="col-md-12"><i>House/Block Number : </i> <span style="color: #000000">{{$value->flat_door_block_house_no}}</span></div>
+                                                            <div class="col-md-12"><i>Name of Premise/Building/Village : </i> <span style="color: #000000">{{$value->name_of_premise_building_village}}</span></div>
+                                                            <div class="col-md-12"><i>Area/Locality : </i> <span style="color: #000000">{{$value->area_locality_wadi}}</span></div>
+                                                            <div class="col-md-12"><i>Road/Street/Lane : </i> <span style="color: #000000">{{$value->road_street_lane}}</span></div>
+                                                            <div class="col-md-12"><i>Post : </i> <span style="color: #000000">{{$value->at_post}}</span></div>
+                                                            <div class="col-md-12"><i>Taluka : </i> <span style="color: #000000">{{$value->taluka}}</span></div>
+                                                            <div class="col-md-12"><i>District : </i> <span style="color: #000000">{{$value->district}}</span></div>
+                                                            <div class="col-md-12"><i>State : </i> <span style="color: #000000">{{$value->state}}</span></div>
+                                                            <div class="col-md-12"><i>Pincode : </i> <span style="color: #000000">{{$value->pincode}}</span></div>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            @else
-                                                <div class="tab-pane fade active" id="address{{$key}}" onscroll="" role="tabpanel" aria-labelledby="pills-home-tab" style="height: 260px;overflow-x: scroll">
-                                                    <div class="row" style="border-bottom: 1px solid #b2b2b2; padding: 10px;background-color: #fefefe;">
-                                                        <div class="col-md-12"><i>Full Name : </i> <span style="color: #000000">{{$value->full_name}}</span></div>
-                                                        <div class="col-md-12"><i>Mobile : </i> <span style="color: #000000">{{$value->mobile}}</span></div>
-                                                        <div class="col-md-12"><i>House/Block Number : </i> <span style="color: #000000">{{$value->flat_door_block_house_no}}</span></div>
-                                                        <div class="col-md-12"><i>Name of Premise/Building/Village : </i> <span style="color: #000000">{{$value->name_of_premise_building_village}}</span></div>
-                                                        <div class="col-md-12"><i>Area/Locality : </i> <span style="color: #000000">{{$value->area_locality_wadi}}</span></div>
-                                                        <div class="col-md-12"><i>Road/Street/Lane : </i> <span style="color: #000000">{{$value->road_street_lane}}</span></div>
-                                                        <div class="col-md-12"><i>Post : </i> <span style="color: #000000">{{$value->at_post}}</span></div>
-                                                        <div class="col-md-12"><i>Taluka : </i> <span style="color: #000000">{{$value->taluka}}</span></div>
-                                                        <div class="col-md-12"><i>District : </i> <span style="color: #000000">{{$value->district}}</span></div>
-                                                        <div class="col-md-12"><i>State : </i> <span style="color: #000000">{{$value->state}}</span></div>
-                                                        <div class="col-md-12"><i>Pincode : </i> <span style="color: #000000">{{$value->pincode}}</span></div>
+                                                @else
+                                                    <div class="tab-pane fade active" id="address{{$key}}" onscroll="" role="tabpanel" aria-labelledby="pills-home-tab" style="height: 260px;overflow-x: scroll">
+                                                        <div class="row" style="border-bottom: 1px solid #b2b2b2; padding: 10px;background-color: #fefefe;">
+                                                            <div class="col-md-12"><i>Full Name : </i> <span style="color: #000000">{{$value->full_name}}</span></div>
+                                                            <div class="col-md-12"><i>Mobile : </i> <span style="color: #000000">{{$value->mobile}}</span></div>
+                                                            <div class="col-md-12"><i>House/Block Number : </i> <span style="color: #000000">{{$value->flat_door_block_house_no}}</span></div>
+                                                            <div class="col-md-12"><i>Name of Premise/Building/Village : </i> <span style="color: #000000">{{$value->name_of_premise_building_village}}</span></div>
+                                                            <div class="col-md-12"><i>Area/Locality : </i> <span style="color: #000000">{{$value->area_locality_wadi}}</span></div>
+                                                            <div class="col-md-12"><i>Road/Street/Lane : </i> <span style="color: #000000">{{$value->road_street_lane}}</span></div>
+                                                            <div class="col-md-12"><i>Post : </i> <span style="color: #000000">{{$value->at_post}}</span></div>
+                                                            <div class="col-md-12"><i>Taluka : </i> <span style="color: #000000">{{$value->taluka}}</span></div>
+                                                            <div class="col-md-12"><i>District : </i> <span style="color: #000000">{{$value->district}}</span></div>
+                                                            <div class="col-md-12"><i>State : </i> <span style="color: #000000">{{$value->state}}</span></div>
+                                                            <div class="col-md-12"><i>Pincode : </i> <span style="color: #000000">{{$value->pincode}}</span></div>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            @endif
+                                                @endif
+                                            @endforeach
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="portlet purple box">
+                                <div class="portlet-title">
+                                    <div class="caption">
+                                        <i class="icon- font-violet"></i>
+                                        <span class="caption-subject font-violet bold uppercase">Customer Tag Cloud</span>
+                                    </div>
+                                </div>
+                                <div class="portlet-body">
+                                    <div class="bootstrap-tagsinput" id="customer-tag-div">
+                                        @foreach($customerTags as $customerTag)
+                                            <button id="tag{{$customerTag['tag_cloud_id']}}{{$customerTag['crm_customer_id']}}" class="lable" style="display: inline;font-size: 90%;margin-left: 2px;margin-top:3px;margin-bottom:3px;padding-bottom: 2px;padding-top: 2px">{{$customerTag['name']}}<span style="color: red;" onclick="removeCustTag({{$customerTag['tag_cloud_id']}},{{$customerTag['crm_customer_id']}})">&nbsp;×</span></button>&nbsp;&nbsp;&nbsp;
                                         @endforeach
+                                    </div>
+                                    <div class="logo-wrap">
+                                        <div class=container>
+                                            <div class="menu clearfix">
+                                                <ul class="clearfix">
+                                                    <li class="select-category" id="search_header_main">
+                                                        <input type="text" id="tag_name" class="typeahead" placeholder="Search Tag" style=""/>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -651,15 +682,23 @@
                                     <h4 class="modal-title" style="text-align: center"><b>Customer Profile Edit</b></h4>
                                 </div>
                                 <hr>
-                                <form id="edit-customer-profile">
-                                    <input type="hidden" value="{{$customerInfo->profile->id}}" id="user_id">
+                                <form method="post" action="/customer/edit-customer">
+                                    {{ csrf_field() }}
+                                    @if($id == 'null')
+                                        <input type="hidden" name="create_lead" value="true">
+                                    @endif
+                                    <input type="hidden" value="{{$customerInfo->profile->id}}" name="user_id">
                                     <div class="modal-body">
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <div class="form-group">
                                                     <label class="col-md-3 control-label">First Name : </label>
                                                     <div class="col-md-6">
-                                                        <input type="text" class="form-control" id="f_name" value="{{ucwords($customerInfo->profile->first_name)}}" name="f_name" readonly>
+                                                        @if($id == 'null')
+                                                            <input type="text" class="form-control" id="f_name" value="{{ucwords($customerInfo->profile->first_name)}}" name="f_name" required>
+                                                        @else
+                                                            <input type="text" class="form-control" id="f_name" value="{{ucwords($customerInfo->profile->first_name)}}" name="f_name" readonly>
+                                                        @endif
                                                     </div>
                                                 </div>
                                             </div>
@@ -670,7 +709,11 @@
                                                 <div class="form-group">
                                                     <label class="col-md-3 control-label">Last Name :</label>
                                                     <div class="col-md-6">
-                                                        <input type="text" class="form-control" id="l_name" value="{{ucwords($customerInfo->profile->last_name)}}" name="l_name"readonly>
+                                                        @if($id == 'null')
+                                                            <input type="text" class="form-control" id="l_name" value="{{ucwords($customerInfo->profile->last_name)}}" name="l_name" required>
+                                                        @else
+                                                            <input type="text" class="form-control" id="l_name" value="{{ucwords($customerInfo->profile->last_name)}}" name="l_name" readonly>
+                                                        @endif
                                                     </div>
                                                 </div>
                                             </div>
@@ -692,7 +735,11 @@
                                                 <div class="form-group">
                                                     <label class="col-md-3 control-label">Email id : </label>
                                                     <div class="col-md-6">
-                                                        <input type="email" class="form-control" id="profile_email" value="{{$customerInfo->profile->email}}" name="profile_email" readonly>
+                                                        @if($id == 'null')
+                                                            <input type="email" class="form-control" id="profile_email" value="{{$customerInfo->profile->email}}" name="profile_email">
+                                                        @else
+                                                            <input type="email" class="form-control" id="profile_email" value="{{$customerInfo->profile->email}}" name="profile_email" readonly>
+                                                        @endif
                                                     </div>
                                                 </div>
                                             </div>
@@ -711,7 +758,7 @@
                                         <br>
                                         <div class="row">
                                             <div class="col-md-10">
-                                                <button type="submit" id="profile-edit" class="btn btn-sm btn-success pull-right">Edit</button>
+                                                <button type="submit" class="btn btn-sm btn-success pull-right">Save</button>
                                             </div>
                                             <div class="col-md-2">
                                                 <button class="btn btn-sm btn-danger pull-right" data-dismiss="modal">Cancel</button>
@@ -919,7 +966,9 @@
                                 url_param: data.url_param,
                                 translated_slug:data.translated_slug,
                                 price:data.discounted_price,
-                                sku:data.seller_sku
+                                sku:data.seller_sku,
+                                minimum_quantity:data.minimum_quantity,
+                                maximum_quantity:data.maximum_quantity
                             };
                         });
                     },
@@ -949,12 +998,12 @@
                         '<div class="col-md-7"><h5>'+POData.name+'<span class="tag label label-info" style="margin-left: 2px">'+POData.company+'</span></h5>'+
                         '</div>'+
                         '<div class="col-md-3">'+
-                                '<a class="btn" onclick="updateProductQuantity('+POData.id+',false,'+POData.price+')" >-</a>'+
+                                '<a class="btn" onclick="updateProductQuantity('+POData.id+',false,'+POData.price+','+POData.minimum_quantity+','+POData.maximum_quantity+')" >-</a>'+
                                 '<input class="cart-quantity" type="text" id="product_'+POData.id+'" value="1" style="width: 30px; text-align: center" readonly>'+
-                                '<a class="btn" onclick="updateProductQuantity('+POData.id+',true,'+POData.price+')">+</a>'+
+                                '<a class="btn" onclick="updateProductQuantity('+POData.id+',true,'+POData.price+','+POData.minimum_quantity+','+POData.maximum_quantity+')">+</a>'+
                         '</div>'+
                         '<div class="col-md-2"><i class="fa fa-rupee"></i><span id="price_'+POData.id+'">'+POData.price+'</span> &nbsp;&nbsp;<a><span onclick="removeProduct('+POData.id+')">x</span></a></div>'+
-                    '</div>'+
+                        '</div>'+
                         '<input class="form-control product-list" type="hidden" id="product_id_'+POData.id+'" name="product_id[]" value="'+POData.id+'">'+
                         '<input class="form-control" type="hidden" id="product_qnt'+POData.id+'" name="product_qnt['+POData.id+']" value="1">';
 
@@ -973,9 +1022,115 @@
                 });
         });
 
-        function updateProductQuantity(id,update,price) {
+        $(document).ready(function () {
+            $('#tag_name').on('select',function () {
+                $('#tag_name').val('');
+            });
+            var crmCustId = $('#crm_customer_id').val();
+            var tagList = new Bloodhound({
+                datumTokenizer: Bloodhound.tokenizers.obj.whitespace('office_name'),
+                queryTokenizer: Bloodhound.tokenizers.whitespace,
+                remote: {
+                    url: "/get-tags?tag_name=%QUERY",
+                    filter: function(x) {
+                        return $.map(x, function (data) {
+                            return {
+                                id: data.id,
+                                name: data.name
+                            };
+                        });
+                    },
+                    wildcard: "%QUERY"
+                }
+            });
+            var language = $('#language').val();
+            tagList.initialize();
+            $('#tag_name').typeahead(null, {
+                displayKey: 'name',
+                engine: Handlebars,
+                source: tagList.ttAdapter(),
+                limit: 30,
+                templates: {
+                    empty: [
+                        '<div class="empty-message">',
+                        'Unable to find any Result that match the current query',
+                        '</div>'
+                    ].join('\n'),
+                    suggestion: Handlebars.compile('<div style="text-transform: capitalize;"><strong>@{{name}}</strong></div>')
+                }
+            }).on('typeahead:selected', function (obj, datum) {
+                var POData = new Array();
+                POData = $.parseJSON(JSON.stringify(datum));
+                POData.name = POData.name.replace(/\&/g,'%26');
+                str = '<button id="tag'+POData.id+crmCustId+'" class="lable" style="display: inline;font-size: 90%;margin-left: 2px;margin-top:3px;margin-bottom:3px;padding-bottom: 2px;padding-top: 2px">'+POData.name+'<span style="color: red;" onclick="removeCustTag('+POData.id+','+crmCustId+')"> ×</span></button>&nbsp;&nbsp;&nbsp';
+                $('#customer-tag-div').append(str);
+                if(crmCustId != 'null'){
+                    $.ajax({
+                        url: '/tag/customer-tag',
+                        type: 'POST',
+                        dataType: 'array',
+                        data: {
+                            "_token": "{{ csrf_token() }}",
+                            'crm_cust_id' : crmCustId,
+                            'tag_id' : POData.id
+                        },
+                        success: function (responce) {
+                        },
+                        error: function (responce) {
+                        }
+                    })
+                }
+            }).on('typeahead:open', function (obj, datum) {
+
+            });
+            $('#tag_name').keypress(function (e) {
+                var key = e.which;
+                if(key == '13'){
+                    var singleQuote = "'";
+                    var tagName = singleQuote+$('#tag_name').val()+singleQuote;
+                    var tag = $('#tag_name').val().replace(/ /g,"_");
+                    var tagStr = '<button id="tag'+tag+crmCustId+'" class="lable" style="display: inline;font-size: 90%;margin-left: 2px;margin-top:3px;margin-bottom:3px;padding-bottom: 2px;padding-top: 2px">'+tag+'<span style="color: red;" onclick="removeCustTag('+tagName+','+crmCustId+')"> ×</span></button>&nbsp;&nbsp;&nbsp';
+                    $('#customer-tag-div').append(tagStr);
+                    $.ajax({
+                        url: '/customer/create-assign-tag',
+                        type: 'POST',
+                        dataType: 'array',
+                        data: {
+                            "_token": "{{ csrf_token() }}",
+                            'tag_name' : $('#tag_name').val(),
+                            'customer_id' : crmCustId
+                        },
+                        success: function (status) {
+                        },
+                        error: function (status) {
+                        }
+                    })
+                }
+            });
+        });
+
+        function removeCustTag(tagId,crmCustId){
+            var tag = 'tag'+tagId+crmCustId;
+            tag = tag.replace(/ /g,"_");
+            $('#'+tag).remove();
+            $.ajax({
+                url: '/customer/remove-tag/'+tagId+'/'+crmCustId,
+                type: 'GET',
+                async: true,
+                success: function(data,textStatus,xhr){
+                    console.log('IN sucess');
+                    console.log(data);
+                },
+                error:function(errorData){
+                    console.log('In Error');
+                    console.log(errorData);
+                }
+            });
+        }
+
+        function updateProductQuantity(id,add,price,minQnt,maxQnt) {
             var qnt = $('#product_'+id).val();
-            if(update == true){
+            if(add == true){
                 qnt++;
                 price = price*qnt;
                 $('#price_'+id).text(price);
@@ -993,6 +1148,9 @@
                     $('#product_'+id).val(qnt);
                     $('#product_qnt'+id).val(qnt);
                 }
+            }
+            if(qnt > maxQnt){
+             alert('Maximum Inventory for this product is '+maxQnt);
             }
         }
 
@@ -1321,28 +1479,14 @@
                 dataType: 'array',
                 data: {
                     'reply_status_id' : statusId,
-                    'customer_id' : customer
+                    'customer_id' : customer,
+                    'in_profile' : true
                 },
                 success: function (responce) {
                     chatHistory(customer,customerNumber);
                 },
                 error: function (responce) {
                     chatHistory(customer,customerNumber);
-                }
-            })
-        });
-
-        $('#select-agent').on('change',function () {
-            var customerId = $(this).val();
-            var customerNumber = $('#createCustomerLead').val();
-            alert(customerNumber);
-            alert(customerId);
-            $.ajax({
-                url: '/crm/create-lead/'+customerId+'/'+customerNumber,
-                type: 'get',
-                success: function (responce) {
-                },
-                error: function (responce) {
                 }
             })
         });
@@ -1373,6 +1517,20 @@
                             str += '<div class="item" style="text-align: center">' +
                                 '<span class="tag label label-info" style="font-size: 90%;">'
                                 +'Schedule to call back is set on ' +data['reminder'] +
+                                '</span>' +
+                                '</div> '+
+                                '<br>';
+                        }else if(data['is_created_tag'] == true){
+                            str += '<div class="item" style="text-align: center">' +
+                                '<span class="tag label label-info" style="font-size: 90%;">' +
+                                data['sale_agent'] +' added tag ' +data['name'] + ' on '+ data['time'] +
+                                '</span>' +
+                                '</div> '+
+                                '<br>';
+                        }else if(data['is_deleted_tag'] == true){
+                            str += '<div class="item" style="text-align: center">' +
+                                '<span class="tag label label-info" style="font-size: 90%;">' +
+                                data['sale_agent'] +' removed tag ' +data['name'] + ' on '+ data['time'] +
                                 '</span>' +
                                 '</div> '+
                                 '<br>';

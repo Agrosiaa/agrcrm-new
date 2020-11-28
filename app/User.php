@@ -39,6 +39,6 @@ class User extends Model implements AuthenticatableContract,
 
     public function roles()
     {
-        return $this->belongsTo('user_roles', 'role_id');
+        return $this->belongsTo('roles', 'role_id');
     }
 }

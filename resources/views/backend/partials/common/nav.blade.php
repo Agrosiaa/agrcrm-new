@@ -65,7 +65,29 @@
                 <div class="hor-menu">
                     <ul class="nav navbar-nav">
                         <li class="menu-dropdown classic-menu-dropdown">
-                            <a href="/home">Dashboard</a>
+                            <?php
+                            $user = \Illuminate\Support\Facades\Auth::User();
+                            $currentDateTime = \Carbon\Carbon::now();
+                            if($user['role_id'] == 2){
+                                $callReminders = \App\User::join('crm_customer','crm_customer.user_id','=','users.id')
+                                    ->join('reminder','reminder.crm_customer_id','=','crm_customer.id')
+                                    ->where('crm_customer.user_id',$user['id'])
+                                    ->where('reminder.reminder_time','>=',$currentDateTime)
+                                    ->count();
+                            }else{
+                                $callReminders = \App\User::join('crm_customer','crm_customer.user_id','=','users.id')
+                                    ->join('reminder','reminder.crm_customer_id','=','crm_customer.id')
+                                    ->where('reminder.reminder_time','>=',$currentDateTime)
+                                    ->count();
+                            }
+                            ?>
+                            <a href="/home">Dashboard
+                                @if($callReminders >= 1)
+                                    <span style="text-align:center;height: 20px;width: 30px;border-radius: 50% !important;display: inline-block;padding-top: -15px !important;margin-left:-4px ;background-color: #d22020">
+                                         {{$callReminders}}
+                                     </span>
+                                @endif
+                            </a>
                         </li>
                         <li class="menu-dropdown classic-menu-dropdown">
                             <a href="/crm/manage">CRM</a>

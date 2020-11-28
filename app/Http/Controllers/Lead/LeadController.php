@@ -6,9 +6,11 @@ use App\CallBack;
 use App\CallStatus;
 use App\CustomerNumberStatus;
 use App\CrmCustomer;
+use App\CustomerTagRelation;
 use App\LoggedCustomerProfile;
 use App\Reminder;
 use App\SalesChat;
+use App\TagCloud;
 use App\User;
 use Box\Spout\Common\Type;
 use Box\Spout\Reader\ReaderFactory;
@@ -148,23 +150,30 @@ class LeadController extends Controller
     public function assignCustomerNumber(Request $request){
         try{
             $user = Auth::User();
-            $agentId = User::join('crm_customer','crm_customer.user_id','=','users.id')
-                ->where('crm_customer.number',$request->mobile_number)
-                ->where('users.is_active',true)
-                ->select('users.id')->first();
-            if($agentId != null){
-                $customerData['user_id'] = $agentId['id'];
-            } else{
-                $lastRecord = CrmCustomer::orderBy('id','desc')->first();
-                $saleAgents = User::where('id','>',$lastRecord['user_id'])->where('admin_id',$user['id'])->where('role_id',2)->where('is_active',true)->first();
-                if($saleAgents == null) {
-                    $saleAgents = User::where('id', '<=', $lastRecord['user_id'])->where('admin_id',$user['id'])->where('role_id', 2)->where('is_active', true)->first();
+            $alreadyExist = CrmCustomer::where('number',$request->mobile_number)->whereIn('customer_number_status_id',[1,2])->first();
+            if($alreadyExist == null){
+                $agentId = User::join('crm_customer','crm_customer.user_id','=','users.id')
+                    ->where('crm_customer.number',$request->mobile_number)
+                    ->where('users.is_active',true)
+                    ->select('users.id')->first();
+                if($agentId != null){
+                    $customerData['user_id'] = $agentId['id'];
+                } else{
+                    $lastRecord = CrmCustomer::orderBy('id','desc')->first();
+                    $saleAgents = User::where('id','>',$lastRecord['user_id'])->where('admin_id',$user['id'])->where('role_id',2)->where('is_active',true)->first();
+                    if($saleAgents == null) {
+                        $saleAgents = User::where('id', '<=', $lastRecord['user_id'])->where('admin_id',$user['id'])->where('role_id', 2)->where('is_active', true)->first();
+                    }
+                    $customerData['user_id'] = $saleAgents['id'];
                 }
-                $customerData['user_id'] = $saleAgents['id'];
+                $customerData['customer_number_status_id'] = CustomerNumberStatus::where('slug', 'new')->value('id');
+                $customerData['number'] = $request->mobile_number;
+                $customerData['lead_source'] = $request->lead_source;
+                CrmCustomer::create($customerData);
+                $request->session()->flash('success','Lead created successfully');
+            }else{
+                $request->session()->flash('error','Lead already exist');
             }
-            $customerData['customer_number_status_id'] = CustomerNumberStatus::where('slug', 'new')->value('id');
-            $customerData['number'] = $request->mobile_number;
-            CrmCustomer::create($customerData);
             return back();
         }catch (\Exception $exception){
             $data = [
@@ -222,7 +231,7 @@ class LeadController extends Controller
                 $end = $end > $iTotalRecords ? $iTotalRecords : $end;
                 $limitedProducts = CrmCustomer::where('customer_number_status_id',$statusId['id'])->whereIn('id',$customerId)->take($iDisplayLength)->skip($iDisplayStart)->orderBy('created_at','desc')->get()->toArray();
                 for($i=0,$j = $iDisplayStart; $j < $end; $i++,$j++) {
-                    $chat = SalesChat::where('customer_number_details_id',$limitedProducts[$j]['id'])->first();
+                    $chat = SalesChat::where('crm_customer_id',$limitedProducts[$j]['id'])->first();
                     $reminder = Reminder::where('crm_customer_id',$limitedProducts[$j]['id'])->first();
                     if ($user['role_id'] == 1) {
                         if(in_array($limitedProducts[$j]['number'],$createdCustomers)){
@@ -333,15 +342,29 @@ class LeadController extends Controller
             $custDetailIds = CrmCustomer::where('number',$mobileNumber)->lists('id');
             $allocationData = CrmCustomer::where('number',$mobileNumber)->orderBy('created_at','asc')->get()->toArray();
             $reminderDetails = Reminder::where('crm_customer_id',$id)->orderBy('created_at','asc')->get()->toArray();
-            $chatData = SalesChat::whereIn('customer_number_details_id',$custDetailIds)->orderBy('created_at','asc')->get()->toArray();
+            $chatData = SalesChat::whereIn('crm_customer_id',$custDetailIds)->orderBy('created_at','asc')->get()->toArray();
+            $createdTagData = CustomerTagRelation::whereIn('crm_customer_id',$custDetailIds)->orderBy('created_at','asc')->get()->toArray();
+            $deleteTagData = CustomerTagRelation::whereIn('crm_customer_id',$custDetailIds)->where('is_deleted',true)->orderBy('created_at','asc')->select('user_id','crm_customer_id','tag_cloud_id as deleted_tag_id','is_deleted','deleted_datetime as created_at','deleted_tag_user')->get()->toArray();
+            $tagData = array_merge($createdTagData,$deleteTagData);
             $chatRemainderData = array_merge($chatData,$reminderDetails);
             $chatRemainderAllocationData = array_merge($allocationData,$chatRemainderData);
-            $chatRemainderAllocationData = collect($chatRemainderAllocationData)->sortBy('created_at');
+            $chatTagRemainderAllocationData = array_merge($chatRemainderAllocationData,$tagData);
+            $logData = collect($chatTagRemainderAllocationData)->sortBy('created_at');
             $i = 0;
-            foreach ($chatRemainderAllocationData as $value){
+            foreach ($logData as $value){
                 if(array_key_exists('number',$value)){
                     $chatHistoryData[$i]['is_allocation'] = true;
                     $chatHistoryData[$i]['number'] = $value['number'];
+                    $chatHistoryData[$i]['sale_agent'] = User::where('id',$value['user_id'])->value('name');
+                    $chatHistoryData[$i]['time'] = date('d F Y H:i:s',strtotime($value['created_at']));
+                }elseif (array_key_exists('deleted_tag_id',$value) && $value['is_deleted'] == true){
+                    $chatHistoryData[$i]['is_deleted_tag'] = true;
+                    $chatHistoryData[$i]['name'] = TagCloud::where('id',$value['deleted_tag_id'])->value('name');
+                    $chatHistoryData[$i]['sale_agent'] = User::where('id',$value['deleted_tag_user'])->value('name');
+                    $chatHistoryData[$i]['time'] = date('d F Y H:i:s',strtotime($value['created_at']));
+                }elseif (array_key_exists('tag_cloud_id',$value)){
+                    $chatHistoryData[$i]['is_created_tag'] = true;
+                    $chatHistoryData[$i]['name'] = TagCloud::where('id',$value['tag_cloud_id'])->value('name');
                     $chatHistoryData[$i]['sale_agent'] = User::where('id',$value['user_id'])->value('name');
                     $chatHistoryData[$i]['time'] = date('d F Y H:i:s',strtotime($value['created_at']));
                 } else {
@@ -412,11 +435,12 @@ class LeadController extends Controller
         try{
             $user = Auth::user();
             $chatData['user_id'] = $user['id'];
-            $chatData['customer_number_details_id'] = $request['customer_id'];
+            $chatData['crm_customer_id'] = $request['customer_id'];
             $chatData['call_status_id'] = $request['reply_status_id'];
             $chatData['message'] = $request['reply_message'];
             SalesChat::create($chatData);
             $connectStatusId = CallStatus::where('slug','connected')->value('id');
+            $failedCallStatus = CallStatus::whereIn('slug',['invalid','out-of-coverage-area','rejected-busy','ringing','mobile-switched-off'])->lists('id')->toArray();
             if($connectStatusId == $request['reply_status_id']){
                 $mobileNumber = CrmCustomer::where('id',$request['customer_id'])->value('number');
                     $createdCustomers = Curl::to(env('BASE_URL')."/created-customers")->asJson()->get();
@@ -424,21 +448,26 @@ class LeadController extends Controller
                         $completeStatusId = CustomerNumberStatus::where('slug','complete')->value('id');
                         $updateCust['customer_number_status_id'] = $completeStatusId;
                         CrmCustomer::where('id',$request['customer_id'])->update($updateCust);
+                        $request->session()->flash('success','Lead status updated to complete successfully');
                     }
             }else{
                 $callBackThree = Reminder::where('call_back_id','=',3)
                                     ->where('crm_customer_id','=',$request['customer_id'])
                                     ->value('id');
-                if($callBackThree != null){
-                    $failStatusId = CustomerNumberStatus::where('slug','fail')->value('id');
+                if($callBackThree != null && array_key_exists($request['reply_status_id'],$failedCallStatus)){
+                    $failStatusId = CustomerNumberStatus::where('slug','failed')->value('id');
                     $updateCust['customer_number_status_id'] = $failStatusId;
                     CrmCustomer::where('id',$request['customer_id'])->update($updateCust);
+                    $request->session()->flash('success','Lead status updated to failed successfully');
                 }
             }
-            if($request->has('reply_status_id') && $request->reply_status_id != null  &&  $user['role_id'] == 2){
+            if($request->has('in_profile') && $request->has('reply_status_id') && $request->reply_status_id != null  &&  $user['role_id'] == 2){
                 $loggedCustomer = LoggedCustomerProfile::where('user_id',$user['id'])->first();
                 if($loggedCustomer != null){
                     $loggedCustomer->update(['session_url' => null]);
+                    $inProfileData['user_id'] = $user['id'];
+                    $inProfileData['crm_customer_id'] = $request['customer_id'];
+                    SalesChat::create($inProfileData);
                 }
             }
         }catch(\Exception $e){
@@ -461,19 +490,10 @@ class LeadController extends Controller
             $data['crm_customer_id'] = $request->customer_status_detail_id;
             $setReminder = Reminder::create($data);
             $callBack1 = CallBack::where('slug','call-back-1')->value('id');
-            $callBack3 = CallBack::where('slug','call-back-3')->value('id');
             if($setReminder->call_back_id == $callBack1){
                 $callBackStatusId = CustomerNumberStatus::where('slug','call-back')->value('id');
                 $updateStatus['customer_number_status_id'] = $callBackStatusId;
                 CrmCustomer::where('id',$request->customer_status_detail_id)->update($updateStatus);
-            }
-            if($setReminder->call_back_id == $callBack3){
-                $callStatus = SalesChat::whereIn('call_status_id',[2,3,4,5,6])->where('customer_number_details_id',$request->customer_status_detail_id)->select('id')->get()->toArray();
-                if(!empty($callStatus)){
-                    $failStatusId = CustomerNumberStatus::where('slug','failed')->value('id');
-                    $updateStatus['customer_number_status_id'] = $failStatusId;
-                    CrmCustomer::where('id',$request->customer_status_detail_id)->update($updateStatus);
-                }
             }
             return back();
         }catch(\Exception $e){
@@ -514,35 +534,42 @@ class LeadController extends Controller
     public function syncAbandonedCart(Request $request){
         try{
             $user = Auth::User();
-            $newLead = CustomerNumberStatus::where('slug','new')->value('id');
-            $abandonedData= Curl::to(env('BASE_URL')."/get-abandoned-carts")->asJson()->get();
-            foreach ($abandonedData as $abandonedDatum){
-                $agentId = User::join('crm_customer','crm_customer.user_id','=','users.id')
-                    ->where('crm_customer.number',$abandonedDatum->mobile)
-                    ->where('users.is_active',true)
-                    ->select('users.id','crm_customer.id as customerLeadId')->first();
-                if($agentId != null){
-                    $customerData['user_id'] = $agentId['id'];
-                } else{
-                    $lastRecord = CrmCustomer::orderBy('id','desc')->first();
-                    $saleAgents = User::where('id','>',$lastRecord['user_id'])->where('admin_id',$user['id'])->where('role_id',2)->where('is_active',true)->first();
-                    if($saleAgents == null) {
-                        $saleAgents = User::where('id', '<=', $lastRecord['user_id'])->where('admin_id',$user['id'])->where('role_id', 2)->where('is_active', true)->first();
+            $abandonedCartAgents = User::where('is_active',true)->where('is_abandoned_cart_agent',true)->where('admin_id',$user['id'])->first();
+            if($abandonedCartAgents != null){
+                $newLead = CustomerNumberStatus::where('slug','new')->value('id');
+                $abandonedData= Curl::to(env('BASE_URL')."/get-abandoned-carts")->asJson()->get();
+                foreach ($abandonedData as $abandonedDatum){
+                    $agentId = User::join('crm_customer','crm_customer.user_id','=','users.id')
+                        ->where('crm_customer.number',$abandonedDatum->mobile)
+                        ->where('users.is_active',true)
+                        ->where('users.is_abandoned_cart_agent',true)
+                        ->select('users.id')->first();
+                    if($agentId != null){
+                        $alreadyExist = CrmCustomer::where('number',$abandonedDatum->mobile)->whereIn('customer_number_status_id',[1,2])->value('id');
+                        if(empty($alreadyExist)){
+                            CrmCustomer::create(['customer_number_status_id' => $newLead, 'user_id' => $agentId['id'], 'number' => $abandonedDatum->mobile, 'is_abandoned' => true]);
+                        }else{
+                            CrmCustomer::where('id',$alreadyExist)->update(['user_id' => $agentId['id'], 'is_abandoned' => true]);
+                        }
+                    } else{
+                        $lastRecord = CrmCustomer::where('is_abandoned',true)->orderBy('id','desc')->first();
+                        $saleAgents = User::where('id','>',$lastRecord['user_id'])->where('is_abandoned_cart_agent',true)->where('admin_id',$user['id'])->where('role_id',2)->where('is_active',true)->first();
+                        if($saleAgents == null) {
+                            $saleAgents = User::where('id', '<=', $lastRecord['user_id'])->where('is_abandoned_cart_agent',true)->where('admin_id',$user['id'])->where('role_id', 2)->where('is_active', true)->first();
+                        }
+                        $alreadyExist = CrmCustomer::where('number',$abandonedDatum->mobile)->whereIn('customer_number_status_id',[1,2])->value('id');
+                        if(empty($alreadyExist)){
+                            CrmCustomer::create(['customer_number_status_id' => $newLead, 'user_id' => $saleAgents['id'], 'number' => $abandonedDatum->mobile, 'is_abandoned' => true]);
+                        }else{
+                            CrmCustomer::where('id',$alreadyExist)->update(['user_id' => $saleAgents['id'], 'is_abandoned' => true]);
+                        }
                     }
-                    $customerData['user_id'] = $saleAgents['id'];
                 }
-                $customerData['customer_number_status_id'] = $newLead;
-                $customerData['number'] = $abandonedDatum->mobile;
-                $customerData['is_abandoned'] = true;
-                CrmCustomer::create($customerData);
-                /*$userId = User::where('is_abandoned_cart_agent',true)->value('id');
-                $custNumberStatDetail = CrmCustomer::where('number',$abandonedDatum->mobile)->value('id');
-                if(empty($custNumberStatDetail)){
-                    CrmCustomer::create(['customer_number_status_id' => 1, 'user_id' => $userId, 'number' => $abandonedDatum->mobile, 'is_abandoned' => true]);
-                }else{
-                    CrmCustomer::where('id',$custNumberStatDetail)->update(['user_id' => $userId, 'is_abandoned' => true]);
-                }*/
+                $request->session()->flash('success','Abandoned cart sync successfully');
+            }else{
+                $request->session()->flash('error','No abandoned cart agent available');
             }
+
             return back();
         }catch(\Exception $exception){
             $data =[

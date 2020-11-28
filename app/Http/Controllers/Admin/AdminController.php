@@ -66,7 +66,7 @@ class AdminController extends Controller
                     ->where('reminder.reminder_time','>=',$currentDateTime)
                     ->select('crm_customer.number','reminder.reminder_time','reminder.call_back_id','users.name')->get()->toArray();
             }
-            return view('backend.admin.home')->with(compact('response','callBackReminders'));
+            return view('backend.admin.home')->with(compact('user','response','callBackReminders'));
         }catch(\Exception $e){
             $data = [
                 'action' => 'validate mobile from cart',
@@ -93,62 +93,6 @@ class AdminController extends Controller
         }
     }
 
-    /*public function salesAgentListing(Request $request){
-        try{
-            $user = Auth::user();
-            $tableData = $request->all();
-            $searchData = NULL;
-            $orderName=null;
-            $agentId = User::where('role_id',2)->lists('id');
-            if($agentId !=null){
-                $resultFlag = true;
-                // Search agent by name
-                if($request->has('agent_name') && $tableData['agent_name']!=""){
-                    $agentId = User::whereIn('id',$agentId)->where('name','like','%'.$tableData['agent_name'].'%')->lists('id');
-                    if(count($agentId) <= 0){
-                        $resultFlag = false;
-                    }
-                }
-                $iTotalRecords = count($agentId);
-                $iDisplayLength = intval($request->length);
-                $iDisplayLength = $iDisplayLength < 0 ? $iTotalRecords : $iDisplayLength;
-                $iDisplayStart = intval($request->start);
-                $sEcho = intval($request->draw);
-                $records = array();
-                $records["data"] = array();
-                $end = $iDisplayStart + $iDisplayLength;
-                $end = $end > $iTotalRecords ? $iTotalRecords : $end;
-                $limitedProducts = User::whereIn('id',$agentId)->take($iDisplayLength)->skip($iDisplayStart)->orderBy('created_at','desc')->get()->toArray();
-                for($i=0,$j = $iDisplayStart; $j < $end; $i++,$j++) {
-                    if($limitedProducts[$j]['is_active'] == true){
-                        $records["data"][] = array(
-                            $limitedProducts[$j]['name'],
-                            '<div class="bootstrap-switch bootstrap-switch-wrapper bootstrap-switch-small bootstrap-switch-animate bootstrap-switch-on" style="width: 90px;"><div class="bootstrap-switch-container" onclick="changeStatus('.$limitedProducts[$j]['id'].')" style="width: 132px; margin-left: 0px;"><span class="bootstrap-switch-handle-on bootstrap-switch-primary" style="width: 44px;">ON</span><span class="bootstrap-switch-label" style="width: 44px;">&nbsp;</span><span class="bootstrap-switch-handle-off bootstrap-switch-default" style="width: 44px;">OFF</span></div></div>'
-                            //'<input class="switch-light switch-material" onclick="changeStatus('.$limitedProducts[$j]['id'].')" type="checkbox" checked>',
-                        );
-                    } else {
-                        $records["data"][] = array(
-                            $limitedProducts[$j]['name'],
-                            '<div class="bootstrap-switch bootstrap-switch-wrapper bootstrap-switch-small bootstrap-switch-animate bootstrap-switch-off" style="width: 90px;"><div class="bootstrap-switch-container" onclick="changeStatus('.$limitedProducts[$j]['id'].')" style="width: 132px; margin-left: -44px;"><span class="bootstrap-switch-handle-on bootstrap-switch-primary" style="width: 44px;">ON</span><span class="bootstrap-switch-label" style="width: 44px;">&nbsp;</span><span class="bootstrap-switch-handle-off bootstrap-switch-default" style="width: 44px;">OFF</span></div></div>'
-                            // '<input class="switch-light switch-material" onclick="changeStatus('.$limitedProducts[$j]['id'].')" type="checkbox">',
-                        );
-                    }
-                }
-                if (isset($request->customActionType) && $request->customActionType == "group_action") {
-                    $records["customActionStatus"] = "OK"; // pass custom message(useful for getting status of group actions)
-                    $records["customActionMessage"] = "Group action successfully has been completed. Well done!"; // pass custom message(useful for getting status of group actions)
-                }
-                $records["draw"] = $sEcho;
-                $records["recordsTotal"] = $iTotalRecords;
-                $records["recordsFiltered"] = $iTotalRecords;
-            }else{
-                $records = '';
-            }
-        }catch(\Exception $e){
-            $records = $e->getMessage();
-        }
-        return response()->json($records);
-    }*/
 
     public function changeAgentStatus(Request $request, $id){
         try{
@@ -160,6 +104,7 @@ class AdminController extends Controller
                 $saleAgentData['is_active'] = true;
                 $saleAgent->update($saleAgentData);
             }
+            $request->session()->flash('success','Sales agent status changed successful');
         }catch (\Exception $e){
             $data = [
                 'action' => 'Change Sales Admin Status',
@@ -172,8 +117,13 @@ class AdminController extends Controller
 
     public function assignAbandonedCartAgent(Request $request, $id){
         try{
-            User::where('is_abandoned_cart_agent',true)->update(['is_abandoned_cart_agent' => false]);
-            User::where('id',$id)->update(['is_abandoned_cart_agent' => true]);
+            $abandonedCartUser = User::where('id',$id)->first();
+            if($abandonedCartUser['is_abandoned_cart_agent'] == true){
+                $abandonedCartUser->update(['is_abandoned_cart_agent' => false]);
+            }else{
+                $abandonedCartUser->update(['is_abandoned_cart_agent' => true]);
+            }
+            $request->session()->flash('success','Abandoned cart agent status changed successful');
         }catch (\Exception $e){
             $data = [
                 'action' => 'Assign agent for abandoned cart customers',
