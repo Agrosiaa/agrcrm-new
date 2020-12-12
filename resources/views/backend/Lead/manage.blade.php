@@ -75,6 +75,11 @@
                                                 Upload Sheet
                                             </a>
                                         </div>--}}
+                                        <div class="col-md-3" style="padding-top: 15px;">
+                                            <a href="/leads/import-customer-call-data" class="btn blue" style="margin-left: 30%">
+                                                Customer Call Data Sheet
+                                            </a>
+                                        </div>
                                         <div class="col-md-1" style="padding-top: 15px;">
                                             <a href="javascript:void(0);" class="btn blue m-icon" data-toggle="modal" data-target="#assign-to-agents-modal">
                                                 Assign

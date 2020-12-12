@@ -48,8 +48,6 @@ Route::group(['prefix' => 'customer'], function () {
 });
 Route::group(['prefix' => 'leads'], function () {
     Route::get('manage/{type}',array('uses' => 'Lead\LeadController@manage'));
-    Route::get('export-customer-number',array('uses' => 'Lead\LeadController@exportCustomerView'));
-    Route::post('export-customer-numbers',array('uses' => 'Lead\LeadController@exportCustomerSheet'));
     Route::post('assign-customer',array('uses' => 'Lead\LeadController@assignCustomerNumber'));
     Route::post('sales-lead-listing/{status}',array('uses' => 'Lead\LeadController@saleLeadListing'));
     Route::get('sales-chat-listing/{id}',array('uses' => 'Lead\LeadController@saleChatListing'));
@@ -58,6 +56,10 @@ Route::group(['prefix' => 'leads'], function () {
     Route::get('call-back-status/{custDetailId}',array('uses' => 'Lead\LeadController@callBackStatus'));
     Route::get('sync-abandoned-cart',array('uses' => 'Lead\LeadController@syncAbandonedCart'));
     Route::get('remove-lead/{id}',array('uses' => 'Lead\LeadController@removeLead'));
+    Route::get('import-customer-call-data',array('uses' => 'Lead\LeadController@importCustomerCallDataView'));
+    Route::post('import-customer-call-data',array('uses' => 'Lead\LeadController@importCustomerCallDataSheet'));
+    /*Route::get('export-customer-number',array('uses' => 'Lead\LeadController@exportCustomerView'));
+    Route::post('export-customer-numbers',array('uses' => 'Lead\LeadController@exportCustomerSheet'));*/
 });
 Route::group(['prefix' => 'agents'], function () {
     Route::get('manage-agents',array('uses' => 'Admin\AdminController@manageAgents'));

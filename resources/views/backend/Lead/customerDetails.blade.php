@@ -625,7 +625,7 @@
                                 <div class="modal-body">
                                     <div class="row">
                                         <div class="row">
-                                            <h4 class="col-md-offset-1">Order Summery</h4>
+                                            <h4 class="col-md-offset-1"><b>Order Summary</b></h4>
                                         </div>
                                         <div class="row col-md-offset-1" id="selected_products">
                                         </div>
@@ -641,7 +641,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="row">
-                                            <h4 class="col-md-offset-1">Delivery Address</h4>
+                                            <h4 class="col-md-offset-1"><b>Delivery Address</b></h4>
                                         </div>
                                         <div class="row col-md-offset-1" id="delivery_address">
                                         </div>
@@ -649,7 +649,7 @@
                                     <hr>
                                     <div class="row">
                                         <div class="row">
-                                            <h4 class="col-md-offset-1">Referral Code</h4>
+                                            <h4 class="col-md-offset-1"><b>Referral Code</b></h4>
                                         </div>
                                         <div class="row col-md-offset-1">
                                             <div class="col-md-5">
@@ -1171,9 +1171,13 @@
                 type: 'post',
                 data: frm.serialize(),
                 success: function (data) {
+                    console.log(data);
+                    alert('success');
                     $('#confirm_order').modal('show');
                 },
                 error: function (data) {
+                    console.log(data);
+                    alert('error');
                     $('#confirm_order').modal('show');
                 }
             })

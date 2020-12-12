@@ -83,7 +83,7 @@
                             ?>
                             <a href="/home">Dashboard
                                 @if($callReminders >= 1)
-                                    <span style="text-align:center;height: 20px;width: 30px;border-radius: 50% !important;display: inline-block;padding-top: -15px !important;margin-left:-4px ;background-color: #d22020">
+                                    &nbsp;<span style="text-align:center;align-items: center;height: 20px;width: 20px;display: inline-block;padding-top: -15px !important;background-color: #d22020">
                                          {{$callReminders}}
                                      </span>
                                 @endif

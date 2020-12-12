@@ -47,105 +47,6 @@ class LeadController extends Controller
             abort(500,$exception->getMessage());
         }
     }
-    public function exportCustomerView(Request $request){
-        try{
-            return view('backend.Lead.customerExcel.logistic-Import-Excel');
-        }catch(\Exception $exception){
-            $data =[
-                'action' => 'export excel view',
-                'exception' => $exception->getMessage()
-            ];
-            Log::critical(json_encode($data));
-            abort(500,$exception->getMessage());
-        }
-    }
-    public function exportCustomerSheet(Request $request){
-        try{
-            $user = Auth::user();
-            $reader = ReaderFactory::create(Type::XLSX); // for XLSX files
-            $reader->open($request->file('excel_file'));
-            $sheetIndex = 1;
-            $numberArray = array();
-            $lastRecord = CrmCustomer::orderBy('id','desc')->first();
-            $saleAgentArray1 = User::where('id','>',$lastRecord['user_id'])->where('admin_id',$user['id'])->where('role_id',2)->where('is_active',true)->get()->toArray();
-            $saleAgentArray2 = User::where('id','<=',$lastRecord['user_id'])->where('admin_id',$user['id'])->where('role_id',2)->where('is_active',true)->get()->toArray();
-            $activeAgents = User::where('role_id',2)->where('admin_id',$user['id'])->where('is_active',true)->pluck('id')->toArray();
-            $saleAgents = array_merge($saleAgentArray1,$saleAgentArray2);
-            foreach($reader->getSheetIterator() as $sheet){
-                if($sheetIndex==1){
-                    $rowIndex = 1;
-                    $setIndex = 0;
-                    foreach ($sheet->getRowIterator() as $rows) {
-                        if($rows[0] != 'Mobile' && $rowIndex == 1){
-                            $message = "File Header name should be -Mobile";
-                            Session::flash('error',$message);
-                            return redirect('/leads/export-customer-number');
-                        }else{
-                            if($rowIndex > 1){
-                                if($rows[0] == null){
-                                    $message = "Please Insert Number";
-                                    $request->session()->flash('error', $message);
-                                    return redirect('/leads/export-customer-number');
-                                }else{
-                                    if(!in_array($rows[0],$numberArray)){
-                                        $agentId = User::join('crm_customer','crm_customer.user_id','=','users.id')
-                                            ->where('crm_customer.number',$rows[0])
-                                            ->where('users.is_active',true)
-                                            ->select('users.id')->first();
-                                        if($agentId != null){
-                                            if($agentId['id'] == $saleAgents[$setIndex]['id']){
-                                                $numberArray[] = $rows[0];
-                                                $customerData['customer_number_status_id'] = CustomerNumberStatus::where('slug','new')->value('id');
-                                                $customerData['user_id'] = $agentId['id'];
-                                                $customerData['number'] = $rows[0];
-                                                CrmCustomer::create($customerData);
-                                                if($setIndex >= count($saleAgents)-1){
-                                                    $setIndex = 0;
-                                                }else{
-                                                    $setIndex++;
-                                                }
-                                            }else{
-                                                $numberArray[] = $rows[0];
-                                                $customerData['customer_number_status_id'] = CustomerNumberStatus::where('slug','new')->value('id');
-                                                $customerData['user_id'] = $agentId['id'];
-                                                $customerData['number'] = $rows[0];
-                                                CrmCustomer::create($customerData);
-                                            }
-                                        }else{
-                                            $numberArray[] = $rows[0];
-                                            $customerData['customer_number_status_id'] = CustomerNumberStatus::where('slug','new')->value('id');
-                                            $customerData['user_id'] = $saleAgents[$setIndex]['id'];
-                                            $customerData['number'] = $rows[0];
-                                            CrmCustomer::create($customerData);
-                                            if($setIndex >= count($saleAgents)-1){
-                                                $setIndex = 0;
-                                            }else{
-                                                $setIndex++;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        Log::info('at end');
-                        $rowIndex++;
-                    }
-                }
-                $sheetIndex++;
-            }
-            $reader->close();
-            $message = "File uploaded successfully";
-            $request->session()->flash('success', $message);
-            return redirect('/leads/export-customer-number');
-        }catch(\Exception $exception){
-            $data =[
-                'action' => 'export excel upload',
-                'exception' => $exception->getMessage()
-            ];
-            Log::critical(json_encode($data));
-            abort(500,$exception->getMessage());
-        }
-    }
 
     public function assignCustomerNumber(Request $request){
         try{
@@ -196,9 +97,9 @@ class LeadController extends Controller
             $completeStatusId = CustomerNumberStatus::where('slug','=','complete')->value('id');
             if($statusId !=null){
                 if($user['role_id'] == 1){
-                    $customerId = CrmCustomer::where('customer_number_status_id',$statusId['id'])->lists('id');
+                    $customerId = CrmCustomer::where('is_active',true)->where('customer_number_status_id',$statusId['id'])->lists('id');
                 }else{
-                    $customerId = CrmCustomer::where('customer_number_status_id',$statusId['id'])->where('user_id',$user['id'])->lists('id');
+                    $customerId = CrmCustomer::where('is_active',true)->where('customer_number_status_id',$statusId['id'])->where('user_id',$user['id'])->lists('id');
                 }
                 $resultFlag = true;
                 // Search customer mobile number
@@ -594,4 +495,213 @@ class LeadController extends Controller
             abort(500,$e->getMessage());
         }
     }
+
+
+    public function importCustomerCallDataView(Request $request){
+        try{
+            return view('backend.admin.importCustomerCallDataExcel');
+        }catch(\Exception $exception){
+            $data =[
+                'action' => 'export excel view',
+                'exception' => $exception->getMessage()
+            ];
+            Log::critical(json_encode($data));
+            abort(500,$exception->getMessage());
+        }
+    }
+    public function importCustomerCallDataSheet(Request $request){
+        try{
+            $user = Auth::user();
+            $lastCallDate = Carbon::now();
+            $completedLead = CustomerNumberStatus::where('slug', 'complete')->value('id');
+            $reader = ReaderFactory::create(Type::XLSX); // for XLSX files
+            $reader->open($request->file('excel_file'));
+            $sheetIndex = 1;
+            foreach($reader->getSheetIterator() as $sheet){
+                if($sheetIndex==1){
+                    $rowIndex = 1;
+                    $customerData = array();
+                    foreach ($sheet->getRowIterator() as $rows) {
+                        $leadPresent = CrmCustomer::where('number',$rows[3])->first();
+                        if($rowIndex > 1 && $leadPresent == null && !(str_contains($rows['11'],'invalid') || str_contains($rows['11'],'Invalid'))){
+                            if($rows[1] != null){
+                                $customerData['user_id'] = $user->id;
+                            }else{
+                                $customerData['user_id'] = $user->id;
+                            }
+                            $customerData['customer_number_status_id'] = $completedLead;
+                            $customerData['number'] = $rows[3];
+                            $customerData['is_active'] = false;
+                            $customerData['lead_source'] = 'Customer call data sheet';
+                            if(empty($rows[0])){
+                                $customerData['created_at'] = $lastCallDate;
+                            }else{
+                                $customerData['created_at'] = $rows[0];
+                                $lastCallDate = $rows[0];
+                            }
+                            $customerData['updated_at'] = Carbon::now();
+                            $crmCustomer = CrmCustomer::insertGetId($customerData);
+                            // Create-Assign tag to customer from call tag index
+                            for ($tagIndex = 11 ; $tagIndex <= 24 ; $tagIndex++){
+                                if(array_key_exists($tagIndex,$rows) && $rows[$tagIndex] != ''){
+                                    $tag = TagCloud::where('name','like',$rows[$tagIndex])->first();
+                                    if($tag == null){
+                                        $tag = TagCloud::create(['name' => $rows[$tagIndex],'user_id' => $user['id']]);
+                                    }
+                                    $customerTag = CustomerTagRelation::where('crm_customer_id',$crmCustomer)->where('tag_cloud_id',$tag['id'])->first();
+                                    if($customerTag == null){
+                                        CustomerTagRelation::create(['tag_cloud_id' => $tag['id'], 'crm_customer_id' => $crmCustomer,'user_id' => $user['id']]);
+                                    }
+                                }
+                            }
+                            $agrUserData = array();
+                            $agrUserData['fname'] = $rows[2] == '' ? '' : $rows[2];
+                            $agrUserData['lname'] = '';
+                            $agrUserData['mobile'] = $rows[3];
+                            $agrUserData['dob'] = '';
+                            $agrUserData['email'] = '';
+                            $agrUserData['address_mobile'] = $rows[3];
+                            $agrUserData['address_fname'] = $rows[2] == '' ? '' : $rows[2];
+                            $agrUserData['house_block'] = 'NA';
+                            $agrUserData['road'] = 'NA';
+                            $agrUserData['state'] = 'NA';
+                            $agrUserData['village_premises'] = $rows[5] == '' ? 'NA' : $rows[5];
+                            $agrUserData['area'] = $rows[10] == '' ? 'NA' : $rows[10];
+                            $agrUserData['taluka'] = $rows[7] == '' ? 'NA' : $rows[7];
+                            $agrUserData['dist'] = $rows[8] == '' ? 'NA' : $rows[8];
+                            $agrUserData['state'] = 'NA';
+                            $agrUserData['pincode'] = $rows[9] == '' ? 'NA' : $rows[9];
+                            $response = Curl::to(env('BASE_URL')."/create-customer")->withData($agrUserData)->asJson()->get();
+                        }elseif ($rowIndex > 1 && $leadPresent != null && !(str_contains($rows['11'],'invalid') || str_contains($rows['11'],'Invalid'))){
+                            for ($tagIndex = 11 ; $tagIndex <= 24 ; $tagIndex++){
+                                if(array_key_exists($tagIndex,$rows) && $rows[$tagIndex] != ''){
+                                    $tag = TagCloud::where('name','like',$rows[$tagIndex])->first();
+                                    if($tag == null){
+                                        $tag = TagCloud::create(['name' => $rows[$tagIndex],'user_id' => $user['id']]);
+                                    }
+                                    $customerTag = CustomerTagRelation::where('crm_customer_id',$leadPresent['id'])->where('tag_cloud_id',$tag['id'])->first();
+                                    if($customerTag == null){
+                                        CustomerTagRelation::create(['tag_cloud_id' => $tag['id'], 'crm_customer_id' => $leadPresent['id'],'user_id' => $user['id']]);
+                                    }
+                                }
+                            }
+                        }
+                        $rowIndex++;
+                    }
+                }
+                $sheetIndex++;
+            }
+            $reader->close();
+            $message = "File uploaded successfully";
+            $request->session()->flash('success', $message);
+            return redirect('/leads/import-customer-call-data');
+        }catch(\Exception $exception){
+            $data =[
+                'action' => 'export excel upload',
+                'exception' => $exception->getMessage()
+            ];
+            Log::critical(json_encode($data));
+            abort(500,$exception->getMessage());
+        }
+    }
+
+    /*
+    public function exportCustomerView(Request $request){
+        try{
+            return view('backend.Lead.customerExcel.logistic-Import-Excel');
+        }catch(\Exception $exception){
+            $data =[
+                'action' => 'export excel view',
+                'exception' => $exception->getMessage()
+            ];
+            Log::critical(json_encode($data));
+            abort(500,$exception->getMessage());
+        }
+    }
+    public function exportCustomerSheet(Request $request){
+        try{
+            $user = Auth::user();
+            $reader = ReaderFactory::create(Type::XLSX); // for XLSX files
+            $reader->open($request->file('excel_file'));
+            $sheetIndex = 1;
+            $numberArray = array();
+            $lastRecord = CrmCustomer::orderBy('id','desc')->first();
+            $saleAgentArray1 = User::where('id','>',$lastRecord['user_id'])->where('admin_id',$user['id'])->where('role_id',2)->where('is_active',true)->get()->toArray();
+            $saleAgentArray2 = User::where('id','<=',$lastRecord['user_id'])->where('admin_id',$user['id'])->where('role_id',2)->where('is_active',true)->get()->toArray();
+            $activeAgents = User::where('role_id',2)->where('admin_id',$user['id'])->where('is_active',true)->pluck('id')->toArray();
+            $saleAgents = array_merge($saleAgentArray1,$saleAgentArray2);
+            foreach($reader->getSheetIterator() as $sheet){
+                if($sheetIndex==1){
+                    $rowIndex = 1;
+                    $setIndex = 0;
+                    foreach ($sheet->getRowIterator() as $rows) {
+                        if($rows[0] != 'Mobile' && $rowIndex == 1){
+                            $message = "File Header name should be -Mobile";
+                            Session::flash('error',$message);
+                            return redirect('/leads/export-customer-number');
+                        }else{
+                            if($rowIndex > 1){
+                                if($rows[0] == null){
+                                    $message = "Please Insert Number";
+                                    $request->session()->flash('error', $message);
+                                    return redirect('/leads/export-customer-number');
+                                }else{
+                                    if(!in_array($rows[0],$numberArray)){
+                                        $agentId = User::join('crm_customer','crm_customer.user_id','=','users.id')
+                                            ->where('crm_customer.number',$rows[0])
+                                            ->where('users.is_active',true)
+                                            ->select('users.id')->first();
+                                        if($agentId != null){
+                                            if($agentId['id'] == $saleAgents[$setIndex]['id']){
+                                                $numberArray[] = $rows[0];
+                                                $customerData['customer_number_status_id'] = CustomerNumberStatus::where('slug','new')->value('id');
+                                                $customerData['user_id'] = $agentId['id'];
+                                                $customerData['number'] = $rows[0];
+                                                CrmCustomer::create($customerData);
+                                                if($setIndex >= count($saleAgents)-1){
+                                                    $setIndex = 0;
+                                                }else{
+                                                    $setIndex++;
+                                                }
+                                            }else{
+                                                $numberArray[] = $rows[0];
+                                                $customerData['customer_number_status_id'] = CustomerNumberStatus::where('slug','new')->value('id');
+                                                $customerData['user_id'] = $agentId['id'];
+                                                $customerData['number'] = $rows[0];
+                                                CrmCustomer::create($customerData);
+                                            }
+                                        }else{
+                                            $numberArray[] = $rows[0];
+                                            $customerData['customer_number_status_id'] = CustomerNumberStatus::where('slug','new')->value('id');
+                                            $customerData['user_id'] = $saleAgents[$setIndex]['id'];
+                                            $customerData['number'] = $rows[0];
+                                            CrmCustomer::create($customerData);
+                                            if($setIndex >= count($saleAgents)-1){
+                                                $setIndex = 0;
+                                            }else{
+                                                $setIndex++;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        $rowIndex++;
+                    }
+                }
+                $sheetIndex++;
+            }
+            $reader->close();
+            $message = "File uploaded successfully";
+            $request->session()->flash('success', $message);
+            return redirect('/leads/export-customer-number');
+        }catch(\Exception $exception){
+            $data =[
+                'action' => 'export excel upload',
+                'exception' => $exception->getMessage()
+            ];
+            Log::critical(json_encode($data));
+            abort(500,$exception->getMessage());
+        }
+    }*/
 }
