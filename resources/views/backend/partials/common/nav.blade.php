@@ -38,7 +38,7 @@
                                 </li>
                                 @if(Auth::user()->role_id == 1)
                                 <li>
-                                    <a href="/manage-agents">
+                                    <a href="/agents/manage-agents">
                                         <i class="icon-settings"></i> Settings </a>
                                 </li>
                                 @endif
@@ -65,10 +65,32 @@
                 <div class="hor-menu">
                     <ul class="nav navbar-nav">
                         <li class="menu-dropdown classic-menu-dropdown">
-                            <a href="/dashboard"> Dashboard</a>
+                            <?php
+                            $user = \Illuminate\Support\Facades\Auth::User();
+                            $currentDateTime = \Carbon\Carbon::now();
+                            if($user['role_id'] == 2){
+                                $callReminders = \App\User::join('crm_customer','crm_customer.user_id','=','users.id')
+                                    ->join('reminder','reminder.crm_customer_id','=','crm_customer.id')
+                                    ->where('crm_customer.user_id',$user['id'])
+                                    ->where('reminder.reminder_time','>=',$currentDateTime)
+                                    ->count();
+                            }else{
+                                $callReminders = \App\User::join('crm_customer','crm_customer.user_id','=','users.id')
+                                    ->join('reminder','reminder.crm_customer_id','=','crm_customer.id')
+                                    ->where('reminder.reminder_time','>=',$currentDateTime)
+                                    ->count();
+                            }
+                            ?>
+                            <a href="/home">Dashboard
+                                @if($callReminders >= 1)
+                                    &nbsp;<span style="text-align:center;align-items: center;height: 20px;width: 20px;display: inline-block;padding-top: -15px !important;background-color: #d22020">
+                                         {{$callReminders}}
+                                     </span>
+                                @endif
+                            </a>
                         </li>
                         <li class="menu-dropdown classic-menu-dropdown">
-                            <a href="/crm/manage"> CRM</a>
+                            <a href="/crm/manage">CRM</a>
                                 <ul class="dropdown-menu pull-left">
                                     <li class=" ">
                                         <?php $status = \App\CustomerNumberStatus::where('slug','new')->first();?>
@@ -78,6 +100,19 @@
                                     </li>
                                 </ul>
                         </li>
+                        @if(Auth::user()->role_id == 1)
+                            <li class="menu-dropdown classic-menu-dropdown">
+                                <a href="/tag/manage">Tag</a>
+                            </li>
+                            <li class="menu-dropdown classic-menu-dropdown">
+                                <a href="/report/view">Report</a>
+                            </li>
+                        @endif
+                        @if(Auth::user()->role_id == 2)
+                            <li class="menu-dropdown classic-menu-dropdown">
+                                <a href="/crm/csr-orders">My Orders</a>
+                            </li>
+                        @endif
                     </ul>
                 </div>
                 <!-- END MEGA MENU -->

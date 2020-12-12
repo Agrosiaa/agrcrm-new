@@ -1,7 +1,18 @@
 @extends('backend.seller.layouts.master')
-@section('title','Agrosiaa | Dashboard')
+@section('title','Agrosiaa | Customer')
 @include('backend.partials.common.nav')
 @section('css')
+    <link rel="stylesheet" type="text/css" href="/assets/frontend/global/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/assets/frontend/global/css/mCustomScrollbar.min.css">
+    <link rel="stylesheet" type="text/css" href="/assets/frontend/global/css/styles/style.css">
+    <link href="/assets/global/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css" rel="stylesheet" type="text/css" />
+    <link href="/assets/global/plugins/datatables/datatables.min.css" rel="stylesheet" type="text/css" />
+    <link href="/assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.css" rel="stylesheet" type="text/css" />
+    <link href="/assets/global/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css" rel="stylesheet" type="text/css" />
+    <link href="/assets/global/plugins/fancybox/source/jquery.fancybox.css" rel="stylesheet" type="text/css" />
+    <link href="/assets/global/css/plugins.min.css" rel="stylesheet" type="text/css" />
+    <link href="/assets/global/plugins/jstree/dist/themes/default/style.css" rel="stylesheet" type="text/css" />
+
 @endsection
 @section('content')
     <!-- BEGIN CONTAINER -->
@@ -27,6 +38,30 @@
                     <!-- END PAGE BREADCRUMBS -->
                     <!-- BEGIN PAGE CONTENT INNER -->
                     {{--<div class="page-content-inner">--}}
+                    <div class="row">
+                        @include('backend.partials.error-messages')
+                        <input type="hidden" id="base_url" value="{{env('BASE_URL')}}">
+                        <input type="hidden" id="crm_customer_id" value="{{$id}}">
+                        @if($id == 'null' && $user['role_id'] == 2)
+                            <div class="col-md-12 col-md-offset-11">
+                                @if($customerInfo->profile->first_name != null || $customerInfo->profile->last_name != null)
+                                    <a href="/crm/create-lead/{{$user['id']}}/{{$mobile}}" class="btn green">Create Lead</a>
+                                @else
+                                    <a href="javascript:void(0);" class="btn green" data-toggle="modal" data-target="#profile-edit-modal">
+                                        Create Lead
+                                    </a>
+                                @endif
+                            </div>
+                        @endif
+                            @if($id != 'null')
+                                <div class="col-md-12 col-md-offset-9">
+                                    <a href="#" onclick="chatHistory('{{$id}}','{{$mobile}}')" class="btn yellow">Make a Log </a>
+                                    <a href="#" id="place_order_button" class="btn blue">Place Order </a>
+                                    <a href="#" id="schedule-button" class="btn red-intense">Schedule </a>
+                                </div>
+                            @endif
+                    </div>
+                    <hr>
                     <div class="row">
                         <div class="col-md-6">
                             <div class="portlet yellow box">
@@ -59,11 +94,11 @@
                                             </div>
                                         @endif
                                     </div>
-                                    <div class="scroller-footer">
-                                    </div>
                                     <a href="javascript:void(0);" class="btn blue m-icon" data-toggle="modal" data-target="#profile-edit-modal">
                                         Edit
                                     </a>
+                                    <div class="scroller-footer">
+                                    </div>
                                 </div>
                                 <div class="col-md-6">
 
@@ -71,44 +106,163 @@
                             </div>
                         </div>
                         <div class="col-md-6">
+                            <div class="portlet green box">
+                                <div class="portlet-title">
+                                    <div class="caption">
+                                        <i class="icon- font-violet"></i>
+                                        <span class="caption-subject font-violet bold uppercase">Addresses</span>
+                                    </div>
+                                </div>
+                                <div class="portlet-body">
+                                    @if(empty($customerInfo->address))
+                                        <div id="no_product_div" style="text-align: center">
+                                            <h5>No address added yet</h5>
+                                        </div>
+                                    @else
+                                        <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                                            @foreach($customerInfo->address as $key=>$value)
+                                                @if($key == 0)
+                                                    <li class="nav-item col-md-3 active">
+                                                        <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#address{{$key}}" role="tab" aria-controls="pills-achievements" aria-selected="true">Address {{$key + 1}}</a>
+                                                    </li>
+                                                @else
+                                                    <li class="nav-item col-md-3">
+                                                        <a class="nav-link" id="pills-home-tab" data-toggle="pill" href="#address{{$key}}" role="tab" aria-controls="pills-achievements" aria-selected="true">Address {{$key + 1}}</a>
+                                                    </li>
+                                                @endif
+                                            @endforeach
+                                        </ul>
+                                        <div class="tab-content" id="pills-tabContent" style="height:50%;">
+                                            @foreach($customerInfo->address as $key=>$value)
+                                                @if($key == 0)
+                                                    <div class="tab-pane fade active in" id="address{{$key}}" onscroll="" role="tabpanel" aria-labelledby="pills-home-tab" style="height: 260px;overflow-x: scroll">
+                                                        <div class="row" style="border-bottom: 1px solid #b2b2b2; padding: 10px;background-color: #fefefe;">
+                                                            <div class="col-md-12"><i>Full Name : </i> <span style="color: #000000">{{$value->full_name}}</span></div>
+                                                            <div class="col-md-12"><i>Mobile : </i> <span style="color: #000000">{{$value->mobile}}</span></div>
+                                                            <div class="col-md-12"><i>House/Block Number : </i> <span style="color: #000000">{{$value->flat_door_block_house_no}}</span></div>
+                                                            <div class="col-md-12"><i>Name of Premise/Building/Village : </i> <span style="color: #000000">{{$value->name_of_premise_building_village}}</span></div>
+                                                            <div class="col-md-12"><i>Area/Locality : </i> <span style="color: #000000">{{$value->area_locality_wadi}}</span></div>
+                                                            <div class="col-md-12"><i>Road/Street/Lane : </i> <span style="color: #000000">{{$value->road_street_lane}}</span></div>
+                                                            <div class="col-md-12"><i>Post : </i> <span style="color: #000000">{{$value->at_post}}</span></div>
+                                                            <div class="col-md-12"><i>Taluka : </i> <span style="color: #000000">{{$value->taluka}}</span></div>
+                                                            <div class="col-md-12"><i>District : </i> <span style="color: #000000">{{$value->district}}</span></div>
+                                                            <div class="col-md-12"><i>State : </i> <span style="color: #000000">{{$value->state}}</span></div>
+                                                            <div class="col-md-12"><i>Pincode : </i> <span style="color: #000000">{{$value->pincode}}</span></div>
+                                                        </div>
+                                                    </div>
+                                                @else
+                                                    <div class="tab-pane fade active" id="address{{$key}}" onscroll="" role="tabpanel" aria-labelledby="pills-home-tab" style="height: 260px;overflow-x: scroll">
+                                                        <div class="row" style="border-bottom: 1px solid #b2b2b2; padding: 10px;background-color: #fefefe;">
+                                                            <div class="col-md-12"><i>Full Name : </i> <span style="color: #000000">{{$value->full_name}}</span></div>
+                                                            <div class="col-md-12"><i>Mobile : </i> <span style="color: #000000">{{$value->mobile}}</span></div>
+                                                            <div class="col-md-12"><i>House/Block Number : </i> <span style="color: #000000">{{$value->flat_door_block_house_no}}</span></div>
+                                                            <div class="col-md-12"><i>Name of Premise/Building/Village : </i> <span style="color: #000000">{{$value->name_of_premise_building_village}}</span></div>
+                                                            <div class="col-md-12"><i>Area/Locality : </i> <span style="color: #000000">{{$value->area_locality_wadi}}</span></div>
+                                                            <div class="col-md-12"><i>Road/Street/Lane : </i> <span style="color: #000000">{{$value->road_street_lane}}</span></div>
+                                                            <div class="col-md-12"><i>Post : </i> <span style="color: #000000">{{$value->at_post}}</span></div>
+                                                            <div class="col-md-12"><i>Taluka : </i> <span style="color: #000000">{{$value->taluka}}</span></div>
+                                                            <div class="col-md-12"><i>District : </i> <span style="color: #000000">{{$value->district}}</span></div>
+                                                            <div class="col-md-12"><i>State : </i> <span style="color: #000000">{{$value->state}}</span></div>
+                                                            <div class="col-md-12"><i>Pincode : </i> <span style="color: #000000">{{$value->pincode}}</span></div>
+                                                        </div>
+                                                    </div>
+                                                @endif
+                                            @endforeach
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="portlet purple box">
+                                <div class="portlet-title">
+                                    <div class="caption">
+                                        <i class="icon- font-violet"></i>
+                                        <span class="caption-subject font-violet bold uppercase">Customer Tag Cloud</span>
+                                    </div>
+                                </div>
+                                <div class="portlet-body">
+                                    <div class="bootstrap-tagsinput" id="customer-tag-div">
+                                        @foreach($customerTags as $customerTag)
+                                            <button id="tag{{$customerTag['tag_cloud_id']}}{{$customerTag['crm_customer_id']}}" class="lable" style="display: inline;font-size: 90%;margin-left: 2px;margin-top:3px;margin-bottom:3px;padding-bottom: 2px;padding-top: 2px">{{$customerTag['name']}}<span style="color: red;" onclick="removeCustTag({{$customerTag['tag_cloud_id']}},{{$customerTag['crm_customer_id']}})">&nbsp;×</span></button>&nbsp;&nbsp;&nbsp;
+                                        @endforeach
+                                    </div>
+                                    <div class="logo-wrap">
+                                        <div class=container>
+                                            <div class="menu clearfix">
+                                                <ul class="clearfix">
+                                                    <li class="select-category" id="search_header_main">
+                                                        <input type="text" id="tag_name" class="typeahead" placeholder="Search Tag" style=""/>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
                             <div class="portlet blue box">
                                 <div class="portlet-title">
                                     <div class="caption">
                                         <i class="icon- font-violet"></i>
                                         <span class="caption-subject font-violet bold uppercase">Order Details</span>
+                                        <input type="hidden" id="customer_mobile" value="{{$customerInfo->profile->mobile}}">
                                     </div>
                                 </div>
                                 <div class="portlet-body">
-                                    <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-                                        <li class="nav-item col-md-5">
-                                            <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#customer-order" role="tab" aria-controls="pills-achievements" aria-selected="true" style="width:213px">Orders</a>
+                                    <ul class="nav nav-pills mb-12" id="pills-tab" role="tablist">
+                                        <li class="nav-item active">
+                                            <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#customer-order" role="tab" aria-controls="pills-achievements" aria-selected="true" style="width:255px">Orders</a>
                                         </li>
-                                        <li class="nav-item col-md-5">
-                                            <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#customer-return" role="tab" aria-controls="pills-annoucement" aria-selected="false" style="width:213px">Return</a>
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#customer-return" role="tab" aria-controls="pills-annoucement" aria-selected="false" style="width:255px">Return</a>
                                         </li>
                                     </ul>
                                     <div class="tab-content" id="pills-tabContent">
-                                        <div class="tab-pane fade active" id="customer-order" onscroll="" role="tabpanel" aria-labelledby="pills-home-tab" style="height: 200px;overflow-y: scroll">
-                                            @if($customerInfo->orders == null)
-                                                <div class="col-md-12" style="text-align: center"><i><b>There are No Orders for this Customer</b></i></div>
-                                            @else
-                                                @foreach($customerInfo->orders as $order)
-                                                    <div class="row" style="border-bottom: 1px solid #b2b2b2; padding: 10px;background-color: #fefefe;">
-                                                        <div class="col-md-12" style="text-align: right; color: lightcoral"><i>{!! date('dS M Y',strtotime($order->created_at)) !!}</i></div>
-                                                        <div class="col-md-12"><i>Order Number : </i> <span style="color: #000000">{{$order->id}}</span></div>
-                                                        <div class="col-md-12"><i>Product : </i> {{$order->product_name}}</div>
-                                                        <div class="col-md-12"><i>Qty : </i><span style="color: #007AFF">{{$order->quantity}}</span> </div>
-                                                        <div class="col-md-12"><i>Status : </i><span style="color: #007AFF">{{$order->status}}</span></div>
-                                                        <div class="col-md-12"><i>Consignment Number : </i> {{$order->consignment_number}}</div>
-                                                        <div class="col-md-12"><i>Payment Mode : </i> {{$order->payment_mode}}</div>
-                                                        <div class="col-md-12"><i>Grand Total : </i> {{$order->subtotal}}</div>
-                                                    </div>
-                                                @endforeach
-                                            @endif
+                                        <div class="tab-pane fade active in" id="customer-order" onscroll="" role="tabpanel" aria-labelledby="pills-home-tab" style="height: 800px;overflow-y: scroll">
+                                            <table class="table table-striped table-bordered table-hover table-checkable" id="sales_admin_list">
+                                                <thead>
+                                                <tr role="row" class="heading">
+                                                    <th width="10%"> Order&nbsp;No </th>
+                                                    <th width="15%"> Order Date </th>
+                                                    <th width="20%"> Products </th>
+                                                    <th width="5%"> Qnt </th>
+                                                    <th width="10%"> SKUID </th>
+                                                    <th width="8%"> Status </th>
+                                                    <th width="10%"> AWB NO </th>
+                                                    <th width="10%"> Total </th>
+                                                </tr>
+                                                <tr role="row" class="filter">
+                                                    <td>
+                                                        <input type="text" class="form-control form-filter input-sm" name="order_no"> </td>
+                                                    <td></td>
+                                                    <td>
+                                                        <input type="text" class="form-control form-filter input-sm" name="product"> </td>
+                                                    <td>
+                                                        <input type="text" class="form-control form-filter input-sm" name="quantity"> </td>
+                                                    <td>
+                                                        <input type="text" class="form-control form-filter input-sm" name="skuid"> </td>
+                                                    <td>
+                                                        <input type="text" class="form-control form-filter input-sm" name="status"> </td>
+                                                    <td>
+                                                        <input type="text" class="form-control form-filter input-sm" name="awb_no"> </td>
+                                                    <td>
+                                                        <div class="margin-bottom-5">
+                                                            <button class="btn btn-sm btn-success filter-submit margin-bottom">
+                                                                <i class="fa fa-search"></i> Search</button>
+                                                        </div>
+                                                        <button class="btn btn-sm btn-default filter-cancel">
+                                                            <i class="fa fa-times"></i> Reset</button>
+                                                    </td>
+                                                </tr>
+                                                </thead>
+                                                <tbody></tbody>
+                                            </table>
                                         </div>
                                         <div class="tab-pane fade" id="customer-return" role="tabpanel" aria-labelledby="pills-profile-tab" style="height: 200px;overflow-y: scroll">
                                             @if($customerInfo->returns == null)
-                                                <div class="col-md-12" style="text-align: center"><i><b>There are No Order Return for this Customer</b></i></div>
+                                                <div class="col-md-12" style="text-align: center;margin-top: 10%"><i><b>There are No Order Return for this Customer</b></i></div>
                                             @else
                                                 @foreach($customerInfo->returns as $order)
                                                     <div class="row" style="border-bottom: 1px solid #b2b2b2; padding: 10px;background-color: #fefefe;">
@@ -130,89 +284,114 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-12" style="height: 340px">
-                            <div class="portlet green box">
+                        <div class="col-md-12">
+                            <div class="portlet blue box">
                                 <div class="portlet-title">
                                     <div class="caption">
                                         <i class="icon- font-violet"></i>
-                                        <span class="caption-subject font-violet bold uppercase">Addresses</span>
+                                        <span class="caption-subject font-violet bold uppercase">Abandoned Cart Listing</span>
+                                        <input type="hidden" id="customer_mobile" value="{{$customerInfo->profile->mobile}}">
                                     </div>
                                 </div>
                                 <div class="portlet-body">
-                                    <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-                                        <li class="nav-item col-md-3">
-                                            <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#address1" role="tab" aria-controls="pills-achievements" aria-selected="true">Address 1</a>
-                                        </li>
-                                        <li class="nav-item col-md-3">
-                                            <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#address2" role="tab" aria-controls="pills-annoucement" aria-selected="false">Address 2</a>
-                                        </li>
-                                        <li class="nav-item col-md-3">
-                                            <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#address3" role="tab" aria-controls="pills-annoucement" aria-selected="false">Address 3</a>
-                                        </li>
-                                    </ul>
-                                    <div class="tab-content" id="pills-tabContent">
-                                        <div class="tab-pane fade active" id="address1" onscroll="" role="tabpanel" aria-labelledby="pills-home-tab" style="height: 215px;overflow-y: scroll">
-                                            @if(count($customerInfo->address) >= 1)
-                                                <div class="row" style="border-bottom: 1px solid #b2b2b2; padding: 10px;background-color: #fefefe;">
-                                                    <div class="col-md-12"><i>Full Name : </i> <span style="color: #000000">{{$customerInfo->address['0']->full_name}}</span></div>
-                                                    <div class="col-md-12"><i>Mobile : </i> <span style="color: #000000">{{$customerInfo->address['0']->mobile}}</span></div>
-                                                    <div class="col-md-12"><i>House/Block Number : </i> <span style="color: #000000">{{$customerInfo->address['0']->flat_door_block_house_no}}</span></div>
-                                                    <div class="col-md-12"><i>Name of Premise/Building/Village : </i> <span style="color: #000000">{{$customerInfo->address['0']->name_of_premise_building_village}}</span></div>
-                                                    <div class="col-md-12"><i>Area/Locality : </i> <span style="color: #000000">{{$customerInfo->address['0']->area_locality_wadi}}</span></div>
-                                                    <div class="col-md-12"><i>Road/Street/Lane : </i> <span style="color: #000000">{{$customerInfo->address['0']->road_street_lane}}</span></div>
-                                                    <div class="col-md-12"><i>Post : </i> <span style="color: #000000">{{$customerInfo->address['0']->at_post}}</span></div>
-                                                    <div class="col-md-12"><i>Taluka : </i> <span style="color: #000000">{{$customerInfo->address['0']->taluka}}</span></div>
-                                                    <div class="col-md-12"><i>District : </i> <span style="color: #000000">{{$customerInfo->address['0']->district}}</span></div>
-                                                    <div class="col-md-12"><i>State : </i> <span style="color: #000000">{{$customerInfo->address['0']->state}}</span></div>
-                                                    <div class="col-md-12"><i>Pincode : </i> <span style="color: #000000">{{$customerInfo->address['0']->pincode}}</span></div>
-                                                </div>
-                                            @endif
-                                        </div>
-                                        <div class="tab-pane fade" id="address2" role="tabpanel" aria-labelledby="pills-profile-tab" style="height: 215px;overflow-y: scroll">
-                                            @if(count($customerInfo->address) >= 2)
-                                                <div class="row" style="border-bottom: 1px solid #b2b2b2; padding: 10px;background-color: #fefefe;">
-                                                    <div class="col-md-12"><i>Full Name : </i> <span style="color: #000000">{{$customerInfo->address['1']->full_name}}</span></div>
-                                                    <div class="col-md-12"><i>Mobile : </i> <span style="color: #000000">{{$customerInfo->address['1']->mobile}}</span></div>
-                                                    <div class="col-md-12"><i>House/Block Number : </i> <span style="color: #000000">{{$customerInfo->address['1']->flat_door_block_house_no}}</span></div>
-                                                    <div class="col-md-12"><i>Name of Premise/Building/Village : </i> <span style="color: #000000">{{$customerInfo->address['1']->name_of_premise_building_village}}</span></div>
-                                                    <div class="col-md-12"><i>Area/Locality : </i> <span style="color: #000000">{{$customerInfo->address['1']->area_locality_wadi}}</span></div>
-                                                    <div class="col-md-12"><i>Road/Street/Lane : </i> <span style="color: #000000">{{$customerInfo->address['1']->road_street_lane}}</span></div>
-                                                    <div class="col-md-12"><i>Post : </i> <span style="color: #000000">{{$customerInfo->address['1']->at_post}}</span></div>
-                                                    <div class="col-md-12"><i>Taluka : </i> <span style="color: #000000">{{$customerInfo->address['1']->taluka}}</span></div>
-                                                    <div class="col-md-12"><i>District : </i> <span style="color: #000000">{{$customerInfo->address['1']->district}}</span></div>
-                                                    <div class="col-md-12"><i>State : </i> <span style="color: #000000">{{$customerInfo->address['1']->state}}</span></div>
-                                                    <div class="col-md-12"><i>Pincode : </i> <span style="color: #000000">{{$customerInfo->address['1']->pincode}}</span></div>
-                                                </div>
-                                            @endif
-                                        </div>
-                                        <div class="tab-pane fade" id="address3" role="tabpanel" aria-labelledby="pills-profile-tab" style="height: 215px;overflow-y: scroll">
-                                            @if(count($customerInfo->address) >= 3)
-                                                <div class="row" style="border-bottom: 1px solid #b2b2b2; padding: 10px;background-color: #fefefe;">
-                                                    <div class="col-md-12"><i>Full Name : </i> <span style="color: #000000">{{$customerInfo->address['2']->full_name}}</span></div>
-                                                    <div class="col-md-12"><i>Mobile : </i> <span style="color: #000000">{{$customerInfo->address['2']->mobile}}</span></div>
-                                                    <div class="col-md-12"><i>House/Block Number : </i> <span style="color: #000000">{{$customerInfo->address['2']->flat_door_block_house_no}}</span></div>
-                                                    <div class="col-md-12"><i>Name of Premise/Building/Village : </i> <span style="color: #000000">{{$customerInfo->address['2']->name_of_premise_building_village}}</span></div>
-                                                    <div class="col-md-12"><i>Area/Locality : </i> <span style="color: #000000">{{$customerInfo->address['2']->area_locality_wadi}}</span></div>
-                                                    <div class="col-md-12"><i>Road/Street/Lane : </i> <span style="color: #000000">{{$customerInfo->address['2']->road_street_lane}}</span></div>
-                                                    <div class="col-md-12"><i>Post : </i> <span style="color: #000000">{{$customerInfo->address['2']->at_post}}</span></div>
-                                                    <div class="col-md-12"><i>Taluka : </i> <span style="color: #000000">{{$customerInfo->address['2']->taluka}}</span></div>
-                                                    <div class="col-md-12"><i>District : </i> <span style="color: #000000">{{$customerInfo->address['2']->district}}</span></div>
-                                                    <div class="col-md-12"><i>State : </i> <span style="color: #000000">{{$customerInfo->address['2']->state}}</span></div>
-                                                    <div class="col-md-12"><i>Pincode : </i> <span style="color: #000000">{{$customerInfo->address['2']->pincode}}</span></div>
-                                                </div>
-                                            @endif
-                                        </div>
+                                    <div class="table-container">
+                                        <table class="table table-striped table-bordered table-hover table-checkable" id="abandoned_cart_listing">
+                                            <thead>
+                                            <tr role="row" class="heading">
+                                                <th width="15%"> Registered From </th>
+                                                <th width="20%"> Created On </th>
+                                                <th width="20%"> Updated On </th>
+                                                <th width="10%"> Action </th>
+                                            </tr>
+                                            <tr role="row" class="filter">
+                                                <td>
+                                                </td>
+                                                <td>
+                                                    <div class="input-group date date-picker">
+                                                        <input type="text" size="16" class="form-control form-filter" name="toDate" id="toDate" placeholder="to date">
+                                                        <span class="input-group-btn">
+                                                     <button class="btn default date-set" type="button">
+                                                         <i class="fa fa-calendar"></i>
+                                                     </button>
+                                                 </span>
+                                                    </div>
+                                                    <div class="input-group date date-picker">
+                                                        <input type="text" size="16" class="form-control form-filter" name="fromDate" id="fromDate" placeholder="from date">
+                                                        <span class="input-group-btn">
+                                                     <button class="btn default date-set" type="button">
+                                                         <i class="fa fa-calendar"></i>
+                                                     </button>
+                                                 </span>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="input-group date date-picker">
+                                                        <input type="text" size="16" class="form-control form-filter" name="toUpdatedDate" id="toUpdatedDate" placeholder="to date">
+                                                        <span class="input-group-btn">
+                                                     <button class="btn default date-set" type="button">
+                                                         <i class="fa fa-calendar"></i>
+                                                     </button>
+                                                 </span>
+                                                    </div>
+                                                    <div class="input-group date date-picker">
+                                                        <input type="text" size="16" class="form-control form-filter" name="fromUpdatedDate" id="fromUpdatedDate" placeholder="from date">
+                                                        <span class="input-group-btn">
+                                                     <button class="btn default date-set" type="button">
+                                                         <i class="fa fa-calendar"></i>
+                                                     </button>
+                                                 </span>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <button class="btn btn-xs blue filter-submit"> Search <i class="fa fa-search"></i> </button>
+                                                    <button class="btn btn-xs default filter-cancel"> Reset <i class="fa fa-undo"></i> </button>
+                                                </td>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-12">
-                            <button class="col-md-2 col-md-offset-3 btn btn-primary" onclick="chatHistory('{{$id}}','{{$mobile}}')"> Make a Log </button>&nbsp;&nbsp;&nbsp;
-                            <button class="col-md-2 btn btn-primary" id="place_order_button"> Place Order </button>&nbsp;&nbsp;&nbsp;
-                            <button class="col-md-2 btn btn-primary"> Schedule </button>&nbsp;&nbsp;&nbsp;
+                    </div>
+                    <div id="schedule_modal" class="modal fade bs-modal-md" tabindex="-1" role="dialog">
+                        <div class="modal-dialog modal-md">
+                            <!-- Modal content-->
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title" style="text-align: center"><b>Set Schedule for Next Call</b></h4>
+                                </div>
+                                <form class="form-horizontal" method="post" role="form" action="/crm/set-schedule">
+                                    <input type="hidden" name="cust_detail_id" value="{{$id}}">
+                                    <div class="modal-body">
+                                        <div class="form-group">
+                                            {{csrf_field()}}
+                                            <label class="control-label col-sm-4">Reminder Time</label>
+                                            <div class="col-md-8">
+                                                <div class="input-group date form_datetime input-large">
+                                                    <input type="text" size="16" name="reminder_time" class="form-control">
+                                                    <span class="input-group-btn">
+                                                        <button class="btn default date-set" type="button">
+                                                            <i class="fa fa-calendar"></i>
+                                                        </button>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-8 col-md-offset-4">
+                                                <button type="submit" class="btn btn-sm btn-success">Create</button>
+                                                <button class="btn btn-sm btn-danger" data-dismiss="modal">Cancel</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
                     </div>
-                    <br><br><br>
                     <div id="reply" class="modal" role="dialog" data-dismiss="modal">
                         <div class="modal-dialog">
                             <!-- Modal content-->
@@ -238,7 +417,7 @@
                                         <div class="col-md-12" >
                                             <div class="portlet light" style="background-image: url(/assets/global/img/chat-background.jpg);">
                                                 <div class="portlet-body" >
-                                                    <div class="scroller scro" style="height: 338px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
+                                                    <div id="chat_scroll_div" class="scroller scro" style="height: 338px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
                                                         <div class="general-item-list" id="chat_message">
 
                                                         </div>
@@ -249,15 +428,14 @@
                                     </div>
                                     <br>
                                     <div class="row" id="query-form">
-                                        <form action="" role="form">
-                                            <div class="col-md-10">
-                                                <input type="text" name="reply_text" id="reply_text" required="required" maxlength="500" class="form-control" placeholder="reply">
-                                                <input type="hidden" id="customer_detail_id" value="">
-                                            </div>
-                                            <div class="col-md-2">
-                                                <button class="btn btn-sm btn-success table-group-action-submit chat-submit pull-right">Reply</button>
-                                            </div>
-                                        </form>
+                                        <div class="col-md-10">
+                                            <input type="text" name="reply_text" id="reply_text" class="col-md-10" maxlength="500"  placeholder="reply" required>
+                                            <input type="hidden" id="customer_detail_id" value="">
+                                            <input type="hidden" id="customer_detail_mobile" value="">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button class="btn btn-sm btn-success table-group-action-submit chat-submit pull-right">Reply</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -270,15 +448,16 @@
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                    <h4 class="modal-title" style="text-align: center"><b>Create Customer</b></h4>
+                                    <h4 class="modal-title" style="text-align: center"><b>Step 1- Enter Address Information</b></h4>
                                     <div>
-                                        <a id="select_product_modal"><h6 style="text-align: right">next</h6></a>
+                                        <a id="select_product_modal"><h4 style="text-align: right">Next</h4></a>
                                     </div>
                                 </div>
                                 <div class="modal-body">
                                     <div class="row">
                                         <div class="col-md-6">
                                             <form id="add_new_address">
+                                                <input type="hidden" value="{{$customerInfo->profile->id}}" id="customer_id">
                                                 <div class="address-form">
                                                     <div class="form-group">
                                                         <label for="company">Full Name</label><span class="required">*</span>
@@ -317,7 +496,7 @@
                                                             <div class="form-group">
                                                                 <label for="pin">Pin</label><span class="required">*</span>
                                                                 <input class="form-control pincode typeahead" type="text" id="pincode" name="pincode" required>
-                                                                <span style="color: darkred"><h6></h6></span>
+                                                                <span style="color: darkred"><h7>Make sure you choose the exact pincode from the dropdown values only</h7></span>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6">
@@ -334,7 +513,7 @@
                                                         <div class="col-md-6">
                                                             <div class="form-group">
                                                                 <label for="state">State</label><span class="required">*</span>
-                                                                <input class="form-control state" type="text" id="state" name="state" readonly>
+                                                                <input class="form-control state" type="text" id="stateName" name="stateName" readonly>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6">
@@ -352,10 +531,11 @@
                                                             </div>
                                                         </div>
                                                     </div>
-
+                                                     @if(count($customerInfo->address) < 3)
                                                     <div class="form-group">
                                                         <button type="submit" id="new_address_button" class="btn btn-primary btn-icon">Add new address</button>
                                                     </div>
+                                                     @endif
                                                 </div>
                                             </form>
                                         </div>
@@ -366,16 +546,16 @@
                                                     @if($customerInfo->address != null)
                                                         @foreach($customerInfo->address as $address)
                                                             <div class="address-item" id="address_{{$address->id}}">
-                                                                <input type="radio" name="customer_address_id" class="btn-address" value="{{$address->id}}">
-                                                                <div class="full-address">
+                                                                <input type="radio" name="customer_address_id" value="{{$address->id}}" style="width: 30px; height: 30px">
+                                                                <div class="full-address" id="delivery_address_{!! $address->id !!}">
                                                                     <div class="name">{{ucwords($address->full_name)}}</div>
                                                                     <div class="mobile"><span><i class="fa fa-phone"></i> {{$address->mobile}}</span></div>
                                                                     <div class="address">{{$address->flat_door_block_house_no}}, {{$address->name_of_premise_building_village}}, {{$address->area_locality_wadi}}, {{$address->road_street_lane}}, {{$address->at_post}}, {{$address->taluka}}, {{$address->district}} - {{$address->pincode}}, {{ucwords(strtolower($address->state))}}, INDIA</div>
-                                                                    <div class="col-md-12 col-sm-4">
-                                                                        <div class="edit-delete-btns">
-                                                                            <button class="btn-edit" data-edit="{{$address->id}}">@lang('message.edit_text')</button>
-                                                                            <button class="btn-delete" data-delete="{{$address->id}}">@lang('message.delete_text')</button>
-                                                                        </div>
+                                                                </div>
+                                                                <div class="col-md-12 col-sm-4">
+                                                                    <div class="edit-delete-btns">
+                                                                        <button type="button" class="btn-edit btn btn-success" data-edit="{{$address->id}}">Edit address</button>
+                                                                        <button type="button" class="btn-delete btn btn-danger" data-delete="{{$address->id}}">delete address</button>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -385,42 +565,47 @@
                                             </div>
                                         </div>
                                     </div>
-                                    {{--<div class="row">
-                                        <div class="col-md-12">
-                                            <button type="submit" id="create_customer" class="btn btn-sm btn-success">Create</button>
-                                            <button class="btn btn-sm btn-danger pull-right" data-dismiss="modal">Cancel</button>
-                                        </div>
-                                    </div>--}}
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div id="select_products" class="modal fade bs-modal-lg" tabindex="-1" role="dialog">
+                    <form id="customer_order">
+                    <div id="select_products" class="modal fade bs-modal-md" tabindex="-1" role="dialog" style="height: 500%">
                         <div class="modal-dialog modal-lg">
                             <!-- Modal content-->
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                    <h4 class="modal-title" style="text-align: center"><b>Select Products</b></h4>
+                                    <h4 class="modal-title" style="text-align: center"><b>Step 2- Add Products For Checkout</b></h4>
                                     <div class="row">
                                         <div class="col-sm-6">
-                                            <a id="place_order_modal"><h6 style="text-align: left">previous</h6></a>
+                                            <a id="place_order_modal"><h4 style="text-align: left">Previous</h4></a>
                                         </div>
                                         <div class="col-sm-6">
-                                            <a id="confirm_order_modal"><h6 style="text-align: right">next</h6></a>
+                                            <a id="confirm_order_modal"><h4 style="text-align: right">Next</h4></a>
                                         </div>
                                     </div>
                                 </div>
-                                <form id="create-customer-form">
-                                    <div class="modal-body">
-                                        <div class="row">
-                                            <div class="col-md-offset-4">
-                                                <label for="state">Enter Product</label><span class="required">*</span>
-                                                <input type="text" class="typeahead form-control" id="product_name" name="product_name" />
+                                <div class="modal-body">
+                                    <div class="logo-wrap">
+                                        <div class=container>
+                                            <div class="menu clearfix">
+                                                <ul class="clearfix">
+                                                     <li class="select-category" id="search_header_main">
+                                                         <input type="text" id="product_name" class="typeahead" placeholder=" Search Products" style=""/>
+                                                     </li>
+                                                </ul>
                                             </div>
                                         </div>
                                     </div>
-                                </form>
+                                    <hr>
+                                    <h4>Checkout Preview</h4>
+                                    <div id="check_out_preview">
+                                    </div>
+                                    <div id="no_product_div" style="text-align: center">
+                                        <h5>No Product Added for Checkout Yet</h5>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -430,83 +615,62 @@
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                    <h4 class="modal-title" style="text-align: center"><b>Confirm Order</b></h4>
+                                    <h4 class="modal-title" style="text-align: center"><b>Step 3- Confirm Order</b></h4>
                                     <div class="row">
                                         <div class="col-sm-6">
-                                            <a id="select_order_modal"><h6 style="text-align: left">previous</h6></a>
+                                            <a id="select_order_modal"><h4 style="text-align: left">Previous</h4></a>
                                         </div>
                                     </div>
                                 </div>
-                                <hr>
-                                <form id="create-customer-form">
-                                    <div class="modal-body">
+                                <div class="modal-body">
+                                    <div class="row">
                                         <div class="row">
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label class="col-md-4 control-label">First Name : <span class="required">*</span></label>
-                                                    <div class="col-md-4">
-                                                        <input type="text" class="form-control" id="fname" name="fname" required>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            <h4 class="col-md-offset-1"><b>Order Summary</b></h4>
                                         </div>
-                                        <br>
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label class="col-md-4 control-label">Last Name : <span class="required">*</span></label>
-                                                    <div class="col-md-4">
-                                                        <input type="text" class="form-control" id="lname" name="lname" required>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                        <div class="row col-md-offset-1" id="selected_products">
                                         </div>
-                                        <br>
+                                        <hr>
                                         <div class="row">
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label class="col-md-4 control-label">Birth date : </label>
-                                                    <div class="col-md-4">
-                                                        <input type="date" class="form-control" id="birthdate" name="birthdate">
-                                                    </div>
-                                                </div>
+                                            <div class="col-md-2 col-md-offset-8">
+                                                <h4>Total:</h4>
                                             </div>
-                                        </div>
-                                        <br>
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label class="col-md-4 control-label">Email id : </label>
-                                                    <div class="col-md-4">
-                                                        <input type="text" class="form-control" id="email" name="email">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <br>
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label class="col-md-4 control-label">Mobile Number : <span class="required">*</span></label>
-                                                    <div class="col-md-4">
-                                                        <input type="text" class="form-control" id="cust_mobile_number" name="mobile_number" required>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <br>
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <button type="submit" id="create_customer" class="btn btn-sm btn-success">Create</button>
-                                                <button class="btn btn-sm btn-danger pull-right" data-dismiss="modal">Cancel</button>
+                                            <div class="col-md-1">
+                                                <h4 class="pull-right" id="order_total"></h4>
                                             </div>
                                         </div>
                                     </div>
-                                </form>
+                                    <div class="row">
+                                        <div class="row">
+                                            <h4 class="col-md-offset-1"><b>Delivery Address</b></h4>
+                                        </div>
+                                        <div class="row col-md-offset-1" id="delivery_address">
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="row">
+                                        <div class="row">
+                                            <h4 class="col-md-offset-1"><b>Referral Code</b></h4>
+                                        </div>
+                                        <div class="row col-md-offset-1">
+                                            <div class="col-md-5">
+                                                <input type="text" class="form-control" id="referral_code" name="referral_code" placeholder="Enter referral code" style=""/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <div class="row">
+                                        <div class="col-md-11">
+                                            <input class="form-control" type="hidden" id="address_id" name="address_id" value="">
+                                            <input class="form-control" type="hidden" value="{{$customerInfo->profile->id}}" name="cust_id">
+                                            <input class="form-control" type="hidden" value="{{$user->id}}" name="sales_id">
+                                        <button type="submit" id="confirm_order_button" class="btn btn-primary btn-icon pull-right" onclick="confirmOrder()">Confirm Order</button>
+                                        </div>
+                                    </div>
                             </div>
                         </div>
                     </div>
-
+                    </div>
+                    </form>
                     {{--End of modal for place orders--}}
                     {{--Modal for Profile edit--}}
                     <div id="profile-edit-modal" class="modal fade bs-modal-md" tabindex="-1" role="dialog">
@@ -518,15 +682,23 @@
                                     <h4 class="modal-title" style="text-align: center"><b>Customer Profile Edit</b></h4>
                                 </div>
                                 <hr>
-                                <form id="edit-customer-profile">
-                                    <input type="hidden" value="{{$customerInfo->profile->id}}" id="user_id">
+                                <form method="post" action="/customer/edit-customer">
+                                    {{ csrf_field() }}
+                                    @if($id == 'null')
+                                        <input type="hidden" name="create_lead" value="true">
+                                    @endif
+                                    <input type="hidden" value="{{$customerInfo->profile->id}}" name="user_id">
                                     <div class="modal-body">
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <div class="form-group">
-                                                    <label class="col-md-3 control-label">First Name : <span class="required">*</span></label>
+                                                    <label class="col-md-3 control-label">First Name : </label>
                                                     <div class="col-md-6">
-                                                        <input type="text" class="form-control" id="fname" value="{{ucwords($customerInfo->profile->first_name)}}" name="fname" required>
+                                                        @if($id == 'null')
+                                                            <input type="text" class="form-control" id="f_name" value="{{ucwords($customerInfo->profile->first_name)}}" name="f_name" required>
+                                                        @else
+                                                            <input type="text" class="form-control" id="f_name" value="{{ucwords($customerInfo->profile->first_name)}}" name="f_name" readonly>
+                                                        @endif
                                                     </div>
                                                 </div>
                                             </div>
@@ -535,9 +707,13 @@
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <div class="form-group">
-                                                    <label class="col-md-3 control-label">Last Name : <span class="required">*</span></label>
+                                                    <label class="col-md-3 control-label">Last Name :</label>
                                                     <div class="col-md-6">
-                                                        <input type="text" class="form-control" id="lname" value="{{ucwords($customerInfo->profile->last_name)}}" name="lname" required>
+                                                        @if($id == 'null')
+                                                            <input type="text" class="form-control" id="l_name" value="{{ucwords($customerInfo->profile->last_name)}}" name="l_name" required>
+                                                        @else
+                                                            <input type="text" class="form-control" id="l_name" value="{{ucwords($customerInfo->profile->last_name)}}" name="l_name" readonly>
+                                                        @endif
                                                     </div>
                                                 </div>
                                             </div>
@@ -548,7 +724,7 @@
                                                 <div class="form-group">
                                                     <label class="col-md-3 control-label">Birth date : </label>
                                                     <div class="col-md-6">
-                                                        <input type="date" class="form-control" id="birthdate" value="{{$customerInfo->profile->dob}}" name="birthdate">
+                                                        <input type="date" class="form-control" id="dob" value="{{$customerInfo->profile->dob}}" name="dob">
                                                     </div>
                                                 </div>
                                             </div>
@@ -559,7 +735,11 @@
                                                 <div class="form-group">
                                                     <label class="col-md-3 control-label">Email id : </label>
                                                     <div class="col-md-6">
-                                                        <input type="text" class="form-control" id="email" value="{{$customerInfo->profile->email}}" name="email">
+                                                        @if($id == 'null')
+                                                            <input type="email" class="form-control" id="profile_email" value="{{$customerInfo->profile->email}}" name="profile_email">
+                                                        @else
+                                                            <input type="email" class="form-control" id="profile_email" value="{{$customerInfo->profile->email}}" name="profile_email" readonly>
+                                                        @endif
                                                     </div>
                                                 </div>
                                             </div>
@@ -570,7 +750,7 @@
                                                 <div class="form-group">
                                                     <label class="col-md-3 control-label">Mobile Number : <span class="required">*</span></label>
                                                     <div class="col-md-6">
-                                                        <input type="text" class="form-control" id="cust_mobile_number" value="{{ucwords($customerInfo->profile->mobile)}}" name="mobile_number" required>
+                                                        <input type="text" class="form-control" id="profile_mobile" value="{{ucwords($customerInfo->profile->mobile)}}" name="profile_mobile" readonly>
                                                     </div>
                                                 </div>
                                             </div>
@@ -578,7 +758,7 @@
                                         <br>
                                         <div class="row">
                                             <div class="col-md-10">
-                                                <button type="submit" id="profile-edit" class="btn btn-sm btn-success pull-right">Edit</button>
+                                                <button type="submit" class="btn btn-sm btn-success pull-right">Save</button>
                                             </div>
                                             <div class="col-md-2">
                                                 <button class="btn btn-sm btn-danger pull-right" data-dismiss="modal">Cancel</button>
@@ -590,7 +770,129 @@
                         </div>
                     </div>
                     {{--END of Modal for Profile edit--}}
-                </div>
+
+                    {{--Modal for edit address--}}
+                    @if($customerInfo->address != null)
+                        @foreach($customerInfo->address as $address)
+                            <div id="edit_address_{{$address->id}}" class="modal fade bs-modal-md" tabindex="-1" role="dialog">
+                                <div class="modal-dialog modal-md">
+                                    <!-- Modal content-->
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                            <h4 class="modal-title" style="text-align: center"><b>Edit Address</b></h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <form id="add_new_address">
+                                                        <input type="hidden" value="{{$customerInfo->profile->id}}" id="customer_id">
+                                                        <div class="address-form">
+                                                            <div class="form-group">
+                                                                <label for="company">Full Name</label><span class="required">*</span>
+                                                                <input type="text" class="form-control" name="full_name" id="full_name_{{$address->id}}" value="{{$address->full_name}}" required>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="mobile">Mobile</label><span class="required">*</span>
+                                                                <input type="text" class="form-control" name="mobile" id="mobile_{{$address->id}}" value="{{$address->mobile}}" required>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="company">Flat/Door/Block No.</label><span class="required">*</span>
+                                                                <input type="text" class="form-control" name="flat_door_block_house_no" id="flat_door_block_house_no_{{$address->id}}" value="{{$address->flat_door_block_house_no}}" required>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="company">Name of the Premise/Building/Village</label><span class="required">*</span>
+                                                                <input type="text" class="form-control" name="name_of_premise_building_village" id="name_of_premise_building_village_{{$address->id}}" value="{{$address->name_of_premise_building_village}}" required>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group">
+                                                                        <label for="area">Area/Locality/Wadi</label><span class="required">*</span>
+                                                                        <input class="form-control area" id="area_{{$address->id}}" name="area_locality_wadi" value="{{$address->area_locality_wadi}}" required>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group">
+                                                                        <label for="post">Road/Street/Lane</label><span class="required">*</span>
+                                                                        <div id="at-post">
+                                                                            <input class="form-control" type="text" id="road_street_lane_{{$address->id}}" name="road_street_lane" value="{{$address->road_street_lane}}" required>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group">
+                                                                        <label for="pin">Pin</label><span class="required">*</span>
+                                                                        <input class="form-control edit-pincode typeahead" type="text" id="pincode_{{$address->id}}" name="pincode" value="{{$address->pincode}}" required>
+                                                                        <span style="color: darkred"><h7>Make sure you choose the exact pincode from the dropdown values only</h7></span>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group">
+                                                                        <label for="post">Post</label><span class="required">*</span>
+                                                                        <div id="at-post">
+                                                                            <select class="form-control edit-atPost" name="at_post" id="atPost_{{$address->id}}" required>
+                                                                                <option value="{{$address->at_post}}">{{$address->at_post}}</option>
+                                                                            </select>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group">
+                                                                        <label for="state">State</label><span class="required">*</span>
+                                                                        <input class="form-control edit-stateName" type="text" id="stateName_{{$address->id}}" name="stateName" value="{{$address->state}}" readonly>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group">
+                                                                        <label for="dist">District</label><span class="required">*</span>
+                                                                        <input type="text" class="form-control edit-district" name="district" id="district_{{$address->id}}" value="{{$address->district}}" readonly>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-6">
+                                                                    <div class="form-group">
+                                                                        <label for="taluka">Taluka</label><span class="required">*</span>
+                                                                        <input type="text" class="form-control edit-taluka" name="taluka" id="taluka_{{$address->id}}" value="{{$address->taluka}}" readonly>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <button type="submit" id="edit_address_button" class="btn btn-primary btn-icon" onclick="editAddress({{$address->id}})">Edit address</button>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    @endif
+
+                    {{--End of Modal for Edit Address--}}
+                    {{--Modal For Abandoned Details--}}
+                    <div id="AbandonedDetailModal" class="modal container fade" tabindex="-1">
+                            <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                                <h4 class="modal-title">Abandoned Cart Details</h4>
+                            </div>
+                            <div class="modal-body">
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" data-dismiss="modal" class="btn btn-outline dark">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                {{--End Modal--}}
                 <!-- END PAGE CONTENT INNER -->
             </div>
         </div>
@@ -628,11 +930,13 @@
     <script type="text/javascript" src="/assets/frontend/custom/registration/js/typeahead.bundle.js"></script>
     <script type="text/javascript" src="/assets/frontend/custom/registration/js/handlebars-v3.0.3.js"></script>
     <script src="/assets/pages/scripts/components-date-time-pickers.min.js" type="text/javascript"></script>
-    <script src="/assets/custom/superadmin/krishimitra/addresses.js"></script>
-    <script src="/assets/pages/scripts/superadmin/order/ecommerce-orders.min.js" type="text/javascript"></script>
+    <script src="/assets/custom/pincode/addresses.js"></script>
+    <script src="/assets/custom/pincode/editaddress.js"></script>
     <script src="/assets/global/plugins/jquery-validation/js/jquery.validate.min.js" type="text/javascript"></script>
+        <script src="/assets/pages/scripts/customer/order/ecommerce-orders.min.js" type="text/javascript"></script>
+        <script src="/assets/pages/scripts/customer/abandonedCart/ecommerce-orders.min.js" type="text/javascript"></script>
 
-    <!-- END PAGE LEVEL SCRIPTS -->
+        <!-- END PAGE LEVEL SCRIPTS -->
     <!-- BEGIN THEME LAYOUT SCRIPTS -->
     <script src="/assets/layouts/layout3/scripts/layout.min.js" type="text/javascript"></script>
     <script src="/assets/layouts/layout3/scripts/demo.min.js" type="text/javascript"></script>
@@ -641,25 +945,30 @@
         $(document).ready(function () {
             $('#place_order').modal('hide');
 
+            $('#product_name').on('select',function () {
+                $('#product_name').val('');
+            });
             var productList = new Bloodhound({
                 datumTokenizer: Bloodhound.tokenizers.obj.whitespace('office_name'),
                 queryTokenizer: Bloodhound.tokenizers.whitespace,
                 remote: {
-                    url: "{{env('BASE_URL')}}/get-products",
+                    url: "{{env('BASE_URL')}}/get-products?product_name=%QUERY",
                     filter: function(x) {
-                        if($(window).width()<420){
-                            $("#header").addClass("fixed");
-                        }
                         return $.map(x, function (data) {
                             return {
                                 id: data.id,
                                 name: data.name,
+                                company: data.company,
                                 translated_name: data.translated_name,
                                 position: data.position,
                                 slug: data.slug,
                                 btn_class: data.class,
                                 url_param: data.url_param,
-                                translated_slug:data.translated_slug
+                                translated_slug:data.translated_slug,
+                                price:data.discounted_price,
+                                sku:data.seller_sku,
+                                minimum_quantity:data.minimum_quantity,
+                                maximum_quantity:data.maximum_quantity
                             };
                         });
                     },
@@ -668,7 +977,7 @@
             });
             var language = $('#language').val();
             productList.initialize();
-            $('#product_name .typeahead').typeahead(null, {
+            $('#product_name').typeahead(null, {
                 displayKey: 'name',
                 engine: Handlebars,
                 source: productList.ttAdapter(),
@@ -679,27 +988,214 @@
                         'Unable to find any Result that match the current query',
                         '</div>'
                     ].join('\n'),
-                    suggestion: Handlebars.compile('<div style="text-transform: capitalize;">  <strong>@{{translated_name}}</strong><span class="@{{btn_class}}">@{{translated_slug}}</span></div>')
-                },
-                {{--<img height="50px" width="50px" src="/assets/frontend/global/images/logo.png" />--}}
+                    suggestion: Handlebars.compile('<div style="text-transform: capitalize;"><strong>@{{translated_name}}</strong><span class="@{{btn_class}}">@{{sku}}</span><span><i class="fa fa-rupee"></i>@{{ price }}</span></div>')
+                }
             }).on('typeahead:selected', function (obj, datum) {
                 var POData = new Array();
                 POData = $.parseJSON(JSON.stringify(datum));
                 POData.name = POData.name.replace(/\&/g,'%26');
+                str = '<div class="row" id="div_'+POData.id+'">'+
+                        '<div class="col-md-7"><h5>'+POData.name+'<span class="tag label label-info" style="margin-left: 2px">'+POData.company+'</span></h5>'+
+                        '</div>'+
+                        '<div class="col-md-3">'+
+                                '<a class="btn" onclick="updateProductQuantity('+POData.id+',false,'+POData.price+','+POData.minimum_quantity+','+POData.maximum_quantity+')" >-</a>'+
+                                '<input class="cart-quantity" type="text" id="product_'+POData.id+'" value="1" style="width: 30px; text-align: center" readonly>'+
+                                '<a class="btn" onclick="updateProductQuantity('+POData.id+',true,'+POData.price+','+POData.minimum_quantity+','+POData.maximum_quantity+')">+</a>'+
+                        '</div>'+
+                        '<div class="col-md-2"><i class="fa fa-rupee"></i><span id="price_'+POData.id+'">'+POData.price+'</span> &nbsp;&nbsp;<a><span onclick="removeProduct('+POData.id+')">x</span></a></div>'+
+                        '</div>'+
+                        '<input class="form-control product-list" type="hidden" id="product_id_'+POData.id+'" name="product_id[]" value="'+POData.id+'">'+
+                        '<input class="form-control" type="hidden" id="product_qnt'+POData.id+'" name="product_qnt['+POData.id+']" value="1">';
 
-            })
-                .on('typeahead:open', function (obj, datum) {
+
+                str2 = '<div class="row" id="selected_products_div_'+POData.id+'"><div class="col-md-7"><h5>'+POData.name+'<span class="tag label label-info" style="margin-left: 2px">'+POData.company+'</span></h5></div>'+
+                    '<div class="col-md-3">'+
+                    '<input class="cart-quantity" type="text" id="selected_product_qnt'+POData.id+'" value="1" style="width: 30px; text-align: center" readonly>'+
+                    '</div>'+
+                    '<div class="col-md-2"><i class="fa fa-rupee"></i><span class="product-price-total" id="products_price_'+POData.id+'">'+POData.price+'</span></div>'+
+                    '</div>';
+                $('#check_out_preview').append(str);
+                $('#selected_products').append(str2);
+                $('#no_product_div').hide();
+            }).on('typeahead:open', function (obj, datum) {
 
                 });
         });
 
+        $(document).ready(function () {
+            $('#tag_name').on('select',function () {
+                $('#tag_name').val('');
+            });
+            var crmCustId = $('#crm_customer_id').val();
+            var tagList = new Bloodhound({
+                datumTokenizer: Bloodhound.tokenizers.obj.whitespace('office_name'),
+                queryTokenizer: Bloodhound.tokenizers.whitespace,
+                remote: {
+                    url: "/get-tags?tag_name=%QUERY",
+                    filter: function(x) {
+                        return $.map(x, function (data) {
+                            return {
+                                id: data.id,
+                                name: data.name
+                            };
+                        });
+                    },
+                    wildcard: "%QUERY"
+                }
+            });
+            var language = $('#language').val();
+            tagList.initialize();
+            $('#tag_name').typeahead(null, {
+                displayKey: 'name',
+                engine: Handlebars,
+                source: tagList.ttAdapter(),
+                limit: 30,
+                templates: {
+                    empty: [
+                        '<div class="empty-message">',
+                        'Unable to find any Result that match the current query',
+                        '</div>'
+                    ].join('\n'),
+                    suggestion: Handlebars.compile('<div style="text-transform: capitalize;"><strong>@{{name}}</strong></div>')
+                }
+            }).on('typeahead:selected', function (obj, datum) {
+                var POData = new Array();
+                POData = $.parseJSON(JSON.stringify(datum));
+                POData.name = POData.name.replace(/\&/g,'%26');
+                str = '<button id="tag'+POData.id+crmCustId+'" class="lable" style="display: inline;font-size: 90%;margin-left: 2px;margin-top:3px;margin-bottom:3px;padding-bottom: 2px;padding-top: 2px">'+POData.name+'<span style="color: red;" onclick="removeCustTag('+POData.id+','+crmCustId+')"> ×</span></button>&nbsp;&nbsp;&nbsp';
+                $('#customer-tag-div').append(str);
+                if(crmCustId != 'null'){
+                    $.ajax({
+                        url: '/tag/customer-tag',
+                        type: 'POST',
+                        dataType: 'array',
+                        data: {
+                            "_token": "{{ csrf_token() }}",
+                            'crm_cust_id' : crmCustId,
+                            'tag_id' : POData.id
+                        },
+                        success: function (responce) {
+                        },
+                        error: function (responce) {
+                        }
+                    })
+                }
+            }).on('typeahead:open', function (obj, datum) {
+
+            });
+            $('#tag_name').keypress(function (e) {
+                var key = e.which;
+                if(key == '13'){
+                    var singleQuote = "'";
+                    var tagName = singleQuote+$('#tag_name').val()+singleQuote;
+                    var tag = $('#tag_name').val().replace(/ /g,"_");
+                    var tagStr = '<button id="tag'+tag+crmCustId+'" class="lable" style="display: inline;font-size: 90%;margin-left: 2px;margin-top:3px;margin-bottom:3px;padding-bottom: 2px;padding-top: 2px">'+tag+'<span style="color: red;" onclick="removeCustTag('+tagName+','+crmCustId+')"> ×</span></button>&nbsp;&nbsp;&nbsp';
+                    $('#customer-tag-div').append(tagStr);
+                    $.ajax({
+                        url: '/customer/create-assign-tag',
+                        type: 'POST',
+                        dataType: 'array',
+                        data: {
+                            "_token": "{{ csrf_token() }}",
+                            'tag_name' : $('#tag_name').val(),
+                            'customer_id' : crmCustId
+                        },
+                        success: function (status) {
+                        },
+                        error: function (status) {
+                        }
+                    })
+                }
+            });
+        });
+
+        function removeCustTag(tagId,crmCustId){
+            var tag = 'tag'+tagId+crmCustId;
+            tag = tag.replace(/ /g,"_");
+            $('#'+tag).remove();
+            $.ajax({
+                url: '/customer/remove-tag/'+tagId+'/'+crmCustId,
+                type: 'GET',
+                async: true,
+                success: function(data,textStatus,xhr){
+                    console.log('IN sucess');
+                    console.log(data);
+                },
+                error:function(errorData){
+                    console.log('In Error');
+                    console.log(errorData);
+                }
+            });
+        }
+
+        function updateProductQuantity(id,add,price,minQnt,maxQnt) {
+            var qnt = $('#product_'+id).val();
+            if(add == true){
+                qnt++;
+                price = price*qnt;
+                $('#price_'+id).text(price);
+                $('#products_price_'+id).text(price);
+                $('#selected_product_qnt'+id).val(qnt);
+                $('#product_'+id).val(qnt);
+                $('#product_qnt'+id).val(qnt);
+            } else {
+                qnt--;
+                if(qnt > 0){
+                    price = price*qnt;
+                    $('#price_'+id).text(price);
+                    $('#products_price_'+id).text(price);
+                    $('#selected_product_qnt'+id).val(qnt);
+                    $('#product_'+id).val(qnt);
+                    $('#product_qnt'+id).val(qnt);
+                }
+            }
+            if(qnt > maxQnt){
+             alert('Maximum Inventory for this product is '+maxQnt);
+            }
+        }
+
+        function removeProduct(id) {
+            $('#div_'+id).remove();
+            $('#selected_products_div_'+id).remove();
+            $('#product_qnt'+id).remove();
+            $('#product_id_'+id).remove();
+            if ( $('#check_out_preview').children().length == 0 ) {
+                $('#no_product_div').show();
+            }
+        }
+
+        function confirmOrder() {
+            var frm = $('#customer_order');
+            $.ajax({
+                url: "{{env('BASE_URL')}}/generate-order",
+                type: 'post',
+                data: frm.serialize(),
+                success: function (data) {
+                    console.log(data);
+                    alert('success');
+                    $('#confirm_order').modal('show');
+                },
+                error: function (data) {
+                    console.log(data);
+                    alert('error');
+                    $('#confirm_order').modal('show');
+                }
+            })
+        }
+
         $('#place_order_button').on('click',function () {
             $('#place_order').modal('show');
         });
-
+        $('#schedule-button').on('click',function () {
+            $('#schedule_modal').modal('show');
+        })
         $('#select_product_modal').on('click',function () {
             $('#select_products').modal('show');
             $('#place_order').modal('hide');
+            var addressId = $('input[name=customer_address_id]:checked').val();
+            var str = $('#delivery_address_'+addressId).html();
+            $('#address_id').val(addressId);
+            $('#delivery_address').html(str);
         });
 
         $('#place_order_modal').on('click',function () {
@@ -710,6 +1206,12 @@
         $('#confirm_order_modal').on('click',function () {
             $('#confirm_order').modal('show');
             $('#select_products').modal('hide');
+            var sum = 0;
+            $('.product-price-total').each(function()
+            {
+                sum += parseFloat($(this).text());
+            });
+            $('#order_total').text(sum);
         });
 
         $('#select_order_modal').on('click',function () {
@@ -728,68 +1230,67 @@
                     'address_id': id
                 },
                 success: function (responce) {
+                    $('#place_order').modal('show');
                     location.reload();
                 },
                 error: function (responce) {
+                    $('#place_order').modal('show');
                     location.reload();
                 }
             })
         });
 
-        /*$('#product_name').on('keyup',function () {
-         var productName = $(this).val();
-         if(productName.length >= 3){
-         $.ajax({
-         url: "{{env('BASE_URL')}}/get-products",
-         type: 'get',
-         dataType: 'array',
-         data: {
-         'product_name': productName
-         },
-         success: function (responce) {
-         console.log(responce);
-         var obj = JSON.stringify(responce);
-         var jsonObj = JSON.parse(obj);
-         var str = '';
-         $.each(jsonObj, function(key , data) {
-         console.log(data['product_name']);
-         })
-         },
-         error: function (responce) {
-         console.log(responce);
-         }
-         })
-         }
-         });*/
-
-
         $(document).on("click",'.btn-edit',function (e) {
             e.preventDefault();
-            $("#edit_is_default").prop("checked", false);
-            $("#edit_is_default").removeAttr("disabled");
             var id = $(this).data("edit");
-            var rememberToken = $('meta[name="csrf_token"]').attr('content');
-            $.ajaxSetup({ headers: { 'X-CSRF-TOKEN' : rememberToken } });
-            $.ajax({
-                url: "/address/get",
-                async:true,
-                data: {'id':id},
-                error: function(data, textStatus, xhr) {
-
-                },
-                success: function(data, textStatus, xhr) {
-                    if(xhr.status==200){
-                        $("#modal_edit_address").modal('show');
-                        $("#form_edit_address").html(data);
-                        $('#edit_at_Post').trigger('change');
-                    }
-                },
-                type: 'POST'
-            });
+            $('#edit_address_'+id).modal('show');
         });
 
-        $('#new_address_button').on('click',function () {
-            jQuery('#add_new_address').validate({
+        function editAddress(id) {
+            var addressFullName= $('#full_name_'+id).val();
+            var addrMobile= $('#mobile_'+id).val();
+            var house_block = $('#flat_door_block_house_no_'+id).val();
+            var village_premises = $('#name_of_premise_building_village_'+id).val();
+            var area = $('#area_'+id).val();
+            var road_street = $('#road_street_lane_'+id).val();
+            var pin = $('#pincode_'+id).val();
+            var post = $('#atPost_'+id).val();
+            var state = $('#stateName_'+id).val();
+            var dist = $('#district_'+id).val();
+            var taluka = $('#taluka_'+id).val();
+            if(house_block != '' && village_premises != '' && area != '' && road_street != '' && pin != '' && post != '' && state != '' && dist != '' && taluka != '')
+            {
+                $.ajax({
+                    url: "{{env('BASE_URL')}}/edit-address",
+                    type: 'POST',
+                    dataType: 'array',
+                    data: {
+                        'address_id': id,
+                        'address_fname': addressFullName,
+                        'address_mobile': addrMobile,
+                        'house_block': house_block,
+                        'village_premises': village_premises,
+                        'area': area,
+                        'road_street': road_street,
+                        'pin': pin,
+                        'at_post': post,
+                        'state': state,
+                        'dist': dist,
+                        'taluka': taluka
+                    },
+                    success: function (responce) {
+                        console.log('in ajax success')
+                        $('#place_order').modal('show');
+                    },
+                    error: function (responce) {
+                        console.log('in ajax failure')
+                        $('#place_order').modal('show');
+                    }
+                })
+            }
+        }
+
+        jQuery('#add_new_address').validate({
                 rules: {
                     full_name: {
                         required: true,
@@ -798,8 +1299,7 @@
                         maxlength: 50
                     },
                     mobile:{
-                        required: true,
-                        mobile: true
+                        required: true
                     },
                     name_of_premise_building_village: {
                         //  alpha_num_space_allow:true,
@@ -830,7 +1330,7 @@
                     pincode:{
                         required: true
                     },
-                    state:{
+                    stateName:{
                         required: true
                     },
                     at_post:{
@@ -875,7 +1375,7 @@
                     pincode:{
                         required: "This field is required."
                     },
-                    state:{
+                    stateName:{
                         required: "This field is required."
                     },
                     at_post:{
@@ -884,7 +1384,6 @@
                 },
                 errorElement: "em",
                 errorPlacement: function ( error, element ) {
-
                     // Add the `help-block` class to the error element
                     error.addClass( "help-block" );
                     error.css("color","red");
@@ -901,80 +1400,106 @@
                     $( element ).parents( ".col-sm-5" ).addClass( "has-success" ).removeClass( "has-error" );
                 },
                 submitHandler: function (form) { // for demo
-                    $.ajax({
-                        url: "/address/create",
-                        async:true,
-                        data: $("#add_new_address").serializeArray(),
-                        error: function(data, textStatus, xhr) {
-
-                        },
-                        success: function(data, textStatus, xhr) {
-                            if(xhr.status==200){
-                                $('#add_new_address')[0].reset();
-                                $('#address-list').append(data);
-                            }else if(xhr.status==201){
-                                $('#add_new_address')[0].reset();
-                                alert('Maximum 3 address allowed');
-                            }
-                        },
-                        type: 'POST'
-                    });
-                    return false;
+                    form.submit();
                 }
             });
+
+        $(document).on("click","#new_address_button",function (e) {
+            e.stopPropagation();
+            var userId = $('#customer_id').val();
+            var addressFullName= $('#full_name').val();
+            var addrMobile= $('#mobile').val();
+            var house_block = $('#flat_door_block_house_no').val();
+            var village_premises = $('#name_of_premise_building_village').val();
+            var area = $('#area').val();
+            var road_street = $('#road_street_lane').val();
+            var pin = $('#pincode').val();
+            var post = $('#atPost').val();
+            var state = $('#stateName').val();
+            var dist = $('#district').val();
+            var taluka = $('#taluka').val();
+            if(house_block != '' && village_premises != '' && area != '' && road_street != '' && pin != '' && post != '' && state != '' && dist != '' && taluka != '')
+            {
+                $.ajax({
+                    url: "{{env('BASE_URL')}}/add-address",
+                    type: 'POST',
+                    dataType: 'array',
+                    data: {
+                        'user_id': userId,
+                        'address_fname': addressFullName,
+                        'address_mobile': addrMobile,
+                        'house_block': house_block,
+                        'village_premises': village_premises,
+                        'area': area,
+                        'road_street': road_street,
+                        'pin': pin,
+                        'at_post': post,
+                        'state': state,
+                        'dist': dist,
+                        'taluka': taluka
+                    },
+                    success: function (responce) {
+                        $('#place_order').modal('show');
+                    },
+                    error: function (responce) {
+                        $('#place_order').modal('show');
+                    }
+                })
+            }
         });
 
         $(document).on("click",".chat-submit",function (e) {
             var  message= $('#reply_text').val();
             var customer= $('#customer_detail_id').val();
-            $.ajax({
-                url: '/leads/sales-chat',
-                type: 'POST',
-                dataType: 'array',
-                data: {
-                    'reply_message' : message,
-                    'customer_id' : customer
-                },
-                success: function (responce) {
-                    var obj = JSON.stringify(responce);
-                    var jsonObj = JSON.parse(obj);
-                    var str = '';
-                    $.each(jsonObj, function(key , data) {
-
-                    })
-                },
-                error: function (responce) {
-                }
-            })
+            var customerNumber = $('#customer_detail_mobile').val();
+            if(message != '') {
+                $.ajax({
+                    url: '/leads/sales-chat',
+                    type: 'POST',
+                    dataType: 'array',
+                    data: {
+                        'reply_message' : message,
+                        'customer_id' : customer
+                    },
+                    success: function (responce) {
+                        document.getElementById("reply_text").value = "";
+                        chatHistory(customer,customerNumber);
+                    },
+                    error: function (responce) {
+                        document.getElementById("reply_text").value = "";
+                        chatHistory(customer,customerNumber);
+                    }
+                })
+            }
         });
 
         $('#select-call-status').on('change',function () {
             var statusId = $(this).val();
             var customer= $('#customer_detail_id').val();
+            var customerNumber = $('#customer_detail_mobile').val();
             $.ajax({
                 url: '/leads/sales-chat',
                 type: 'POST',
                 dataType: 'array',
                 data: {
                     'reply_status_id' : statusId,
-                    'customer_id' : customer
+                    'customer_id' : customer,
+                    'in_profile' : true
                 },
                 success: function (responce) {
-                    $('#reply').modal('toggle');
-                    location.reload();
+                    chatHistory(customer,customerNumber);
                 },
                 error: function (responce) {
-                    location.reload();
-                    $('#reply').modal('toggle');
+                    chatHistory(customer,customerNumber);
                 }
             })
         });
-
 
         function chatHistory(id,number) {
             $('#reply').modal('show');
             $('#customer_detail_id').val(id);
             $('#customer_status_detail_id').val(id);
+            $('#customer_detail_mobile').val(number);
             $('.reply-title').text("Chat History - " +number);
             $.ajax({
                 url: '/leads/sales-chat-listing/'+id,
@@ -989,6 +1514,27 @@
                             str += '<div class="item" style="text-align: center">' +
                                 '<span class="tag label label-info" style="font-size: 90%;">' +
                                 data['number'] +' was allocated to ' +data['sale_agent'] + ' on '+ data['time'] +
+                                '</span>' +
+                                '</div> '+
+                                '<br>';
+                        }else if(data['is_schedule'] == true){
+                            str += '<div class="item" style="text-align: center">' +
+                                '<span class="tag label label-info" style="font-size: 90%;">'
+                                +'Schedule to call back is set on ' +data['reminder'] +
+                                '</span>' +
+                                '</div> '+
+                                '<br>';
+                        }else if(data['is_created_tag'] == true){
+                            str += '<div class="item" style="text-align: center">' +
+                                '<span class="tag label label-info" style="font-size: 90%;">' +
+                                data['sale_agent'] +' added tag ' +data['name'] + ' on '+ data['time'] +
+                                '</span>' +
+                                '</div> '+
+                                '<br>';
+                        }else if(data['is_deleted_tag'] == true){
+                            str += '<div class="item" style="text-align: center">' +
+                                '<span class="tag label label-info" style="font-size: 90%;">' +
+                                data['sale_agent'] +' removed tag ' +data['name'] + ' on '+ data['time'] +
                                 '</span>' +
                                 '</div> '+
                                 '<br>';
@@ -1018,34 +1564,45 @@
                                 }
                             }else {
                                 if(data['status'] == null) {
-                                    if(data['user'] == true){
-                                        str += '<div class="item">' +
-                                            '<div class="item-head">' +
-                                            '<div class="item-details pull-right">' +
-                                            '<img class="item-pic rounded" height="35" width="35" src="/assets/layouts/layout3/img/avatar.png">' +
-                                            '<span style="color: black">' + data['userName'] + '</span>' +
-                                            '&nbsp;&nbsp;&nbsp;<span class="item-label" style="color: #8c8c8e">' + data['time'] + '</span>' +
-                                            '</div>' +
-                                            '</div>' +
-                                            '<div class="item-body pull-right">' +
-                                            '<span>' + data['message'] + '</span>' +
-                                            '</div>' +
-                                            '</div>' +
-                                            '<br>';
+                                    if(data['message'] == null){
+                                        str += '<div class="item" style="text-align: center"><span class="tag label label-info" style="font-size: 90%;">'+ data['userName'] +' viewed profile @ ' +data['time']+'</span></div><br>';
                                     }else {
-                                        str += '<div class="item">' +
-                                            '<div class="item-head">' +
-                                            '<div class="item-details">' +
-                                            '<img class="item-pic rounded" height="35" width="35" src="/assets/layouts/layout3/img/avatar.png">' +
-                                            '<span style="color: black">' + data['userName'] + '</span>' +
-                                            '&nbsp;&nbsp;&nbsp;<span class="item-label" style="color: #8c8c8e">' + data['time'] + '</span>' +
-                                            '</div>' +
-                                            '</div>' +
-                                            '<div class="item-body">' +
-                                            '<span>' + data['message'] + '</span>' +
-                                            '</div>' +
-                                            '</div>' +
-                                            '<br>';
+                                        if(data['message'] != ''){
+                                            if(data['user'] == true){
+                                                str += '<div class="item">' +
+                                                    '<div class="item-head">' +
+                                                    '<div class="item-details pull-right">' +
+                                                    '<img class="item-pic rounded" height="35" width="35" src="/assets/layouts/layout3/img/avatar.png">' +
+                                                    '<span style="color: black">' + data['userName'] + '</span>' +
+                                                    '&nbsp;&nbsp;&nbsp;<span class="item-label" style="color: #8c8c8e">' + data['time'] + '</span>' +
+                                                    '</div>' +
+                                                    '</div>' +
+                                                    '<div class="item-body pull-right col-md-offset-3" style="margin-top: auto;margin-bottom: 5px;border-radius: 15px !important;background-color: #78e08f;padding: 5px;position: relative;">' +
+                                                    '<span>' + data['message'] + '</span>' +
+                                                    '</div>' +
+                                                    '</div>' +
+                                                    '<br>';
+                                            }else {
+                                                str += '<div class="item">' +
+                                                    '<div class="item-head">' +
+                                                    '<div class="item-details">' +
+                                                    '<img class="item-pic rounded" height="35" width="35" src="/assets/layouts/layout3/img/avatar.png">' +
+                                                    '<span style="color: black">' + data['userName'] + '</span>' +
+                                                    '&nbsp;&nbsp;&nbsp;<span class="item-label" style="color: #8c8c8e">' + data['time'] + '</span>' +
+                                                    '</div>' +
+                                                    '</div>';
+                                                if(data['message'].length < 40){
+                                                    str +=  '<div class="item-body col-md-9" style="margin-top: 5px;">' +
+                                                        '<span style="margin-top: auto;margin-bottom: 5px;border-radius: 15px !important;background-color: #82ccdd;padding: 5px;position: relative;;margin-left: -15px;">' + data['message'] + '</span>';
+                                                } else {
+                                                    str +=  '<div class="item-body col-md-9" style="margin-top: auto;margin-bottom: 5px;border-radius: 15px !important;background-color: #82ccdd;padding: 5px;position: relative;">' +
+                                                        '<span>' + data['message'] + '</span>';
+                                                }
+                                                str +=   '</div>' +
+                                                    '</div>' +
+                                                    '<br>';
+                                            }
+                                        }
                                     }
                                 } else {
                                     str += '<div class="item" style="text-align: center"><span class="tag label label-info" style="font-size: 90%;">'+ data['status'] +' @ ' +data['time'] + ' by ' + data['userName'] + '</span></div><br>';
@@ -1061,11 +1618,11 @@
             });
         }
         $(document).on("click","#profile-edit",function (e) {
-            var first_name = $('#fname').val();
-            var last_name = $('#lname').val();
-            var email = $('#email').val();
-            var dob = $('#birthdate').val();
-            var mobile = $('#cust_mobile_number').val();
+            var first_name = $('#f_name').val();
+            var last_name = $('#l_name').val();
+            var email = $('#profile_email').val();
+            var dob = $('#dob').val();
+            var mobile = $('#profile_mobile').val();
             var id = $('#user_id').val();
             $.ajax({
                 url: "{{env('BASE_URL')}}/edit-profile",
@@ -1087,4 +1644,21 @@
             })
         });
     </script>
+        <script>
+            function openCustomerDetails(id) {
+                $.ajax({
+                    url: '/customer/abandoned-cart-detail/'+id+'',
+                    type: 'GET',
+                    async: true,
+                    success: function(data,textStatus,xhr){
+                        $("#AbandonedDetailModal .modal-body").html(data);
+                        $("#AbandonedDetailModal").modal('show');
+                    },
+                    error:function(errorData){
+                        alert('Something went wrong');
+                    }
+
+                });
+            }
+        </script>
 @endsection

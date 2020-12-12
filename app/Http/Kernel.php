@@ -32,17 +32,7 @@ class Kernel extends HttpKernel
         'auth' => \App\Http\Middleware\Authenticate::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
-        'seller' => \App\Http\Middleware\Seller::class,
-        'common' => \App\Http\Middleware\Common::class,
-        'admin' => \App\Http\Middleware\Admin::class,
-        'superadmin' => \App\Http\Middleware\Superadmin::class,
         'user' => \App\Http\Middleware\User::class,
-        'shipmentadmin' => \App\Http\Middleware\Shipmentadmin::class,
-        'setlanguage' => \App\Http\Middleware\SetLanguage::class,
-        'financeadmin' => \App\Http\Middleware\Financeadmin::class,
-        'data-entry-admin' => \App\Http\Middleware\DataEntry::class,
-        'customersupport' => CustomerSupport::class,
-        'vendorsupport' => VendorSupport::class,
-        'accountadmin'=> AccountAdmin::class
+        'logged-customer-profile' => \App\Http\Middleware\LoggedInCustomerProfile::class,
     ];
 }

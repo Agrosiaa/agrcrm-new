@@ -180,8 +180,7 @@ return [
         /* Image Magick */
         Intervention\Image\ImageServiceProvider::class,
         Ixudra\Curl\CurlServiceProvider::class,
-
-
+        Maatwebsite\Excel\ExcelServiceProvider::class
     ],
 
     /*

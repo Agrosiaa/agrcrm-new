@@ -16,8 +16,10 @@ class CreateSalesChatTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
-            $table->unsignedInteger('customer_number_details_id');
-            $table->foreign('customer_number_details_id')->references('id')->on('customer_number_status_details')->onUpdate('cascade')->onDelete('cascade');
+            $table->unsignedInteger('crm_customer_id');
+            $table->foreign('crm_customer_id')->references('id')->on('crm_customer')->onUpdate('cascade')->onDelete('cascade');
+            $table->unsignedInteger('call_status_id')->nullable();
+            $table->foreign('call_status_id')->references('id')->on('call_status')->onUpdate('cascade')->onDelete('cascade');
             $table->text('message')->nullable();
             $table->timestamps();
         });
