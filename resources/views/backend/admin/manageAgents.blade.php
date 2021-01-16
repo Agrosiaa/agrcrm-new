@@ -56,7 +56,7 @@
                                         @foreach($saleAgents as $saleAgent)
                                             @if($saleAgent['is_active'] == true)
                                             <tr role="row">
-                                                <td class="sorting_1">{{$saleAgent['name']}}</td>
+                                                <td class="sorting_1">{{$saleAgent['name']}} - {{$saleAgent['user_name']}}</td>
                                                 <td>
                                                     <div class="bootstrap-switch bootstrap-switch-wrapper bootstrap-switch-small bootstrap-switch-animate bootstrap-switch-on" style="width: 90px;">
                                                         <div class="bootstrap-switch-container" onclick="changeStatus({{$saleAgent['id']}})" style="width: 132px; margin-left: 0px;">
@@ -67,7 +67,7 @@
                                             </tr>
                                             @else
                                             <tr role="row">
-                                                <td class="sorting_1">{{$saleAgent['name']}}</td>
+                                                <td class="sorting_1">{{$saleAgent['name']}} - {{$saleAgent['user_name']}}</td>
                                                 <td>
                                                     <div class="bootstrap-switch bootstrap-switch-wrapper bootstrap-switch-small bootstrap-switch-animate bootstrap-switch-off" style="width: 90px;">
                                                         <div class="bootstrap-switch-container" onclick="changeStatus({{$saleAgent['id']}})" style="width: 132px; margin-left: 0px;">
@@ -124,7 +124,7 @@
                                         @if($saleAgent['is_active'] == true)
                                             @if($saleAgent['is_abandoned_cart_agent'] == true)
                                                 <tr role="row">
-                                                    <td class="sorting_1">{{$saleAgent['name']}}</td>
+                                                    <td class="sorting_1">{{$saleAgent['name']}} - {{$saleAgent['user_name']}}</td>
                                                     <td>
                                                         <div class="bootstrap-switch bootstrap-switch-wrapper bootstrap-switch-small bootstrap-switch-animate bootstrap-switch-on" style="width: 90px;">
                                                             <div class="bootstrap-switch-container" onclick="changeIsAbandonedStatus({{$saleAgent['id']}})" style="width: 132px; margin-left: 0px;">
@@ -135,7 +135,7 @@
                                                 </tr>
                                             @else
                                                 <tr role="row">
-                                                    <td class="sorting_1">{{$saleAgent['name']}}</td>
+                                                    <td class="sorting_1">{{$saleAgent['name']}} - {{$saleAgent['user_name']}}</td>
                                                     <td>
                                                         <div class="bootstrap-switch bootstrap-switch-wrapper bootstrap-switch-small bootstrap-switch-animate bootstrap-switch-off" style="width: 90px;">
                                                             <div class="bootstrap-switch-container" onclick="changeIsAbandonedStatus({{$saleAgent['id']}})" style="width: 132px; margin-left: 0px;">

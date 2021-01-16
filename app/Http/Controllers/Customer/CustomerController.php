@@ -300,7 +300,7 @@ class CustomerController extends Controller
             $data['email'] = $request->profile_email;
             $response = Curl::to(env('BASE_URL')."/edit-profile")->withData($data)->asJson()->get();
             if($response == 200){
-                if($request->has('create_lead') && $request->create_lead == 'true'){
+                if($request->has('create_lead') && $request->create_lead == 'true' && $user['role_id'] != 1){
                     $customerData['user_id'] = $user['id'];
                     $customerData['customer_number_status_id'] = CustomerNumberStatus::where('slug', 'new')->value('id');
                     $customerData['number'] = $request->profile_mobile;

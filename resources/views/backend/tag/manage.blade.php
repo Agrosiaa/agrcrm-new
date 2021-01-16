@@ -41,7 +41,7 @@
                                     <span class="caption-subject font-green sbold uppercase"> Tag Listing </span>
                                 </div>
                                 <div class="col-sm-1" style="padding-top: 8px;">
-                                    <a href="javascript:void(0);" class="btn blue m-icon" data-toggle="modal" data-target="#create-tag-modal">
+                                    <a href="javascript:void(0);" class="btn blue m-icon" id="open-tag-modal">
                                         Create Tag
                                     </a>
                                 </div>
@@ -84,7 +84,7 @@
                         <div class="modal-content">
                             <div class="modal-header">
                                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                <h4 class="modal-title" style="text-align: center"><b>Create Tag</b></h4>
+                                <h4 class="modal-title" style="text-align: center"><b id="tag_modal_title">Create Tag</b></h4>
                             </div>
                             <form class="form-horizontal" method="post" role="form" action="/tag/create-edit-tag">
                                 <div class="modal-body">
@@ -93,8 +93,8 @@
                                             <div class="form-group">
                                                 {{csrf_field()}}
                                                 <input type="hidden" name="tag_id" id="tag_id">
-                                                <label class="col-md-4 control-label">Tag Name</label>
-                                                <div class="col-md-4">
+                                                <label class="col-md-2 control-label">Tag Name</label>
+                                                <div class="col-md-9">
                                                     <input type="text" class="form-control" id="tag_name" name="tag_name" required>
                                                 </div>
                                             </div>
@@ -155,7 +155,14 @@
         function editTag(id,name) {
             $('#tag_id').val(id);
             $('#tag_name').val(name);
+            $('#tag_modal_title').text('Edit Tag');
             $('#create-tag-modal').modal('show');
         }
+        $('#open-tag-modal').on('click',function () {
+            $('#tag_id').val(null);
+            $('#tag_name').val(null);
+            $('#tag_modal_title').text('Create Tag');
+            $('#create-tag-modal').modal('show');
+        })
     </script>
 @endsection
