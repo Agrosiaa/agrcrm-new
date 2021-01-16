@@ -454,15 +454,19 @@ class LeadController extends Controller
                         }
                     } else{
                         $lastRecord = CrmCustomer::where('is_abandoned',true)->orderBy('id','desc')->first();
-                        $saleAgents = User::where('id','>',$lastRecord['user_id'])->where('is_abandoned_cart_agent',true)->where('admin_id',$user['id'])->where('role_id',2)->where('is_active',true)->first();
-                        if($saleAgents == null) {
-                            $saleAgents = User::where('id', '<=', $lastRecord['user_id'])->where('is_abandoned_cart_agent',true)->where('admin_id',$user['id'])->where('role_id', 2)->where('is_active', true)->first();
-                        }
-                        $alreadyExist = CrmCustomer::where('number',$abandonedDatum->mobile)->whereIn('customer_number_status_id',[1,2])->value('id');
-                        if(empty($alreadyExist)){
-                            CrmCustomer::create(['customer_number_status_id' => $newLead, 'user_id' => $saleAgents['id'], 'number' => $abandonedDatum->mobile, 'is_abandoned' => true]);
+                        if($lastRecord == null){
+                            CrmCustomer::create(['customer_number_status_id' => $newLead, 'user_id' => $abandonedCartAgents['id'], 'number' => $abandonedDatum->mobile, 'is_abandoned' => true]);
                         }else{
-                            CrmCustomer::where('id',$alreadyExist)->update(['user_id' => $saleAgents['id'], 'is_abandoned' => true]);
+                            $saleAgents = User::where('id','>',$lastRecord['user_id'])->where('is_abandoned_cart_agent',true)->where('admin_id',$user['id'])->where('role_id',2)->where('is_active',true)->first();
+                            if($saleAgents == null) {
+                                $saleAgents = User::where('id', '<=', $lastRecord['user_id'])->where('is_abandoned_cart_agent',true)->where('admin_id',$user['id'])->where('role_id', 2)->where('is_active', true)->first();
+                            }
+                            $alreadyExist = CrmCustomer::where('number',$abandonedDatum->mobile)->whereIn('customer_number_status_id',[1,2])->value('id');
+                            if(empty($alreadyExist)){
+                                CrmCustomer::create(['customer_number_status_id' => $newLead, 'user_id' => $saleAgents['id'], 'number' => $abandonedDatum->mobile, 'is_abandoned' => true]);
+                            }else{
+                                CrmCustomer::where('id',$alreadyExist)->update(['user_id' => $saleAgents['id'], 'is_abandoned' => true]);
+                            }
                         }
                     }
                 }
