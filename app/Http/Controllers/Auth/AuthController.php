@@ -55,7 +55,7 @@ class AuthController extends Controller
                 return back()->withInput();//->with('error',$message);
             } else{
                 if (Auth::attempt(['user_name' => $request->user_id,'password' => $request->password])) {
-                    return redirect('dashboard');
+                    return redirect('home');
                 } else{
                     $message="The email address or password is invalid";
                     $request->session()->flash('error', $message);
