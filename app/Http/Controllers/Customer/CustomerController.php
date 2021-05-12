@@ -8,6 +8,7 @@ use App\CustomerTagRelation;
 use App\LoggedCustomerProfile;
 use App\Reminder;
 use App\TagCloud;
+use App\TagType;
 use App\UserRoles;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -27,6 +28,7 @@ class CustomerController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+        $this->user = Auth::user();
     }
     public function customerOrderListing(Request $request, $mobile){
         try{
@@ -99,6 +101,14 @@ class CustomerController extends Controller
                 $limitedOrders = $customerOrders = Curl::to(env('BASE_URL')."/customer-orders")
                     ->withData( array( 'mobile' => $mobile, 'retrieve' => 'data','filteredIds' => $customerOrders->orders))->asJson()->get();
                 for($i=0,$j = $iDisplayStart; $j < $end; $i++,$j++) {
+                    if($limitedOrders[$j]->is_configurable == true){
+                        $displayPrice = (($limitedOrders[$j]->discounted_price * (($limitedOrders[$j]->length) * ($limitedOrders[$j]->width)) * $limitedOrders[$j]->quantity) +$limitedOrders[$j]->delivery_amount-$limitedOrders[$j]->coupon_discount);
+                    }else{
+                        $displayPrice = (($limitedOrders[$j]->discounted_price * $limitedOrders[$j]->quantity) +$limitedOrders[$j]->delivery_amount - $limitedOrders[$j]->coupon_discount);
+                    }
+                    if($limitedOrders[$j]->agrosiaa_discount != null && $limitedOrders[$j]->agrosiaa_discount > 0){
+                        $displayPrice = "<del>".$displayPrice."</del> | ".($displayPrice - $limitedOrders[$j]->agrosiaa_discount);
+                    }
                     $records["data"][] = array(
                         'AGR'.str_pad($limitedOrders[$j]->id, 9, "0", STR_PAD_LEFT),
                         $limitedOrders[$j]->created_at,
@@ -107,7 +117,7 @@ class CustomerController extends Controller
                         $limitedOrders[$j]->seller_sku,
                         $limitedOrders[$j]->status,
                         $limitedOrders[$j]->consignment_number,
-                        $limitedOrders[$j]->subtotal,
+                        $displayPrice,
                     );
 
                 }
@@ -318,7 +328,6 @@ class CustomerController extends Controller
             abort(500,$e->getMessage());
         }
     }
-
     public function createAssignTag(Request $request){
         try{
             $status = 200;
@@ -337,5 +346,85 @@ class CustomerController extends Controller
             abort(500,$exception->getMessage());
         }
         return response()->json($status);
+    }
+    public function createOrder(Request $request){
+        try{
+            $data = $request->all();
+            unset($data['_token']);
+            $response = Curl::to(env('BASE_URL')."/generate-order")->withData($data)->asJson()->post();
+            if($response->status == 200){
+                foreach($response->data as $product){
+                    $this->createNewCustomerTag($product, $data['crm_customer_id'], $data['customer_mobile'], 'order');
+                }
+                $request->session()->flash('success','Order Placed successfully');
+            }else{
+                $request->session()->flash('error','Order Not Placed');
+            }
+            return back();
+        }catch (\Exception $e){
+            abort(500,$e->getMessage());
+        }
+    }
+    public function addAddress(Request $request){
+        try{
+            $data = $request->all();
+            unset($data['_token']);
+            unset($data['crm_customer_id']);
+            $response = Curl::to(env('BASE_URL')."/add-address")->withData($data)->asJson()->post();
+            if($response->status == 200){
+                $this->createNewCustomerTag($data['pincode'], $request->crm_customer_id, $data['customer_mobile'], 'pincode');
+                $this->createNewCustomerTag($data['state'], $request->crm_customer_id, $data['customer_mobile'], 'state');
+                $this->createNewCustomerTag($data['taluka'], $request->crm_customer_id, $data['customer_mobile'], 'city');
+                $this->createNewCustomerTag($data['district'], $request->crm_customer_id, $data['customer_mobile'], 'district');
+                $request->session()->flash('success','Address added successfully');
+            }else{
+                $request->session()->flash('error','Address Not Added');
+            }
+            return back();
+        }catch (\Exception $e){
+            abort(500,$e->getMessage());
+        }
+    }
+    public function editAddress(Request $request){
+        try{
+            $data = $request->all();
+            unset($data['_token']);
+            unset($data['crm_customer_id']);
+            unset($data['customer_mobile']);
+            $response = Curl::to(env('BASE_URL')."/edit-address")->withData($data)->asJson()->post();
+            if($response->status == 200){
+                $this->createNewCustomerTag($data['pincode'], $request->crm_customer_id, $request->customer_mobile, 'pincode');
+                $this->createNewCustomerTag($data['state'], $request->crm_customer_id, $request->customer_mobile, 'state');
+                $this->createNewCustomerTag($data['taluka'], $request->crm_customer_id, $request->customer_mobile, 'city');
+                $this->createNewCustomerTag($data['district'], $request->crm_customer_id, $request->customer_mobile, 'district');
+                $request->session()->flash('success','Address Edited successfully');
+            }else{
+                $request->session()->flash('error','Address Not Edited');
+            }
+            return back();
+        }catch (\Exception $e){
+            abort(500,$e->getMessage());
+        }
+    }
+        public function createNewCustomerTag($tagName, $crmCustId, $custNumber, $tagType){
+        try{
+            $tag = TagCloud::where('name',$tagName)->first();
+            $tagTypeId = TagType::where('slug',$tagType)->value('id');
+            if(!$tag){
+                $tag = TagCloud::create(['name' => $tagName,'user_id' => $this->user->id,'tag_type_id' => $tagTypeId]);
+            }
+            if($crmCustId == 'null'){
+                $crmCustId = CrmCustomer::where('number',$custNumber)->value('id');
+            }
+            if(!$crmCustId || $crmCustId != 'null'){
+                $customerTag = CustomerTagRelation::where('tag_cloud_id',$tag['id'])->where('crm_customer_id',$crmCustId)->where('tag_type_id',$tagTypeId)->first();
+                if(!$customerTag){
+                    CustomerTagRelation::create(['tag_cloud_id'=> $tag['id'], 'user_id' => $this->user->id,'tag_type_id' => $tagTypeId, 'crm_customer_id' => $crmCustId]);
+                }
+            }
+            return true;
+        }catch (\Exception $e){
+            abort(500,$e->getMessage());
+        }
     }
 }

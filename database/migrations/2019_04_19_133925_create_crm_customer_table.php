@@ -20,6 +20,8 @@ class CreateCrmCustomerTable extends Migration
             $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
             $table->string('number',15);
             $table->boolean('is_abandoned')->nullable();
+            $table->boolean('is_active')->default(true)->nullable();
+            $table->string('lead_source')->nullable();
             $table->timestamps();
         });
     }

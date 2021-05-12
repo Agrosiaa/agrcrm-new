@@ -456,8 +456,11 @@
                                 <div class="modal-body">
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <form id="add_new_address">
-                                                <input type="hidden" value="{{$customerInfo->profile->id}}" id="customer_id">
+                                            <form method="post" role="form" action="/customer/add-address" >
+                                                {{ csrf_field() }}
+                                                <input type="hidden" value="{{$customerInfo->profile->id}}" name="customer_user_id">
+                                                <input class="form-control" type="hidden" value="{{$id}}" name="crm_customer_id">
+                                                <input class="form-control" type="hidden" value="{{$mobile}}" name="customer_mobile">
                                                 <div class="address-form">
                                                     <div class="form-group">
                                                         <label for="company">Full Name</label><span class="required">*</span>
@@ -513,7 +516,7 @@
                                                         <div class="col-md-6">
                                                             <div class="form-group">
                                                                 <label for="state">State</label><span class="required">*</span>
-                                                                <input class="form-control state" type="text" id="stateName" name="stateName" readonly>
+                                                                <input class="form-control state" type="text" id="stateName" name="state" readonly>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6">
@@ -533,7 +536,7 @@
                                                     </div>
                                                      @if(count($customerInfo->address) < 3)
                                                     <div class="form-group">
-                                                        <button type="submit" id="new_address_button" class="btn btn-primary btn-icon">Add new address</button>
+                                                        <button type="submit" class="btn btn-primary btn-icon">Add new address</button>
                                                     </div>
                                                      @endif
                                                 </div>
@@ -569,7 +572,8 @@
                             </div>
                         </div>
                     </div>
-                    <form id="customer_order">
+                    <form class="form-horizontal" method="post" role="form" action="/customer/create-order" >
+                        {{ csrf_field() }}
                     <div id="select_products" class="modal fade bs-modal-md" tabindex="-1" role="dialog" style="height: 500%">
                         <div class="modal-dialog modal-lg">
                             <!-- Modal content-->
@@ -663,7 +667,9 @@
                                             <input class="form-control" type="hidden" id="address_id" name="address_id" value="">
                                             <input class="form-control" type="hidden" value="{{$customerInfo->profile->id}}" name="cust_id">
                                             <input class="form-control" type="hidden" value="{{$user->id}}" name="sales_id">
-                                        <button type="submit" id="confirm_order_button" class="btn btn-primary btn-icon pull-right" onclick="confirmOrder()">Confirm Order</button>
+                                            <input class="form-control" type="hidden" value="{{$id}}" name="crm_customer_id">
+                                            <input class="form-control" type="hidden" value="{{$mobile}}" name="customer_mobile">
+                                        <button type="submit" class="btn btn-primary btn-icon pull-right">Confirm Order</button>
                                         </div>
                                     </div>
                             </div>
@@ -785,8 +791,11 @@
                                         <div class="modal-body">
                                             <div class="row">
                                                 <div class="col-md-12">
-                                                    <form id="add_new_address">
-                                                        <input type="hidden" value="{{$customerInfo->profile->id}}" id="customer_id">
+                                                    <form method="post" role="form" action="/customer/edit-address" >
+                                                        {{ csrf_field() }}
+                                                        <input type="hidden" value="{{$address->id}}" name="id">
+                                                        <input class="form-control" type="hidden" value="{{$id}}" name="crm_customer_id">
+                                                        <input class="form-control" type="hidden" value="{{$mobile}}" name="customer_mobile">
                                                         <div class="address-form">
                                                             <div class="form-group">
                                                                 <label for="company">Full Name</label><span class="required">*</span>
@@ -843,7 +852,7 @@
                                                                 <div class="col-md-6">
                                                                     <div class="form-group">
                                                                         <label for="state">State</label><span class="required">*</span>
-                                                                        <input class="form-control edit-stateName" type="text" id="stateName_{{$address->id}}" name="stateName" value="{{$address->state}}" readonly>
+                                                                        <input class="form-control edit-stateName" type="text" id="stateName_{{$address->id}}" name="state" value="{{$address->state}}" readonly>
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-md-6">
@@ -863,7 +872,7 @@
                                                             </div>
 
                                                             <div class="form-group">
-                                                                <button type="submit" id="edit_address_button" class="btn btn-primary btn-icon" onclick="editAddress({{$address->id}})">Edit address</button>
+                                                                <button type="submit" class="btn btn-primary btn-icon">Edit address</button>
                                                             </div>
                                                         </div>
                                                     </form>
@@ -1131,13 +1140,17 @@
         function updateProductQuantity(id,add,price,minQnt,maxQnt) {
             var qnt = $('#product_'+id).val();
             if(add == true){
-                qnt++;
-                price = price*qnt;
-                $('#price_'+id).text(price);
-                $('#products_price_'+id).text(price);
-                $('#selected_product_qnt'+id).val(qnt);
-                $('#product_'+id).val(qnt);
-                $('#product_qnt'+id).val(qnt);
+                if(qnt >= maxQnt){
+                    alert('Maximum Inventory for this product is '+maxQnt);
+                }else{
+                    qnt++;
+                    price = price*qnt;
+                    $('#price_'+id).text(price);
+                    $('#products_price_'+id).text(price);
+                    $('#selected_product_qnt'+id).val(qnt);
+                    $('#product_'+id).val(qnt);
+                    $('#product_qnt'+id).val(qnt);
+                }
             } else {
                 qnt--;
                 if(qnt > 0){
@@ -1149,9 +1162,7 @@
                     $('#product_qnt'+id).val(qnt);
                 }
             }
-            if(qnt > maxQnt){
-             alert('Maximum Inventory for this product is '+maxQnt);
-            }
+
         }
 
         function removeProduct(id) {
@@ -1162,25 +1173,6 @@
             if ( $('#check_out_preview').children().length == 0 ) {
                 $('#no_product_div').show();
             }
-        }
-
-        function confirmOrder() {
-            var frm = $('#customer_order');
-            $.ajax({
-                url: "{{env('BASE_URL')}}/generate-order",
-                type: 'post',
-                data: frm.serialize(),
-                success: function (data) {
-                    console.log(data);
-                    alert('success');
-                    $('#confirm_order').modal('show');
-                },
-                error: function (data) {
-                    console.log(data);
-                    alert('error');
-                    $('#confirm_order').modal('show');
-                }
-            })
         }
 
         $('#place_order_button').on('click',function () {
@@ -1245,50 +1237,6 @@
             var id = $(this).data("edit");
             $('#edit_address_'+id).modal('show');
         });
-
-        function editAddress(id) {
-            var addressFullName= $('#full_name_'+id).val();
-            var addrMobile= $('#mobile_'+id).val();
-            var house_block = $('#flat_door_block_house_no_'+id).val();
-            var village_premises = $('#name_of_premise_building_village_'+id).val();
-            var area = $('#area_'+id).val();
-            var road_street = $('#road_street_lane_'+id).val();
-            var pin = $('#pincode_'+id).val();
-            var post = $('#atPost_'+id).val();
-            var state = $('#stateName_'+id).val();
-            var dist = $('#district_'+id).val();
-            var taluka = $('#taluka_'+id).val();
-            if(house_block != '' && village_premises != '' && area != '' && road_street != '' && pin != '' && post != '' && state != '' && dist != '' && taluka != '')
-            {
-                $.ajax({
-                    url: "{{env('BASE_URL')}}/edit-address",
-                    type: 'POST',
-                    dataType: 'array',
-                    data: {
-                        'address_id': id,
-                        'address_fname': addressFullName,
-                        'address_mobile': addrMobile,
-                        'house_block': house_block,
-                        'village_premises': village_premises,
-                        'area': area,
-                        'road_street': road_street,
-                        'pin': pin,
-                        'at_post': post,
-                        'state': state,
-                        'dist': dist,
-                        'taluka': taluka
-                    },
-                    success: function (responce) {
-                        console.log('in ajax success')
-                        $('#place_order').modal('show');
-                    },
-                    error: function (responce) {
-                        console.log('in ajax failure')
-                        $('#place_order').modal('show');
-                    }
-                })
-            }
-        }
 
         jQuery('#add_new_address').validate({
                 rules: {
@@ -1403,50 +1351,6 @@
                     form.submit();
                 }
             });
-
-        $(document).on("click","#new_address_button",function (e) {
-            e.stopPropagation();
-            var userId = $('#customer_id').val();
-            var addressFullName= $('#full_name').val();
-            var addrMobile= $('#mobile').val();
-            var house_block = $('#flat_door_block_house_no').val();
-            var village_premises = $('#name_of_premise_building_village').val();
-            var area = $('#area').val();
-            var road_street = $('#road_street_lane').val();
-            var pin = $('#pincode').val();
-            var post = $('#atPost').val();
-            var state = $('#stateName').val();
-            var dist = $('#district').val();
-            var taluka = $('#taluka').val();
-            if(house_block != '' && village_premises != '' && area != '' && road_street != '' && pin != '' && post != '' && state != '' && dist != '' && taluka != '')
-            {
-                $.ajax({
-                    url: "{{env('BASE_URL')}}/add-address",
-                    type: 'POST',
-                    dataType: 'array',
-                    data: {
-                        'user_id': userId,
-                        'address_fname': addressFullName,
-                        'address_mobile': addrMobile,
-                        'house_block': house_block,
-                        'village_premises': village_premises,
-                        'area': area,
-                        'road_street': road_street,
-                        'pin': pin,
-                        'at_post': post,
-                        'state': state,
-                        'dist': dist,
-                        'taluka': taluka
-                    },
-                    success: function (responce) {
-                        $('#place_order').modal('show');
-                    },
-                    error: function (responce) {
-                        $('#place_order').modal('show');
-                    }
-                })
-            }
-        });
 
         $(document).on("click",".chat-submit",function (e) {
             var  message= $('#reply_text').val();
