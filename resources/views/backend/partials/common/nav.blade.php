@@ -113,6 +113,9 @@
                                 <a href="/crm/csr-orders">My Orders</a>
                             </li>
                         @endif
+                        <li class="menu-dropdown classic-menu-dropdown">
+                            <a href="/product/manage">Products</a>
+                        </li>
                     </ul>
                 </div>
                 <!-- END MEGA MENU -->

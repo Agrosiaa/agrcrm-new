@@ -141,12 +141,12 @@ class TagController extends Controller
         try{
             $user = Auth::user();
             if($request->has('crm_cust_id') && $request->crm_cust_id != null){
-                CustomerTagRelation::create(['user_id' => $user['id'],'crm_customer_id' => $request->crm_cust_id, 'tag_cloud_id' => $request->tag_id]);
+                CustomerTagRelation::create(['user_id' => $user['id'],'crm_customer_id' => $request->crm_cust_id, 'tag_cloud_id' => $request->tag_id, 'tag_type_id' => null]);
             }
             return back();
         }catch (\Exception $exception){
             $data = [
-                'action' => 'Create/Edit new tag',
+                'action' => 'Create/Edit Assign new tag',
                 'exception' => $exception->getMessage()
             ];
             Log::critical(json_encode($data));
@@ -179,6 +179,7 @@ class TagController extends Controller
     public function getRelevantResult($keyword)
     {
         $tag_id = array();
+        $relevantData = array();
         $searchResultsTake = env('SEARCH_RESULT');
         $keywordLower = strtolower($keyword);
         $tagsDataArray = TagCloud::whereIn('id',$tag_id)->where('is_active',1)->select('id','name')->orderBy('created_at','desc')->take($searchResultsTake)->skip(0)->get()->toArray();

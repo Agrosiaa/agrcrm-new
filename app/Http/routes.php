@@ -82,3 +82,8 @@ Route::group(['prefix' => 'report'], function () {
     Route::get('view',array('uses' => 'Report\ReportController@view'));
     Route::post('generate',array('uses' => 'Report\ReportController@generateReport'));
 });
+Route::group(['prefix' => 'product'], function () {
+    Route::get('manage',array('uses' => 'Product\ProductController@manage'));
+    Route::get('view/{id}',array('uses' => 'Product\ProductController@view'));
+    Route::post('list',array('uses' => 'Product\ProductController@productListing'));
+});

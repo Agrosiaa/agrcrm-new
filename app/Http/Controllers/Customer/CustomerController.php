@@ -99,7 +99,7 @@ class CustomerController extends Controller
                 $end = $iDisplayStart + $iDisplayLength;
                 $end = $end > $iTotalRecords ? $iTotalRecords : $end;
                 $limitedOrders = $customerOrders = Curl::to(env('BASE_URL')."/customer-orders")
-                    ->withData( array( 'mobile' => $mobile, 'retrieve' => 'data','filteredIds' => $customerOrders->orders))->asJson()->get();
+                    ->withData(array('mobile' => $mobile, 'retrieve' => 'data','filteredIds' => $customerOrders->orders))->asJson()->get();
                 for($i=0,$j = $iDisplayStart; $j < $end; $i++,$j++) {
                     if($limitedOrders[$j]->is_configurable == true){
                         $displayPrice = (($limitedOrders[$j]->discounted_price * (($limitedOrders[$j]->length) * ($limitedOrders[$j]->width)) * $limitedOrders[$j]->quantity) +$limitedOrders[$j]->delivery_amount-$limitedOrders[$j]->coupon_discount);
@@ -157,11 +157,19 @@ class CustomerController extends Controller
                     return 'false';
                 }
             }
-            $customerTags = CrmCustomer::join('customer_tag_relation','customer_tag_relation.crm_customer_id','=','crm_customer.id')
+            $typeTags = CrmCustomer::join('customer_tag_relation','customer_tag_relation.crm_customer_id','=','crm_customer.id')
                         ->join('tag_cloud','customer_tag_relation.tag_cloud_id','=','tag_cloud.id')
+                        ->join('tag_type','tag_type.id','=','customer_tag_relation.tag_type_id')
                         ->where('crm_customer.number','=',$mobile)
                         ->where('is_deleted','!=',true)
-                        ->select('customer_tag_relation.tag_cloud_id','tag_cloud.name','customer_tag_relation.crm_customer_id')->get()->toArray();
+                            ->select('tag_type.name as tag_type_name','customer_tag_relation.tag_cloud_id','tag_cloud.name','customer_tag_relation.crm_customer_id')->get()->toArray();
+            $nonTypeTags = CrmCustomer::join('customer_tag_relation','customer_tag_relation.crm_customer_id','=','crm_customer.id')
+                ->join('tag_cloud','customer_tag_relation.tag_cloud_id','=','tag_cloud.id')
+                ->where('crm_customer.number','=',$mobile)
+                ->where('is_deleted','!=',true)
+                ->where('customer_tag_relation.tag_type_id','=',0)
+                ->select('customer_tag_relation.tag_cloud_id','tag_cloud.name','customer_tag_relation.crm_customer_id')->get()->toArray();
+            $customerTags = array_merge($typeTags,$nonTypeTags);
             if($user['role_id'] != $admin){
                 $sessionUrl = '/customer/customer-details/'.$mobile.'/'.$id;
                 $loggedCustomer = LoggedCustomerProfile::where('user_id',$user['id'])->first();

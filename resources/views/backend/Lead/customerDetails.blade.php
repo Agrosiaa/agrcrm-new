@@ -184,7 +184,11 @@
                                 <div class="portlet-body">
                                     <div class="bootstrap-tagsinput" id="customer-tag-div">
                                         @foreach($customerTags as $customerTag)
-                                            <button id="tag{{$customerTag['tag_cloud_id']}}{{$customerTag['crm_customer_id']}}" class="lable" style="display: inline;font-size: 90%;margin-left: 2px;margin-top:3px;margin-bottom:3px;padding-bottom: 2px;padding-top: 2px">{{$customerTag['name']}}<span style="color: red;" onclick="removeCustTag({{$customerTag['tag_cloud_id']}},{{$customerTag['crm_customer_id']}})">&nbsp;×</span></button>&nbsp;&nbsp;&nbsp;
+                                            @if(isset($customerTag['tag_type_name']))
+                                                <button id="tag{{$customerTag['tag_cloud_id']}}{{$customerTag['crm_customer_id']}}" class="lable" style="display: inline;font-size: 90%;margin-left: 2px;margin-top:3px;margin-bottom:3px;padding-bottom: 2px;padding-top: 2px">{{$customerTag['name']}}&nbsp;<span style="border-radius: 5px;background: #73AD21;">{{$customerTag['tag_type_name']}}</span>&nbsp;<span style="color: red;" onclick="removeCustTag({{$customerTag['tag_cloud_id']}},{{$customerTag['crm_customer_id']}})">&nbsp;×</span></button>&nbsp;&nbsp;&nbsp;
+                                            @else
+                                                <button id="tag{{$customerTag['tag_cloud_id']}}{{$customerTag['crm_customer_id']}}" class="lable" style="display: inline;font-size: 90%;margin-left: 2px;margin-top:3px;margin-bottom:3px;padding-bottom: 2px;padding-top: 2px">{{$customerTag['name']}}<span style="color: red;" onclick="removeCustTag({{$customerTag['tag_cloud_id']}},{{$customerTag['crm_customer_id']}})">&nbsp;×</span></button>&nbsp;&nbsp;&nbsp;
+                                            @endif
                                         @endforeach
                                     </div>
                                     <div class="logo-wrap">
@@ -1431,7 +1435,7 @@
                         }else if(data['is_created_tag'] == true){
                             str += '<div class="item" style="text-align: center">' +
                                 '<span class="tag label label-info" style="font-size: 90%;">' +
-                                data['sale_agent'] +' added tag ' +data['name'] + ' on '+ data['time'] +
+                                data['sale_agent'] +' added tag '+'<span style="color: #0e0e0e">' +data['name']+'</span>' + ' on '+ data['time'] +
                                 '</span>' +
                                 '</div> '+
                                 '<br>';
