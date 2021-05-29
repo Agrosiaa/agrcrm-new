@@ -3,14 +3,10 @@
 @include('backend.partials.common.nav')
 @section('css')
 <link rel="stylesheet" type="text/css" href="/assets/frontend/global/css/bootstrap.css">
-<link rel="stylesheet" type="text/css" href="/assets/frontend/global/css/mCustomScrollbar.min.css">
 <link rel="stylesheet" type="text/css" href="/assets/frontend/global/css/styles/style.css">
-<link href="/assets/global/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css" rel="stylesheet" type="text/css" />
 <link href="/assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.css" rel="stylesheet" type="text/css" />
-<link href="/assets/global/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css" rel="stylesheet" type="text/css" />
 <link href="/assets/global/plugins/fancybox/source/jquery.fancybox.css" rel="stylesheet" type="text/css" />
 <link href="/assets/global/css/plugins.min.css" rel="stylesheet" type="text/css" />
-<link href="/assets/global/plugins/jstree/dist/themes/default/style.css" rel="stylesheet" type="text/css" />
 
 @endsection
 @section('content')
@@ -115,7 +111,7 @@
                                 <div>All Inclusive of Taxes</div>
                             </div>
                             @if($product['quantity'] >= $product['minimum_quantity'] && $product['quantity'] > 0 )
-                            <div class="quantity">
+                            <!--<div class="quantity">
                                 <button class="btn btn-primary">-</button>
                                 <input type="text" id="productQuantity" placeholder="Qty" value="{{$product['minimum_quantity']}}">
                                 <button class="btn btn-primary">+</button>
@@ -123,7 +119,7 @@
                             <div class="row">
                                 <span id="product_quantity_message" style="display:none;color:red"></span>
                             </div>
-                            <!--<div class="check-availability">
+                            <div class="check-availability">
                                 <div class="check">
                                     <span>Check availability at</span>&nbsp;<input type="text" id="pincode" name="pincode" placeholder="@lang('message.enter_pincode_text')"> &nbsp;<a href="javascript:void(0)" class="btn btn-primary" id="check" disabled="">@lang('message.check_button')</a>
                                 </div>
@@ -135,31 +131,31 @@
                                 </div>
                             </div>-->
                             @if($categoryData['itemHead']->is_configurable == true && $product['is_override_configurable'] == false)
-                            <div class="configurable">
-                                <button class="btn btn-primary" data-toggle="modal" data-target="#select-size">Select Size</button>
-                            </div>
+                                <div class="configurable">
+                                    <button class="btn btn-primary" data-toggle="modal" data-target="#select-size">Select Size</button>
+                                </div>
                             @else
-                            <div class="buy-addCart-buttons">
+                            <!--<div class="buy-addCart-buttons">
                                 @if($product['is_active'] == false)
                                 <button class="btn btn-primary btn-icon" disabled>Buy Now</button>
                                 @else
                                 <button class="btn btn-primary btn-icon">Buy Now</button>
                                 @endif
                                 <button class="btn btn-info btn-icon">Add to Cart</button>
-                            </div>
-                            @endif
-                            @else
-                            <div class="out-of-stock">Product Is Out of Stock</div>
-                            @endif
-                            @if($product['is_active'] == false)
-                            <p style="color:red;">This product is disabled by vendor for some reasons. Kindly contact <a href="tel:8550999760">+91-8550999760</a> for urgent requirement.</p>
-                            @endif
-                            <!--<ul>
-                                <li>Easy Return</li>
-                                <li>100% Original</li>
-                                <li>Brand New</li>
-                                <li>Pay Securely</li>
-                            </ul>-->
+                            </div>-->
+                        @endif
+                        @else
+                        <div class="out-of-stock">Product Is Out of Stock</div>
+                        @endif
+                        @if($product['is_active'] == false)
+                        <p style="color:red;">This product is disabled by vendor for some reasons. Kindly contact <a href="tel:8550999760">+91-8550999760</a> for urgent requirement.</p>
+                        @endif
+                        <!--<ul>
+                            <li>Easy Return</li>
+                            <li>100% Original</li>
+                            <li>Brand New</li>
+                            <li>Pay Securely</li>
+                        </ul>-->
 
                             <div class="delivery-info">
                                 <div class="item">
@@ -361,8 +357,6 @@
 <script src="/assets/global/plugins/jquery.min.js" type="text/javascript"></script>
 <script src="/assets/global/plugins/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
 <script src="/assets/global/plugins/js.cookie.min.js" type="text/javascript"></script>
-<script src="/assets/global/plugins/bootstrap-hover-dropdown/bootstrap-hover-dropdown.min.js" type="text/javascript"></script>
-<script src="/assets/global/plugins/jquery-slimscroll/jquery.slimscroll.min.js" type="text/javascript"></script>
 <script src="/assets/global/plugins/jquery.blockui.min.js" type="text/javascript"></script>
 <script src="/assets/global/plugins/uniform/jquery.uniform.min.js" type="text/javascript"></script>
 <script src="/assets/global/plugins/bootstrap-switch/js/bootstrap-switch.min.js" type="text/javascript"></script>
@@ -371,8 +365,10 @@
 <script src="/assets/global/scripts/app.min.js" type="text/javascript"></script>
 <!-- END THEME GLOBAL SCRIPTS -->
 <!-- BEGIN PAGE LEVEL SCRIPTS -->
-<script type="text/javascript" src="/assets/frontend/custom/registration/js/typeahead.bundle.js"></script>
-<script type="text/javascript" src="/assets/frontend/custom/registration/js/handlebars-v3.0.3.js"></script>
+    <script type="text/javascript" src="/assets/frontend/global/js/mCustomScrollbar.min.js"></script>
+    <script type="text/javascript" src="/assets/frontend/global/js/jquery.cycle2.min.js"></script>
+    <script type="text/javascript" src="/assets/frontend/global/js/jquery.cycle2.carousel.min.js"></script>
+    <script type="text/javascript" src="/assets/frontend/global/js/custom.js"></script>
 <script src="/assets/pages/scripts/components-date-time-pickers.min.js" type="text/javascript"></script>
 <script src="/assets/global/plugins/jquery-validation/js/jquery.validate.min.js" type="text/javascript"></script>
 
