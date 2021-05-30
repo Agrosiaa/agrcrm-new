@@ -265,13 +265,13 @@ body {
     margin-right: 24px;
     border-radius: 2px;
     background: #fff;
-    width: 400px; }
+    width: 70%; }
 .select-category .selectWrap {
     width: 140px;
     float: left;
     border: none; }
 .select-category input {
-    width: 400px;
+    width: 100%;
     margin-right: 10px;
     padding-left: 10px;
     outline: none;

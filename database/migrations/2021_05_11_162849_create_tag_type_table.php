@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddLeadSourceToCrmCustomerTable extends Migration
+class CreateTagTypeTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,8 +12,11 @@ class AddLeadSourceToCrmCustomerTable extends Migration
      */
     public function up()
     {
-        Schema::table('crm_customer', function (Blueprint $table) {
-            $table->string('lead_source')->nullable();
+        Schema::create('tag_type', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('name');
+            $table->string('slug')->unique();
+            $table->timestamps();
         });
     }
 
@@ -24,8 +27,6 @@ class AddLeadSourceToCrmCustomerTable extends Migration
      */
     public function down()
     {
-        Schema::table('crm_customer', function (Blueprint $table) {
-            $table->dropColumn('lead_source');
-        });
+        Schema::drop('tag_type');
     }
 }

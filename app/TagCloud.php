@@ -8,5 +8,10 @@ class TagCloud extends Model
 {
     protected $table = 'tag_cloud';
 
-    protected $fillable = ['name','user_id','is_product','is_category','is_crop','is_active'];
+    protected $fillable = ['name','user_id','tag_type_id','is_active'];
+
+    public function tagType()
+    {
+        return $this->belongsTo('App\TagType', 'tag_type_id');
+    }
 }

@@ -17,9 +17,7 @@ class CreateTagCloudTable extends Migration
             $table->string('name',255)->unique();
             $table->unsignedInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
-            $table->boolean('is_product')->nullable();
-            $table->boolean('is_category')->nullable();
-            $table->boolean('is_crop')->nullable();
+            $table->unsignedInteger('tag_type_id')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
