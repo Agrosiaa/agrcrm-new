@@ -23,7 +23,8 @@ class TagController extends Controller
     public function manage(Request $request){
         try{
             $user = Auth::user();
-            return view('backend.tag.manage');
+            $tagTypes = TagType::all();
+            return view('backend.tag.manage')->with(compact('tagTypes'));
         }catch(\Exception $exception){
             $data =[
                 'action' => 'get crm orders',
@@ -41,12 +42,19 @@ class TagController extends Controller
             if($tagIds != null){
                 $resultFlag = true;
                 // Search with tag name
-                if($request->has('name') && $tableData['name']!=""){
+                if($resultFlag && $request->has('name') && $tableData['name']!=""){
                     $tagIds = TagCloud::whereIn('id',$tagIds)->where('name','like','%'.$tableData['name'].'%')->lists('id');
                     if(count($tagIds) <= 0){
                         $resultFlag = false;
                     }
                 }
+                if($resultFlag && $request->has('tag_type') && $tableData['tag_type']!=""){
+                    $tagIds = TagCloud::whereIn('id',$tagIds)->where('tag_type_id',$tableData['tag_type'])->lists('id');
+                    if(count($tagIds) <= 0){
+                        $resultFlag = false;
+                    }
+                }
+
                 $iTotalRecords = count($tagIds);
                 $iDisplayLength = intval($request->length);
                 $iDisplayLength = $iDisplayLength < 0 ? $iTotalRecords : $iDisplayLength;
@@ -56,11 +64,12 @@ class TagController extends Controller
                 $records["data"] = array();
                 $end = $iDisplayStart + $iDisplayLength;
                 $end = $end > $iTotalRecords ? $iTotalRecords : $end;
-                $limitedProducts = TagCloud::whereIn('id',$tagIds)->take($iDisplayLength)->skip($iDisplayStart)->orderBy('created_at','desc')->get()->toArray();
+                $limitedProducts = TagCloud::whereIn('id',$tagIds)->take($iDisplayLength)->skip($iDisplayStart)->with('TagType')->orderBy('created_at','desc')->get()->toArray();
                 for($i=0,$j = $iDisplayStart; $j < $end; $i++,$j++) {
-                    $editTagPara = $limitedProducts[$j]['id'].",'".$limitedProducts[$j]['name']."'";
+                    $editTagPara = $limitedProducts[$j]['id'].",'".$limitedProducts[$j]['name']."',".$limitedProducts[$j]['tag_type_id'];
                     $records["data"][] = array(
                         $limitedProducts[$j]['name'],
+                        $limitedProducts[$j]['tag_type'] ? $limitedProducts[$j]['tag_type']['name'] : '',
                         date('d F Y H:i:s', strtotime($limitedProducts[$j]['created_at'])),
                         '<a class="btn btn-sm btn-default btn-circle btn-editable" onclick="editTag('.$editTagPara.')"><i class="fa fa-pencil"></i> Edit</a>',
                     );
@@ -85,9 +94,17 @@ class TagController extends Controller
         try{
             $user = Auth::User();
             if($request->has('tag_id') && $request->tag_id){
-                TagCloud::where('id',$request->tag_id)->update(['name' => $request->tag_name,'user_id' => $user['id']]);
+                TagCloud::where('id',$request->tag_id)->update([
+                    'name' => $request->tag_name,
+                    'tag_type_id' => $request->tag_type_id,
+                    'user_id' => $user['id']
+                ]);
             }else{
-                TagCloud::create(['name' => $request->tag_name,'user_id' => $user['id']]);
+                TagCloud::create([
+                    'name' => $request->tag_name,
+                    'tag_type_id' => $request->tag_type_id,
+                    'user_id' => $user['id']
+                ]);
             }
             return back();
         }catch (\Exception $exception){
