@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\LoggedCustomerProfile;
 use App\UserRoles;
 use Closure;
+use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 

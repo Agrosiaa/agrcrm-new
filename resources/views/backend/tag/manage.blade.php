@@ -54,12 +54,20 @@
                                     <thead>
                                     <tr role="row" class="heading">
                                         <th width="10%"> Tag Name </th>
+                                        <th width="10%"> Tag Type </th>
                                         <th width="10%"> Created Date </th>
                                         <th width="10%"> Action </th>
                                     </tr>
                                     <tr role="row" class="filter">
                                         <td>
-                                            <input type="text" class="form-control form-filter input-sm" name="order_no"> </td>
+                                            <input type="text" class="form-control form-filter input-sm" name="name"> </td>
+                                        <td>
+                                            <select class="form-control form-filter input-sm" name="tag_type">
+                                                <option value="">Please select tag type</option>
+                                                @foreach($tagTypes as $tagType)
+                                                <option value="{{$tagType['id']}}"">{{$tagType['name']}}</option>
+                                                @endforeach
+                                            </select>
                                         <td></td>
                                         <td>
                                             <div class="margin-bottom-5">
@@ -87,12 +95,27 @@
                                 <h4 class="modal-title" style="text-align: center"><b id="tag_modal_title">Create Tag</b></h4>
                             </div>
                             <form class="form-horizontal" method="post" role="form" action="/tag/create-edit-tag">
+                                {{csrf_field()}}
+                                <input type="hidden" name="tag_id" id="tag_id">
                                 <div class="modal-body">
                                     <div class="row">
                                         <div class="col-md-12">
                                             <div class="form-group">
-                                                {{csrf_field()}}
-                                                <input type="hidden" name="tag_id" id="tag_id">
+                                                <label class="col-md-2 control-label">Tag Type</label>
+                                                <div class="col-md-9">
+                                                    <select class="form-control" name="tag_type_id">
+                                                        <option value="">Please select tag type</option>
+                                                        @foreach($tagTypes as $tagType)
+                                                        <option value="{{$tagType['id']}}"">{{$tagType['name']}}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
                                                 <label class="col-md-2 control-label">Tag Name</label>
                                                 <div class="col-md-9">
                                                     <input type="text" class="form-control" id="tag_name" name="tag_name" required>
@@ -152,7 +175,13 @@
 
     <!-- END THEME LAYOUT SCRIPTS -->
     <script>
-        function editTag(id,name) {
+        function editTag(id,name,typeId) {
+            if(typeId != null){
+                $("select option").each(function(){
+                    if ($(this).val() == typeId)
+                        $(this).attr("selected","selected");
+                });
+            }
             $('#tag_id').val(id);
             $('#tag_name').val(name);
             $('#tag_modal_title').text('Edit Tag');

@@ -97,7 +97,7 @@ class CrmController extends Controller
         try{
             $user = Auth::user();
             $customerOrders = Curl::to(env('BASE_URL')."/csr-orders")
-                ->withData( array( 'csr_id' => $user['id'], 'retrieve' => 'ids'))->asJson()->get();
+                ->withData( array( 'csr_id' => $user['id'], 'retrieve' => 'ids'))->asJson()->post();
             $tableData = $request->all();
             $searchData = NULL;
             $orderName=null;
@@ -106,7 +106,7 @@ class CrmController extends Controller
                 // Search customer mobile number
                 if($request->has('order_no') && $tableData['order_no']!=""){
                     $customerOrders = Curl::to(env('BASE_URL')."/csr-orders")
-                        ->withData( array( 'csr_id' => $user['id'], 'filter' => true , 'order_no' => $tableData['order_no'],'ids' => $customerOrders->orders))->asJson()->get();
+                        ->withData( array( 'csr_id' => $user['id'], 'filter' => true , 'order_no' => $tableData['order_no'],'ids' => $customerOrders->orders))->asJson()->post();
                     if(empty($customerOrders->orders)){
                         $resultFlag = false;
                     }
@@ -114,7 +114,7 @@ class CrmController extends Controller
                 // Filter Customer listing with respect to sales parson name
                 if($resultFlag == true && $request->has('product') && $tableData['product']!=""){
                     $customerOrders = Curl::to(env('BASE_URL')."/csr-orders")
-                        ->withData( array( 'csr_id' => $user['id'], 'filter' => true,'product' => $tableData['product'],'ids' => $customerOrders->orders))->asJson()->get();
+                        ->withData( array( 'csr_id' => $user['id'], 'filter' => true,'product' => $tableData['product'],'ids' => $customerOrders->orders))->asJson()->post();
                     if(empty($customerOrders->orders)){
                         $resultFlag = false;
                     }
@@ -122,7 +122,7 @@ class CrmController extends Controller
 
                 if($resultFlag == true && $request->has('quantity') && $tableData['quantity']!=""){
                     $customerOrders = Curl::to(env('BASE_URL')."/csr-orders")
-                        ->withData( array( 'csr_id' => $user['id'], 'filter' => true,'quantity' => $tableData['quantity'], 'ids' => $customerOrders->orders))->asJson()->get();
+                        ->withData( array( 'csr_id' => $user['id'], 'filter' => true,'quantity' => $tableData['quantity'], 'ids' => $customerOrders->orders))->asJson()->post();
                     if(empty($customerOrders->orders)){
                         $resultFlag = false;
                     }
@@ -130,7 +130,7 @@ class CrmController extends Controller
 
                 if($resultFlag == true && $request->has('customer') && $tableData['customer']!=""){
                     $customerOrders = Curl::to(env('BASE_URL')."/csr-orders")
-                        ->withData( array( 'csr_id' => $user['id'], 'filter' => true,'customer' => $tableData['customer'],'ids' => $customerOrders->orders))->asJson()->get();
+                        ->withData( array( 'csr_id' => $user['id'], 'filter' => true,'customer' => $tableData['customer'],'ids' => $customerOrders->orders))->asJson()->post();
                     if(empty($customerOrders->orders)){
                         $resultFlag = false;
                     }
@@ -138,7 +138,7 @@ class CrmController extends Controller
 
                 if($resultFlag == true && $request->has('status') && $tableData['status']!=""){
                     $customerOrders = Curl::to(env('BASE_URL')."/csr-orders")
-                        ->withData( array( 'csr_id' => $user['id'],'filter' => true, 'status' => $tableData['status'], 'ids' => $customerOrders->orders))->asJson()->get();
+                        ->withData( array( 'csr_id' => $user['id'],'filter' => true, 'status' => $tableData['status'], 'ids' => $customerOrders->orders))->asJson()->post();
                     if(empty($customerOrders->orders)){
                         $resultFlag = false;
                     }
@@ -146,14 +146,14 @@ class CrmController extends Controller
 
                 if($resultFlag == true && $request->has('awb_no') && $tableData['awb_no']!=""){
                     $customerOrders = Curl::to(env('BASE_URL')."/csr-orders")
-                        ->withData( array( 'csr_id' => $user['id'],'filter' => true, 'awb_no' => $tableData['awb_no'], 'ids' => $customerOrders->orders))->asJson()->get();
+                        ->withData( array( 'csr_id' => $user['id'],'filter' => true, 'awb_no' => $tableData['awb_no'], 'ids' => $customerOrders->orders))->asJson()->post();
                     if(empty($customerOrders->orders)){
                         $resultFlag = false;
                     }
                 }
                 if($resultFlag == true && $request->has('shipment') && $tableData['shipment']!=""){
                     $customerOrders = Curl::to(env('BASE_URL')."/csr-orders")
-                        ->withData( array( 'csr_id' => $user['id'],'filter' => true, 'shipment' => $tableData['shipment'], 'ids' => $customerOrders->orders))->asJson()->get();
+                        ->withData( array( 'csr_id' => $user['id'],'filter' => true, 'shipment' => $tableData['shipment'], 'ids' => $customerOrders->orders))->asJson()->post();
                     if(empty($customerOrders->orders)){
                         $resultFlag = false;
                     }
@@ -169,7 +169,7 @@ class CrmController extends Controller
                 $end = $iDisplayStart + $iDisplayLength;
                 $end = $end > $iTotalRecords ? $iTotalRecords : $end;
                 $limitedOrders = $customerOrders = Curl::to(env('BASE_URL')."/csr-orders")
-                    ->withData( array( 'csr_id' => $user['id'], 'retrieve' => 'data','filteredIds' => $customerOrders->orders))->asJson()->get();
+                    ->withData( array( 'csr_id' => $user['id'], 'retrieve' => 'data','filteredIds' => $customerOrders->orders))->asJson()->post();
                 for($i=0,$j = $iDisplayStart; $j < $end; $i++,$j++) {
                     $records["data"][] = array(
                         'AGR'.str_pad($limitedOrders[$j]->id, 9, "0", STR_PAD_LEFT),
