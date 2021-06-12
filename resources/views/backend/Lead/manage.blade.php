@@ -8,9 +8,6 @@
         }
     </style>
     <!-- BEGIN PAGE LEVEL PLUGINS -->
-    <link rel="stylesheet" type="text/css" href="/assets/frontend/global/css/bootstrap.css">
-    <link rel="stylesheet" type="text/css" href="/assets/frontend/global/css/mCustomScrollbar.min.css">
-    <link rel="stylesheet" type="text/css" href="/assets/frontend/global/css/styles/style.css">
     <link href="/assets/global/plugins/datatables/datatables.min.css" rel="stylesheet" type="text/css" />
     <link href="/assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.css" rel="stylesheet" type="text/css" />
     <link href="/assets/global/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css" rel="stylesheet" type="text/css" />
@@ -69,29 +66,24 @@
                                             </div>
                                         </div>
                                     <input type="hidden" name="current_status" id="current_status" value="{{Route::current()->getParameter('type')}}" />
-                                   @if($user['role_id'] == 1)
-                                        {{--<div class="col-md-2" style="padding-top: 15px;">
-                                            <a href="/leads/export-customer-number" class="btn blue" style="margin-left: 30%">
-                                                Upload Sheet
-                                            </a>
-                                        </div>--}}
-                                        <div class="col-md-3" style="padding-top: 15px;">
-                                            <a href="/leads/import-customer-call-data" class="btn blue" style="margin-left: 30%">
+                                </div>
+                                <div class="table-container">
+                                    @if($user['role_id'] == 1)
+                                        <div class="text-right">
+    <!--                                        <a href="/leads/export-customer-number" class="btn blue">-->
+    <!--                                            Upload Sheet-->
+    <!--                                        </a>-->
+                                            <a href="/leads/import-customer-call-data" class="btn blue">
                                                 Customer Call Data Sheet
                                             </a>
-                                        </div>
-                                        <div class="col-md-1" style="padding-top: 15px;">
+                                            <a href="/leads/sync-abandoned-cart" class="btn blue">
+                                                Sync Cart
+                                            </a>
                                             <a href="javascript:void(0);" class="btn blue m-icon" data-toggle="modal" data-target="#assign-to-agents-modal">
                                                 Assign
                                             </a>
                                         </div>
-                                        <div class="col-md-1" style="padding-top: 15px;">
-                                            <a href="/leads/sync-abandoned-cart" class="btn blue" style="margin-left: 30%">
-                                                sync cart
-                                            </a>
-                                        </div>
                                     @endif
-                                    </div>
                                     @if($user['role_id'] == 1 && (($status == 'new') || ($status == 'call-back') || ($status == 'complete') || ($status == 'failed')))
                                         <table class="table table-striped table-bordered table-hover table-checkable" id="sales_admin_list">
                                             <thead>
@@ -146,7 +138,7 @@
                                         </thead>
                                         <tbody></tbody>
                                     </table>
-                                @endif
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -500,6 +492,7 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <input type="hidden" class="form-control" id="lead_crm_id" name="lead_crm_id">
                                     <div class="row">
                                         <div class="col-md-12">
                                             <button type="submit" id="create_customer" class="btn btn-sm btn-success">Create</button>
@@ -520,16 +513,6 @@
     <!-- END PAGE CONTENT BODY -->
 @endsection
 @section('javascript')
-    <!-- BEGIN CORE PLUGINS -->
-    <script src="/assets/global/plugins/jquery.min.js" type="text/javascript"></script>
-    <script src="/assets/global/plugins/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
-    <script src="/assets/global/plugins/js.cookie.min.js" type="text/javascript"></script>
-    <script src="/assets/global/plugins/bootstrap-hover-dropdown/bootstrap-hover-dropdown.min.js" type="text/javascript"></script>
-    <script src="/assets/global/plugins/jquery-slimscroll/jquery.slimscroll.min.js" type="text/javascript"></script>
-    <script src="/assets/global/plugins/jquery.blockui.min.js" type="text/javascript"></script>
-    <script src="/assets/global/plugins/uniform/jquery.uniform.min.js" type="text/javascript"></script>
-    <script src="/assets/global/plugins/bootstrap-switch/js/bootstrap-switch.min.js" type="text/javascript"></script>
-    <!-- END CORE PLUGINS -->
     <!-- BEGIN PAGE LEVEL PLUGINS -->
     <script src="/assets/global/scripts/datatable.js" type="text/javascript"></script>
     <script src="/assets/global/plugins/datatables/datatables.min.js" type="text/javascript"></script>
@@ -802,9 +785,10 @@
             }
         }
 
-        function createCustomer(mobile) {
+        function createCustomer(leadId, mobile) {
             $('#create-customer-modal').modal('show');
             $('#cust_mobile_number').val(mobile);
+            $('#lead_crm_id').val(leadId);
             $('#address-div').hide();
         }
 

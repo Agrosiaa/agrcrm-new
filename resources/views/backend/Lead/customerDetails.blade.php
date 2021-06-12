@@ -16,568 +16,558 @@
 @endsection
 @section('content')
     <!-- BEGIN CONTAINER -->
-    <div class="page-container">
-        <!-- BEGIN CONTENT -->
-        <div class="page-content-wrapper">
-            <!-- BEGIN CONTENT BODY -->
-            <!-- BEGIN PAGE HEAD-->
-            <div class="page-head">
-                <div class="container">
-                    <!-- BEGIN PAGE TITLE -->
-
-                    <!-- END PAGE TITLE -->
-
+    <div class="page-content">
+        <div class="container">
+            <!-- BEGIN PAGE CONTENT INNER -->
+            <div class="page-content-inner">
+                <div class="row">
+                    @include('backend.partials.error-messages')
+                    <input type="hidden" id="base_url" value="{{env('BASE_URL')}}">
+                    <input type="hidden" id="crm_customer_id" value="{{$id}}">
+                    @if($id == 'null' && $user['role_id'] == 2)
+                    <div class="col-md-12 col-md-offset-11">
+                        @if($customerInfo->profile->first_name != null || $customerInfo->profile->last_name != null)
+                        <a href="/crm/create-lead/{{$user['id']}}/{{$mobile}}" class="btn green">Create Lead</a>
+                        @else
+                        <a href="javascript:void(0);" class="btn green" data-toggle="modal" data-target="#profile-edit-modal">
+                            Create Lead
+                        </a>
+                        @endif
+                    </div>
+                    @endif
+                    @if($id != 'null')
+                    <div class="col-md-12 col-md-offset-9">
+                        <a href="#" onclick="chatHistory('{{$id}}','{{$mobile}}')" class="btn yellow">Make a Log </a>
+                        <a href="#" id="place_order_button" class="btn blue">Place Order </a>
+                        <a href="#" id="schedule-button" class="btn red-intense">Schedule </a>
+                    </div>
+                    @endif
                 </div>
-            </div>
-            <!-- END PAGE HEAD-->
-            <!-- BEGIN PAGE CONTENT BODY -->
-            <div class="page-content content-min-height">
-                <div class="container" style="width: 90%;">
-                    <!-- BEGIN PAGE BREADCRUMBS -->
-
-                    <!-- END PAGE BREADCRUMBS -->
-                    <!-- BEGIN PAGE CONTENT INNER -->
-                    {{--<div class="page-content-inner">--}}
-                    <div class="row">
-                        @include('backend.partials.error-messages')
-                        <input type="hidden" id="base_url" value="{{env('BASE_URL')}}">
-                        <input type="hidden" id="crm_customer_id" value="{{$id}}">
-                        @if($id == 'null' && $user['role_id'] == 2)
-                            <div class="col-md-12 col-md-offset-11">
-                                @if($customerInfo->profile->first_name != null || $customerInfo->profile->last_name != null)
-                                    <a href="/crm/create-lead/{{$user['id']}}/{{$mobile}}" class="btn green">Create Lead</a>
-                                @else
-                                    <a href="javascript:void(0);" class="btn green" data-toggle="modal" data-target="#profile-edit-modal">
-                                        Create Lead
-                                    </a>
+                <hr>
+                <div class="row">
+                <div class="col-md-6">
+                    <div class="portlet yellow box">
+                        <div class="portlet-title">
+                            <div class="caption">
+                                <i class="icon-user font-violet"></i>
+                                <span class="caption-subject font-violet bold uppercase">Profile</span>
+                            </div>
+                        </div>
+                        <div class="portlet-body">
+                            <div class="scroller" style="height: 250px;" data-always-visible="1" data-rail-visible="0">
+                                <div class="row static-info">
+                                    <div class="col-md-5 name"> Customer Name: </div>
+                                    <div class="col-md-7 value"> {{ucwords($customerInfo->profile->first_name)}}  {{ucwords($customerInfo->profile->last_name)}} </div>
+                                </div>
+                                <div class="row static-info">
+                                    <div class="col-md-5 name"> Mobile No: </div>
+                                    <div class="col-md-7 value"> {{$customerInfo->profile->mobile}} </div>
+                                </div>
+                                @if($customerInfo->profile->email != null)
+                                <div class="row static-info">
+                                    <div class="col-md-5 name"> Email: </div>
+                                    <div class="col-md-7 value"> {{$customerInfo->profile->email}} </div>
+                                </div>
+                                @endif
+                                @if($customerInfo->profile->dob != null)
+                                <div class="row static-info">
+                                    <div class="col-md-5 name"> Date of Birth: </div>
+                                    <div class="col-md-7 value"> {{$customerInfo->profile->dob}} </div>
+                                </div>
                                 @endif
                             </div>
-                        @endif
-                            @if($id != 'null')
-                                <div class="col-md-12 col-md-offset-9">
-                                    <a href="#" onclick="chatHistory('{{$id}}','{{$mobile}}')" class="btn yellow">Make a Log </a>
-                                    <a href="#" id="place_order_button" class="btn blue">Place Order </a>
-                                    <a href="#" id="schedule-button" class="btn red-intense">Schedule </a>
-                                </div>
-                            @endif
-                    </div>
-                    <hr>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="portlet yellow box">
-                                <div class="portlet-title">
-                                    <div class="caption">
-                                        <i class="icon-user font-violet"></i>
-                                        <span class="caption-subject font-violet bold uppercase">Profile</span>
-                                    </div>
-                                </div>
-                                <div class="portlet-body">
-                                    <div class="scroller" style="height: 250px;" data-always-visible="1" data-rail-visible="0">
-                                        <div class="row static-info">
-                                            <div class="col-md-5 name"> Customer Name: </div>
-                                            <div class="col-md-7 value"> {{ucwords($customerInfo->profile->first_name)}}  {{ucwords($customerInfo->profile->last_name)}} </div>
-                                        </div>
-                                        <div class="row static-info">
-                                            <div class="col-md-5 name"> Mobile No: </div>
-                                            <div class="col-md-7 value"> {{$customerInfo->profile->mobile}} </div>
-                                        </div>
-                                        @if($customerInfo->profile->email != null)
-                                            <div class="row static-info">
-                                                <div class="col-md-5 name"> Email: </div>
-                                                <div class="col-md-7 value"> {{$customerInfo->profile->email}} </div>
-                                            </div>
-                                        @endif
-                                        @if($customerInfo->profile->dob != null)
-                                            <div class="row static-info">
-                                                <div class="col-md-5 name"> Date of Birth: </div>
-                                                <div class="col-md-7 value"> {{$customerInfo->profile->dob}} </div>
-                                            </div>
-                                        @endif
-                                    </div>
-                                    <a href="javascript:void(0);" class="btn blue m-icon" data-toggle="modal" data-target="#profile-edit-modal">
-                                        Edit
-                                    </a>
-                                    <div class="scroller-footer">
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-
-                                </div>
+                            <a href="javascript:void(0);" class="btn blue m-icon" data-toggle="modal" data-target="#profile-edit-modal">
+                                Edit
+                            </a>
+                            <div class="scroller-footer">
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="portlet green box">
-                                <div class="portlet-title">
-                                    <div class="caption">
-                                        <i class="icon- font-violet"></i>
-                                        <span class="caption-subject font-violet bold uppercase">Addresses</span>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="portlet green box">
+                        <div class="portlet-title">
+                            <div class="caption">
+                                <i class="icon- font-violet"></i>
+                                <span class="caption-subject font-violet bold uppercase">Addresses</span>
+                            </div>
+                        </div>
+                        <div class="portlet-body">
+                            @if(empty($customerInfo->address))
+                            <div id="no_product_div" style="text-align: center">
+                                <h5>No address added yet</h5>
+                            </div>
+                            @else
+                            <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                                @foreach($customerInfo->address as $key=>$value)
+                                @if($key == 0)
+                                <li class="nav-item col-md-3 active">
+                                    <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#address{{$key}}" role="tab" aria-controls="pills-achievements" aria-selected="true">Address {{$key + 1}}</a>
+                                </li>
+                                @else
+                                <li class="nav-item col-md-3">
+                                    <a class="nav-link" id="pills-home-tab" data-toggle="pill" href="#address{{$key}}" role="tab" aria-controls="pills-achievements" aria-selected="true">Address {{$key + 1}}</a>
+                                </li>
+                                @endif
+                                @endforeach
+                            </ul>
+                            <div class="tab-content" id="pills-tabContent" style="height:50%;">
+                                @foreach($customerInfo->address as $key=>$value)
+                                @if($key == 0)
+                                <div class="tab-pane fade active in" id="address{{$key}}" onscroll="" role="tabpanel" aria-labelledby="pills-home-tab" style="height: 260px;overflow-x: scroll">
+                                    <div class="row" style="border-bottom: 1px solid #b2b2b2; padding: 10px;background-color: #fefefe;">
+                                        <div class="col-md-12"><i>Full Name : </i> <span style="color: #000000">{{$value->full_name}}</span></div>
+                                        <div class="col-md-12"><i>Mobile : </i> <span style="color: #000000">{{$value->mobile}}</span></div>
+                                        <div class="col-md-12"><i>House/Block Number : </i> <span style="color: #000000">{{$value->flat_door_block_house_no}}</span></div>
+                                        <div class="col-md-12"><i>Name of Premise/Building/Village : </i> <span style="color: #000000">{{$value->name_of_premise_building_village}}</span></div>
+                                        <div class="col-md-12"><i>Area/Locality : </i> <span style="color: #000000">{{$value->area_locality_wadi}}</span></div>
+                                        <div class="col-md-12"><i>Road/Street/Lane : </i> <span style="color: #000000">{{$value->road_street_lane}}</span></div>
+                                        <div class="col-md-12"><i>Post : </i> <span style="color: #000000">{{$value->at_post}}</span></div>
+                                        <div class="col-md-12"><i>Taluka : </i> <span style="color: #000000">{{$value->taluka}}</span></div>
+                                        <div class="col-md-12"><i>District : </i> <span style="color: #000000">{{$value->district}}</span></div>
+                                        <div class="col-md-12"><i>State : </i> <span style="color: #000000">{{$value->state}}</span></div>
+                                        <div class="col-md-12"><i>Pincode : </i> <span style="color: #000000">{{$value->pincode}}</span></div>
                                     </div>
                                 </div>
-                                <div class="portlet-body">
-                                    @if(empty($customerInfo->address))
-                                        <div id="no_product_div" style="text-align: center">
-                                            <h5>No address added yet</h5>
-                                        </div>
-                                    @else
-                                        <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-                                            @foreach($customerInfo->address as $key=>$value)
-                                                @if($key == 0)
-                                                    <li class="nav-item col-md-3 active">
-                                                        <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#address{{$key}}" role="tab" aria-controls="pills-achievements" aria-selected="true">Address {{$key + 1}}</a>
-                                                    </li>
-                                                @else
-                                                    <li class="nav-item col-md-3">
-                                                        <a class="nav-link" id="pills-home-tab" data-toggle="pill" href="#address{{$key}}" role="tab" aria-controls="pills-achievements" aria-selected="true">Address {{$key + 1}}</a>
-                                                    </li>
-                                                @endif
-                                            @endforeach
+                                @else
+                                <div class="tab-pane fade active" id="address{{$key}}" onscroll="" role="tabpanel" aria-labelledby="pills-home-tab" style="height: 260px;overflow-x: scroll">
+                                    <div class="row" style="border-bottom: 1px solid #b2b2b2; padding: 10px;background-color: #fefefe;">
+                                        <div class="col-md-12"><i>Full Name : </i> <span style="color: #000000">{{$value->full_name}}</span></div>
+                                        <div class="col-md-12"><i>Mobile : </i> <span style="color: #000000">{{$value->mobile}}</span></div>
+                                        <div class="col-md-12"><i>House/Block Number : </i> <span style="color: #000000">{{$value->flat_door_block_house_no}}</span></div>
+                                        <div class="col-md-12"><i>Name of Premise/Building/Village : </i> <span style="color: #000000">{{$value->name_of_premise_building_village}}</span></div>
+                                        <div class="col-md-12"><i>Area/Locality : </i> <span style="color: #000000">{{$value->area_locality_wadi}}</span></div>
+                                        <div class="col-md-12"><i>Road/Street/Lane : </i> <span style="color: #000000">{{$value->road_street_lane}}</span></div>
+                                        <div class="col-md-12"><i>Post : </i> <span style="color: #000000">{{$value->at_post}}</span></div>
+                                        <div class="col-md-12"><i>Taluka : </i> <span style="color: #000000">{{$value->taluka}}</span></div>
+                                        <div class="col-md-12"><i>District : </i> <span style="color: #000000">{{$value->district}}</span></div>
+                                        <div class="col-md-12"><i>State : </i> <span style="color: #000000">{{$value->state}}</span></div>
+                                        <div class="col-md-12"><i>Pincode : </i> <span style="color: #000000">{{$value->pincode}}</span></div>
+                                    </div>
+                                </div>
+                                @endif
+                                @endforeach
+                            </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="portlet purple box">
+                        <div class="portlet-title">
+                            <div class="caption">
+                                <i class="icon- font-violet"></i>
+                                <span class="caption-subject font-violet bold uppercase">Customer Tag Cloud</span>
+                            </div>
+                        </div>
+                        <div class="portlet-body">
+                            <div class="bootstrap-tagsinput" id="customer-tag-div">
+                                @foreach($customerTags as $customerTag)
+                                @if(isset($customerTag['tag_type_name']))
+                                <button id="tag{{$customerTag['tag_cloud_id']}}{{$customerTag['crm_customer_id']}}" class="lable" style="background-color:rgb(241 243 244);display: inline;font-size: 90%;margin-left: 2px;margin-top:3px;margin-bottom:3px;padding-bottom: 2px;padding-top: 2px">{{$customerTag['name']}}&nbsp;<span style="border-radius: 4px !important;background: green;">{{$customerTag['tag_type_name']}}</span>&nbsp;<span style="color: red;" onclick="removeCustTag({{$customerTag['tag_cloud_id']}},{{$customerTag['crm_customer_id']}})">&nbsp;×</span></button>&nbsp;&nbsp;&nbsp;
+                                @else
+                                <button id="tag{{$customerTag['tag_cloud_id']}}{{$customerTag['crm_customer_id']}}" class="lable" style="background-color: rgb(241 243 244);display: inline;font-size: 90%;margin-left: 2px;margin-top:3px;margin-bottom:3px;padding-bottom: 2px;padding-top: 2px">{{$customerTag['name']}}<span style="color: red;" onclick="removeCustTag({{$customerTag['tag_cloud_id']}},{{$customerTag['crm_customer_id']}})">&nbsp;×</span></button>&nbsp;&nbsp;&nbsp;
+                                @endif
+                                @endforeach
+                            </div>
+                            <div class="logo-wrap">
+                                <div class=container>
+                                    <div class="menu clearfix">
+                                        <ul class="clearfix">
+                                            <li class="select-category" id="search_header_main">
+                                                <input type="text" id="tag_name" class="typeahead" placeholder="Search Tag" style=""/>
+                                            </li>
                                         </ul>
-                                        <div class="tab-content" id="pills-tabContent" style="height:50%;">
-                                            @foreach($customerInfo->address as $key=>$value)
-                                                @if($key == 0)
-                                                    <div class="tab-pane fade active in" id="address{{$key}}" onscroll="" role="tabpanel" aria-labelledby="pills-home-tab" style="height: 260px;overflow-x: scroll">
-                                                        <div class="row" style="border-bottom: 1px solid #b2b2b2; padding: 10px;background-color: #fefefe;">
-                                                            <div class="col-md-12"><i>Full Name : </i> <span style="color: #000000">{{$value->full_name}}</span></div>
-                                                            <div class="col-md-12"><i>Mobile : </i> <span style="color: #000000">{{$value->mobile}}</span></div>
-                                                            <div class="col-md-12"><i>House/Block Number : </i> <span style="color: #000000">{{$value->flat_door_block_house_no}}</span></div>
-                                                            <div class="col-md-12"><i>Name of Premise/Building/Village : </i> <span style="color: #000000">{{$value->name_of_premise_building_village}}</span></div>
-                                                            <div class="col-md-12"><i>Area/Locality : </i> <span style="color: #000000">{{$value->area_locality_wadi}}</span></div>
-                                                            <div class="col-md-12"><i>Road/Street/Lane : </i> <span style="color: #000000">{{$value->road_street_lane}}</span></div>
-                                                            <div class="col-md-12"><i>Post : </i> <span style="color: #000000">{{$value->at_post}}</span></div>
-                                                            <div class="col-md-12"><i>Taluka : </i> <span style="color: #000000">{{$value->taluka}}</span></div>
-                                                            <div class="col-md-12"><i>District : </i> <span style="color: #000000">{{$value->district}}</span></div>
-                                                            <div class="col-md-12"><i>State : </i> <span style="color: #000000">{{$value->state}}</span></div>
-                                                            <div class="col-md-12"><i>Pincode : </i> <span style="color: #000000">{{$value->pincode}}</span></div>
-                                                        </div>
-                                                    </div>
-                                                @else
-                                                    <div class="tab-pane fade active" id="address{{$key}}" onscroll="" role="tabpanel" aria-labelledby="pills-home-tab" style="height: 260px;overflow-x: scroll">
-                                                        <div class="row" style="border-bottom: 1px solid #b2b2b2; padding: 10px;background-color: #fefefe;">
-                                                            <div class="col-md-12"><i>Full Name : </i> <span style="color: #000000">{{$value->full_name}}</span></div>
-                                                            <div class="col-md-12"><i>Mobile : </i> <span style="color: #000000">{{$value->mobile}}</span></div>
-                                                            <div class="col-md-12"><i>House/Block Number : </i> <span style="color: #000000">{{$value->flat_door_block_house_no}}</span></div>
-                                                            <div class="col-md-12"><i>Name of Premise/Building/Village : </i> <span style="color: #000000">{{$value->name_of_premise_building_village}}</span></div>
-                                                            <div class="col-md-12"><i>Area/Locality : </i> <span style="color: #000000">{{$value->area_locality_wadi}}</span></div>
-                                                            <div class="col-md-12"><i>Road/Street/Lane : </i> <span style="color: #000000">{{$value->road_street_lane}}</span></div>
-                                                            <div class="col-md-12"><i>Post : </i> <span style="color: #000000">{{$value->at_post}}</span></div>
-                                                            <div class="col-md-12"><i>Taluka : </i> <span style="color: #000000">{{$value->taluka}}</span></div>
-                                                            <div class="col-md-12"><i>District : </i> <span style="color: #000000">{{$value->district}}</span></div>
-                                                            <div class="col-md-12"><i>State : </i> <span style="color: #000000">{{$value->state}}</span></div>
-                                                            <div class="col-md-12"><i>Pincode : </i> <span style="color: #000000">{{$value->pincode}}</span></div>
-                                                        </div>
-                                                    </div>
-                                                @endif
-                                            @endforeach
-                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="portlet blue box">
+                        <div class="portlet-title">
+                            <div class="caption">
+                                <i class="icon- font-violet"></i>
+                                <span class="caption-subject font-violet bold uppercase">Order Details</span>
+                                <input type="hidden" id="customer_mobile" value="{{$customerInfo->profile->mobile}}">
+                            </div>
+                        </div>
+                        <div class="portlet-body">
+                            <ul class="nav nav-pills mb-12" id="pills-tab" role="tablist">
+                                <li class="nav-item active">
+                                    <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#customer-order" role="tab" aria-controls="pills-achievements" aria-selected="true" style="width:255px">Orders</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#customer-return" role="tab" aria-controls="pills-annoucement" aria-selected="false" style="width:255px">Return</a>
+                                </li>
+                            </ul>
+                            <div class="tab-content" id="pills-tabContent">
+                                <div class="tab-pane fade active in" id="customer-order" onscroll="" role="tabpanel" aria-labelledby="pills-home-tab" style="height: 800px;overflow-y: scroll">
+                                    <table class="table table-striped table-bordered table-hover table-checkable" id="sales_admin_list">
+                                        <thead>
+                                        <tr role="row" class="heading">
+                                            <th width="10%"> Order&nbsp;No </th>
+                                            <th width="15%"> Order Date </th>
+                                            <th width="20%"> Products </th>
+                                            <th width="5%"> Qnt </th>
+                                            <th width="10%"> SKUID </th>
+                                            <th width="8%"> Status </th>
+                                            <th width="8%"> Shipment </th>
+                                            <th width="10%"> AWB NO </th>
+                                            <th width="10%"> Total </th>
+                                        </tr>
+                                        <tr role="row" class="filter">
+                                            <td>
+                                                <input type="text" class="form-control form-filter input-sm" name="order_no"> </td>
+                                            <td></td>
+                                            <td>
+                                                <input type="text" class="form-control form-filter input-sm" name="product"> </td>
+                                            <td>
+                                                <input type="text" class="form-control form-filter input-sm" name="quantity"> </td>
+                                            <td>
+                                                <input type="text" class="form-control form-filter input-sm" name="skuid"> </td>
+                                            <td>
+                                                <input type="text" class="form-control form-filter input-sm" name="status"> </td>
+                                            <td>
+                                                <input type="text" class="form-control form-filter input-sm" name="shipment"> </td>
+                                            <td>
+                                                <input type="text" class="form-control form-filter input-sm" name="awb_no"> </td>
+                                            <td>
+                                                <div class="margin-bottom-5">
+                                                    <button class="btn btn-sm btn-success filter-submit margin-bottom">
+                                                        <i class="fa fa-search"></i> Search</button>
+                                                </div>
+                                                <button class="btn btn-sm btn-default filter-cancel">
+                                                    <i class="fa fa-times"></i> Reset</button>
+                                            </td>
+                                        </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                                <div class="tab-pane fade" id="customer-return" role="tabpanel" aria-labelledby="pills-profile-tab" style="height: 200px;overflow-y: scroll">
+                                    @if($customerInfo->returns == null)
+                                    <div class="col-md-12" style="text-align: center;margin-top: 10%"><i><b>There are No Order Return for this Customer</b></i></div>
+                                    @else
+                                    @foreach($customerInfo->returns as $order)
+                                    <div class="row" style="border-bottom: 1px solid #b2b2b2; padding: 10px;background-color: #fefefe;">
+                                        <div class="col-md-12" style="text-align: right; color: lightcoral"><i>{!! date('dS M Y',strtotime($order->created_at)) !!}</i></div>
+                                        <div class="col-md-12"><i>Order Number : </i> <span style="color: #000000">{{$order->id}}</span></div>
+                                        <div class="col-md-12"><i>Product : </i> {{$order->product_name}}</div>
+                                        <div class="col-md-12"><i>Qty : </i><span style="color: #007AFF">{{$order->quantity}}</span> </div>
+                                        <div class="col-md-12"><i>Status : </i><span style="color: #007AFF">{{$order->status}}</span></div>
+                                        <div class="col-md-12"><i>Consignment Number : </i> {{$order->consignment_number}}</div>
+                                        <div class="col-md-12"><i>Payment Mode : </i> {{$order->payment_mode}}</div>
+                                        <div class="col-md-12"><i>Grand Total : </i> {{$order->subtotal}}</div>
+                                    </div>
+                                    @endforeach
                                     @endif
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="portlet purple box">
-                                <div class="portlet-title">
-                                    <div class="caption">
-                                        <i class="icon- font-violet"></i>
-                                        <span class="caption-subject font-violet bold uppercase">Customer Tag Cloud</span>
-                                    </div>
-                                </div>
-                                <div class="portlet-body">
-                                    <div class="bootstrap-tagsinput" id="customer-tag-div">
-                                        @foreach($customerTags as $customerTag)
-                                            @if(isset($customerTag['tag_type_name']))
-                                                <button id="tag{{$customerTag['tag_cloud_id']}}{{$customerTag['crm_customer_id']}}" class="lable" style="background-color:rgb(241 243 244);display: inline;font-size: 90%;margin-left: 2px;margin-top:3px;margin-bottom:3px;padding-bottom: 2px;padding-top: 2px">{{$customerTag['name']}}&nbsp;<span style="border-radius: 4px !important;background: green;">{{$customerTag['tag_type_name']}}</span>&nbsp;<span style="color: red;" onclick="removeCustTag({{$customerTag['tag_cloud_id']}},{{$customerTag['crm_customer_id']}})">&nbsp;×</span></button>&nbsp;&nbsp;&nbsp;
-                                            @else
-                                                <button id="tag{{$customerTag['tag_cloud_id']}}{{$customerTag['crm_customer_id']}}" class="lable" style="background-color: rgb(241 243 244);display: inline;font-size: 90%;margin-left: 2px;margin-top:3px;margin-bottom:3px;padding-bottom: 2px;padding-top: 2px">{{$customerTag['name']}}<span style="color: red;" onclick="removeCustTag({{$customerTag['tag_cloud_id']}},{{$customerTag['crm_customer_id']}})">&nbsp;×</span></button>&nbsp;&nbsp;&nbsp;
-                                            @endif
-                                        @endforeach
-                                    </div>
-                                    <div class="logo-wrap">
-                                        <div class=container>
-                                            <div class="menu clearfix">
-                                                <ul class="clearfix">
-                                                    <li class="select-category" id="search_header_main">
-                                                        <input type="text" id="tag_name" class="typeahead" placeholder="Search Tag" style=""/>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="portlet blue box">
-                                <div class="portlet-title">
-                                    <div class="caption">
-                                        <i class="icon- font-violet"></i>
-                                        <span class="caption-subject font-violet bold uppercase">Order Details</span>
-                                        <input type="hidden" id="customer_mobile" value="{{$customerInfo->profile->mobile}}">
-                                    </div>
-                                </div>
-                                <div class="portlet-body">
-                                    <ul class="nav nav-pills mb-12" id="pills-tab" role="tablist">
-                                        <li class="nav-item active">
-                                            <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#customer-order" role="tab" aria-controls="pills-achievements" aria-selected="true" style="width:255px">Orders</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#customer-return" role="tab" aria-controls="pills-annoucement" aria-selected="false" style="width:255px">Return</a>
-                                        </li>
-                                    </ul>
-                                    <div class="tab-content" id="pills-tabContent">
-                                        <div class="tab-pane fade active in" id="customer-order" onscroll="" role="tabpanel" aria-labelledby="pills-home-tab" style="height: 800px;overflow-y: scroll">
-                                            <table class="table table-striped table-bordered table-hover table-checkable" id="sales_admin_list">
-                                                <thead>
-                                                <tr role="row" class="heading">
-                                                    <th width="10%"> Order&nbsp;No </th>
-                                                    <th width="15%"> Order Date </th>
-                                                    <th width="20%"> Products </th>
-                                                    <th width="5%"> Qnt </th>
-                                                    <th width="10%"> SKUID </th>
-                                                    <th width="8%"> Status </th>
-                                                    <th width="10%"> AWB NO </th>
-                                                    <th width="10%"> Total </th>
-                                                </tr>
-                                                <tr role="row" class="filter">
-                                                    <td>
-                                                        <input type="text" class="form-control form-filter input-sm" name="order_no"> </td>
-                                                    <td></td>
-                                                    <td>
-                                                        <input type="text" class="form-control form-filter input-sm" name="product"> </td>
-                                                    <td>
-                                                        <input type="text" class="form-control form-filter input-sm" name="quantity"> </td>
-                                                    <td>
-                                                        <input type="text" class="form-control form-filter input-sm" name="skuid"> </td>
-                                                    <td>
-                                                        <input type="text" class="form-control form-filter input-sm" name="status"> </td>
-                                                    <td>
-                                                        <input type="text" class="form-control form-filter input-sm" name="awb_no"> </td>
-                                                    <td>
-                                                        <div class="margin-bottom-5">
-                                                            <button class="btn btn-sm btn-success filter-submit margin-bottom">
-                                                                <i class="fa fa-search"></i> Search</button>
-                                                        </div>
-                                                        <button class="btn btn-sm btn-default filter-cancel">
-                                                            <i class="fa fa-times"></i> Reset</button>
-                                                    </td>
-                                                </tr>
-                                                </thead>
-                                                <tbody></tbody>
-                                            </table>
-                                        </div>
-                                        <div class="tab-pane fade" id="customer-return" role="tabpanel" aria-labelledby="pills-profile-tab" style="height: 200px;overflow-y: scroll">
-                                            @if($customerInfo->returns == null)
-                                                <div class="col-md-12" style="text-align: center;margin-top: 10%"><i><b>There are No Order Return for this Customer</b></i></div>
-                                            @else
-                                                @foreach($customerInfo->returns as $order)
-                                                    <div class="row" style="border-bottom: 1px solid #b2b2b2; padding: 10px;background-color: #fefefe;">
-                                                        <div class="col-md-12" style="text-align: right; color: lightcoral"><i>{!! date('dS M Y',strtotime($order->created_at)) !!}</i></div>
-                                                        <div class="col-md-12"><i>Order Number : </i> <span style="color: #000000">{{$order->id}}</span></div>
-                                                        <div class="col-md-12"><i>Product : </i> {{$order->product_name}}</div>
-                                                        <div class="col-md-12"><i>Qty : </i><span style="color: #007AFF">{{$order->quantity}}</span> </div>
-                                                        <div class="col-md-12"><i>Status : </i><span style="color: #007AFF">{{$order->status}}</span></div>
-                                                        <div class="col-md-12"><i>Consignment Number : </i> {{$order->consignment_number}}</div>
-                                                        <div class="col-md-12"><i>Payment Mode : </i> {{$order->payment_mode}}</div>
-                                                        <div class="col-md-12"><i>Grand Total : </i> {{$order->subtotal}}</div>
-                                                    </div>
-                                                @endforeach
-                                            @endif
-                                        </div>
-                                    </div>
-                                    <div class="scroller-footer">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="portlet blue box">
-                                <div class="portlet-title">
-                                    <div class="caption">
-                                        <i class="icon- font-violet"></i>
-                                        <span class="caption-subject font-violet bold uppercase">Abandoned Cart Listing</span>
-                                        <input type="hidden" id="customer_mobile" value="{{$customerInfo->profile->mobile}}">
-                                    </div>
-                                </div>
-                                <div class="portlet-body">
-                                    <div class="table-container">
-                                        <table class="table table-striped table-bordered table-hover table-checkable" id="abandoned_cart_listing">
-                                            <thead>
-                                            <tr role="row" class="heading">
-                                                <th width="15%"> Registered From </th>
-                                                <th width="20%"> Created On </th>
-                                                <th width="20%"> Updated On </th>
-                                                <th width="10%"> Action </th>
-                                            </tr>
-                                            <tr role="row" class="filter">
-                                                <td>
-                                                </td>
-                                                <td>
-                                                    <div class="input-group date date-picker">
-                                                        <input type="text" size="16" class="form-control form-filter" name="toDate" id="toDate" placeholder="to date">
-                                                        <span class="input-group-btn">
-                                                     <button class="btn default date-set" type="button">
-                                                         <i class="fa fa-calendar"></i>
-                                                     </button>
-                                                 </span>
-                                                    </div>
-                                                    <div class="input-group date date-picker">
-                                                        <input type="text" size="16" class="form-control form-filter" name="fromDate" id="fromDate" placeholder="from date">
-                                                        <span class="input-group-btn">
-                                                     <button class="btn default date-set" type="button">
-                                                         <i class="fa fa-calendar"></i>
-                                                     </button>
-                                                 </span>
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <div class="input-group date date-picker">
-                                                        <input type="text" size="16" class="form-control form-filter" name="toUpdatedDate" id="toUpdatedDate" placeholder="to date">
-                                                        <span class="input-group-btn">
-                                                     <button class="btn default date-set" type="button">
-                                                         <i class="fa fa-calendar"></i>
-                                                     </button>
-                                                 </span>
-                                                    </div>
-                                                    <div class="input-group date date-picker">
-                                                        <input type="text" size="16" class="form-control form-filter" name="fromUpdatedDate" id="fromUpdatedDate" placeholder="from date">
-                                                        <span class="input-group-btn">
-                                                     <button class="btn default date-set" type="button">
-                                                         <i class="fa fa-calendar"></i>
-                                                     </button>
-                                                 </span>
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <button class="btn btn-xs blue filter-submit"> Search <i class="fa fa-search"></i> </button>
-                                                    <button class="btn btn-xs default filter-cancel"> Reset <i class="fa fa-undo"></i> </button>
-                                                </td>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
+                            <div class="scroller-footer">
                             </div>
                         </div>
                     </div>
-                    <div id="schedule_modal" class="modal fade bs-modal-md" tabindex="-1" role="dialog">
-                        <div class="modal-dialog modal-md">
-                            <!-- Modal content-->
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h4 class="modal-title" style="text-align: center"><b>Set Schedule for Next Call</b></h4>
-                                </div>
-                                <form class="form-horizontal" method="post" role="form" action="/crm/set-schedule">
-                                    <input type="hidden" name="cust_detail_id" value="{{$id}}">
-                                    <div class="modal-body">
-                                        <div class="form-group">
-                                            {{csrf_field()}}
-                                            <label class="control-label col-sm-4">Reminder Time</label>
-                                            <div class="col-md-8">
-                                                <div class="input-group date form_datetime input-large">
-                                                    <input type="text" size="16" name="reminder_time" class="form-control">
-                                                    <span class="input-group-btn">
-                                                        <button class="btn default date-set" type="button">
-                                                            <i class="fa fa-calendar"></i>
-                                                        </button>
-                                                    </span>
-                                                </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="portlet blue box">
+                        <div class="portlet-title">
+                            <div class="caption">
+                                <i class="icon- font-violet"></i>
+                                <span class="caption-subject font-violet bold uppercase">Abandoned Cart Listing</span>
+                                <input type="hidden" id="customer_mobile" value="{{$customerInfo->profile->mobile}}">
+                            </div>
+                        </div>
+                        <div class="portlet-body">
+                            <div class="table-container">
+                                <table class="table table-striped table-bordered table-hover table-checkable" id="abandoned_cart_listing">
+                                    <thead>
+                                    <tr role="row" class="heading">
+                                        <th width="15%"> Registered From </th>
+                                        <th width="20%"> Created On </th>
+                                        <th width="20%"> Updated On </th>
+                                        <th width="10%"> Action </th>
+                                    </tr>
+                                    <tr role="row" class="filter">
+                                        <td>
+                                        </td>
+                                        <td>
+                                            <div class="input-group date date-picker">
+                                                <input type="text" size="16" class="form-control form-filter" name="toDate" id="toDate" placeholder="to date">
+                                                            <span class="input-group-btn">
+                                                         <button class="btn default date-set" type="button">
+                                                             <i class="fa fa-calendar"></i>
+                                                         </button>
+                                                     </span>
                                             </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-8 col-md-offset-4">
-                                                <button type="submit" class="btn btn-sm btn-success">Create</button>
-                                                <button class="btn btn-sm btn-danger" data-dismiss="modal">Cancel</button>
+                                            <div class="input-group date date-picker">
+                                                <input type="text" size="16" class="form-control form-filter" name="fromDate" id="fromDate" placeholder="from date">
+                                                            <span class="input-group-btn">
+                                                         <button class="btn default date-set" type="button">
+                                                             <i class="fa fa-calendar"></i>
+                                                         </button>
+                                                     </span>
                                             </div>
-                                        </div>
-                                    </div>
-                                </form>
+                                        </td>
+                                        <td>
+                                            <div class="input-group date date-picker">
+                                                <input type="text" size="16" class="form-control form-filter" name="toUpdatedDate" id="toUpdatedDate" placeholder="to date">
+                                                            <span class="input-group-btn">
+                                                         <button class="btn default date-set" type="button">
+                                                             <i class="fa fa-calendar"></i>
+                                                         </button>
+                                                     </span>
+                                            </div>
+                                            <div class="input-group date date-picker">
+                                                <input type="text" size="16" class="form-control form-filter" name="fromUpdatedDate" id="fromUpdatedDate" placeholder="from date">
+                                                            <span class="input-group-btn">
+                                                         <button class="btn default date-set" type="button">
+                                                             <i class="fa fa-calendar"></i>
+                                                         </button>
+                                                     </span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-xs blue filter-submit"> Search <i class="fa fa-search"></i> </button>
+                                            <button class="btn btn-xs default filter-cancel"> Reset <i class="fa fa-undo"></i> </button>
+                                        </td>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
-                    <div id="reply" class="modal" role="dialog" data-dismiss="modal">
-                        <div class="modal-dialog">
-                            <!-- Modal content-->
-                            <div class="modal-content" style="width: 590px">
-                                <div class="modal-header" style="width: 580px">
-                                    <div class="col-md-7">
-                                        <h4 class="modal-title reply-title" style="color: black"> </h4>
+                </div>
+                </div>
+                <div id="schedule_modal" class="modal fade bs-modal-md" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-md">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title" style="text-align: center"><b>Set Schedule for Next Call</b></h4>
+                            </div>
+                            <form class="form-horizontal" method="post" role="form" action="/crm/set-schedule">
+                                <input type="hidden" name="cust_detail_id" value="{{$id}}">
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        {{csrf_field()}}
+                                        <label class="control-label col-sm-4">Reminder Time</label>
+                                        <div class="col-md-8">
+                                            <div class="input-group date form_datetime input-large">
+                                                <input type="text" size="16" name="reminder_time" class="form-control">
+                                                        <span class="input-group-btn">
+                                                            <button class="btn default date-set" type="button">
+                                                                <i class="fa fa-calendar"></i>
+                                                            </button>
+                                                        </span>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="row">
+                                        <div class="col-md-8 col-md-offset-4">
+                                            <button type="submit" class="btn btn-sm btn-success">Create</button>
+                                            <button class="btn btn-sm btn-danger" data-dismiss="modal">Cancel</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div id="reply" class="modal" role="dialog" data-dismiss="modal">
+                    <div class="modal-dialog">
+                        <!-- Modal content-->
+                        <div class="modal-content" style="width: 590px">
+                            <div class="modal-header" style="width: 580px">
+                                <div class="col-md-7">
+                                    <h4 class="modal-title reply-title" style="color: black"> </h4>
+                                </div>
+                                <div class="col-md-4">
+                                    @if($user['role_id'] == 2)
                                         <select id="select-call-status" class="" style="-webkit-appearance: menulist; align-self: center">Select Call Status
                                             <option>Select Call Status</option>
                                             @foreach($callStatuses as $callStatus)
-                                                <option value="{!! $callStatus['id'] !!}">{!! $callStatus['name'] !!}</option>
+                                            <option value="{!! $callStatus['id'] !!}">{!! $callStatus['name'] !!}</option>
                                             @endforeach
                                         </select>
-                                    </div>
-                                    <div class="col-md-1">
-                                        <button type="button" class="close pull-right" data-dismiss="modal">&times;</button>
-                                    </div>
+                                    @endif
                                 </div>
-                                <div class="modal-body" style="width: 580px">
-                                    <div class="row">
-                                        <div class="col-md-12" >
-                                            <div class="portlet light" style="background-image: url(/assets/global/img/chat-background.jpg);">
-                                                <div class="portlet-body" >
-                                                    <div id="chat_scroll_div" class="scroller scro" style="height: 338px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
-                                                        <div class="general-item-list" id="chat_message">
+                                <div class="col-md-1">
+                                    <button type="button" class="close pull-right" data-dismiss="modal">&times;</button>
+                                </div>
+                            </div>
+                            <div class="modal-body" style="width: 580px">
+                                <div class="row">
+                                    <div class="col-md-12" >
+                                        <div class="portlet light" style="background-image: url(/assets/global/img/chat-background.jpg);">
+                                            <div class="portlet-body" >
+                                                <div id="chat_scroll_div" class="scroller scro" style="height: 338px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
+                                                    <div class="general-item-list" id="chat_message">
 
-                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <br>
-                                    <div class="row" id="query-form">
-                                        <div class="col-md-10">
-                                            <input type="text" name="reply_text" id="reply_text" class="col-md-10" maxlength="500"  placeholder="reply" required>
-                                            <input type="hidden" id="customer_detail_id" value="">
-                                            <input type="hidden" id="customer_detail_mobile" value="">
+                                </div>
+                                <br>
+                                <div class="row" id="query-form">
+                                    <div class="col-md-10">
+                                        <input type="text" name="reply_text" id="reply_text" class="col-md-10" maxlength="500"  placeholder="reply" required>
+                                        <input type="hidden" id="customer_detail_id" value="">
+                                        <input type="hidden" id="customer_detail_mobile" value="">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button class="btn btn-sm btn-success table-group-action-submit chat-submit pull-right">Reply</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {{--Modal For place Orders--}}
+                <div id="place_order" class="modal fade bs-modal-lg" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-lg">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title" style="text-align: center"><b>Step 1- Enter Address Information</b></h4>
+                                <div>
+                                    <a id="select_product_modal" class="text-right"><h4>Next</h4></a>
+                                </div>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <form method="post" role="form" action="/customer/add-address" >
+                                            {{ csrf_field() }}
+                                            <input type="hidden" value="{{$customerInfo->profile->id}}" name="customer_user_id">
+                                            <input class="form-control" type="hidden" value="{{$id}}" name="crm_customer_id">
+                                            <input class="form-control" type="hidden" value="{{$mobile}}" name="customer_mobile">
+                                            <div class="address-form">
+                                                <div class="form-group">
+                                                    <label for="company">Full Name</label><span class="required">*</span>
+                                                    <input type="text" class="form-control" name="full_name" id="full_name" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="mobile">Mobile</label><span class="required">*</span>
+                                                    <input type="text" class="form-control" name="mobile" id="mobile" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="company">Flat/Door/Block No.</label><span class="required">*</span>
+                                                    <input type="text" class="form-control" name="flat_door_block_house_no" id="flat_door_block_house_no" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="company">Name of the Premise/Building/Village</label><span class="required">*</span>
+                                                    <input type="text" class="form-control" name="name_of_premise_building_village" id="name_of_premise_building_village" required>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label for="area">Area/Locality/Wadi</label><span class="required">*</span>
+                                                            <input class="form-control area" id="area" name="area_locality_wadi" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label for="post">Road/Street/Lane</label><span class="required">*</span>
+                                                            <div id="at-post">
+                                                                <input class="form-control" type="text" id="road_street_lane" name="road_street_lane" required>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label for="pin">Pin</label><span class="required">*</span>
+                                                            <input class="form-control pincode typeahead" type="text" id="pincode" name="pincode" required>
+                                                            <span style="color: darkred"><h7>Make sure you choose the exact pincode from the dropdown values only</h7></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label for="post">Post</label><span class="required">*</span>
+                                                            <div id="at-post">
+                                                                <select class="form-control" name="at_post" id="atPost" required>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label for="state">State</label><span class="required">*</span>
+                                                            <input class="form-control state" type="text" id="stateName" name="state" readonly>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label for="dist">District</label><span class="required">*</span>
+                                                            <input type="text" class="form-control" name="district" id="district" readonly>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label for="taluka">Taluka</label><span class="required">*</span>
+                                                            <input type="text" class="form-control" name="taluka" id="taluka" readonly>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                @if(count($customerInfo->address) < 3)
+                                                <div class="form-group">
+                                                    <button type="submit" class="btn btn-primary btn-icon">Add new address</button>
+                                                </div>
+                                                @endif
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="text-right">
+                                            <h6 class="text-danger" id="select_address_msg" hidden>Please select address</h6>
                                         </div>
-                                        <div class="col-md-2">
-                                            <button class="btn btn-sm btn-success table-group-action-submit chat-submit pull-right">Reply</button>
+                                        <div class="address-list-wrap">
+                                            <label>Saved Address</label>
+                                            <div class="address-list" id="address-list">
+                                                @if($customerInfo->address != null)
+                                                @foreach($customerInfo->address as $address)
+                                                <div class="address-item" id="address_{{$address->id}}">
+                                                    <input type="radio" name="customer_address_id" value="{{$address->id}}" style="width: 30px; height: 30px">
+                                                    <div class="full-address" id="delivery_address_{!! $address->id !!}">
+                                                        <div class="name">{{ucwords($address->full_name)}}</div>
+                                                        <div class="mobile"><span><i class="fa fa-phone"></i> {{$address->mobile}}</span></div>
+                                                        <div class="address">{{$address->flat_door_block_house_no}}, {{$address->name_of_premise_building_village}}, {{$address->area_locality_wadi}}, {{$address->road_street_lane}}, {{$address->at_post}}, {{$address->taluka}}, {{$address->district}} - {{$address->pincode}}, {{ucwords(strtolower($address->state))}}, INDIA</div>
+                                                    </div>
+                                                    <div class="col-md-12 col-sm-4">
+                                                        <div class="edit-delete-btns">
+                                                            <button type="button" class="btn-edit btn btn-success" data-edit="{{$address->id}}">Edit address</button>
+                                                            <button type="button" class="btn-delete btn btn-danger" data-delete="{{$address->id}}">delete address</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                @endforeach
+                                                @endif
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    {{--Modal For place Orders--}}
-                    <div id="place_order" class="modal fade bs-modal-lg" tabindex="-1" role="dialog">
-                        <div class="modal-dialog modal-lg">
-                            <!-- Modal content-->
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                    <h4 class="modal-title" style="text-align: center"><b>Step 1- Enter Address Information</b></h4>
-                                    <div>
-                                        <a id="select_product_modal"><h4 style="text-align: right">Next</h4></a>
-                                    </div>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <form method="post" role="form" action="/customer/add-address" >
-                                                {{ csrf_field() }}
-                                                <input type="hidden" value="{{$customerInfo->profile->id}}" name="customer_user_id">
-                                                <input class="form-control" type="hidden" value="{{$id}}" name="crm_customer_id">
-                                                <input class="form-control" type="hidden" value="{{$mobile}}" name="customer_mobile">
-                                                <div class="address-form">
-                                                    <div class="form-group">
-                                                        <label for="company">Full Name</label><span class="required">*</span>
-                                                        <input type="text" class="form-control" name="full_name" id="full_name" required>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label for="mobile">Mobile</label><span class="required">*</span>
-                                                        <input type="text" class="form-control" name="mobile" id="mobile" required>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label for="company">Flat/Door/Block No.</label><span class="required">*</span>
-                                                        <input type="text" class="form-control" name="flat_door_block_house_no" id="flat_door_block_house_no" required>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label for="company">Name of the Premise/Building/Village</label><span class="required">*</span>
-                                                        <input type="text" class="form-control" name="name_of_premise_building_village" id="name_of_premise_building_village" required>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-md-6">
-                                                            <div class="form-group">
-                                                                <label for="area">Area/Locality/Wadi</label><span class="required">*</span>
-                                                                <input class="form-control area" id="area" name="area_locality_wadi" required>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <div class="form-group">
-                                                                <label for="post">Road/Street/Lane</label><span class="required">*</span>
-                                                                <div id="at-post">
-                                                                    <input class="form-control" type="text" id="road_street_lane" name="road_street_lane" required>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-md-6">
-                                                            <div class="form-group">
-                                                                <label for="pin">Pin</label><span class="required">*</span>
-                                                                <input class="form-control pincode typeahead" type="text" id="pincode" name="pincode" required>
-                                                                <span style="color: darkred"><h7>Make sure you choose the exact pincode from the dropdown values only</h7></span>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <div class="form-group">
-                                                                <label for="post">Post</label><span class="required">*</span>
-                                                                <div id="at-post">
-                                                                    <select class="form-control" name="at_post" id="atPost" required>
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-md-6">
-                                                            <div class="form-group">
-                                                                <label for="state">State</label><span class="required">*</span>
-                                                                <input class="form-control state" type="text" id="stateName" name="state" readonly>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <div class="form-group">
-                                                                <label for="dist">District</label><span class="required">*</span>
-                                                                <input type="text" class="form-control" name="district" id="district" readonly>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-md-6">
-                                                            <div class="form-group">
-                                                                <label for="taluka">Taluka</label><span class="required">*</span>
-                                                                <input type="text" class="form-control" name="taluka" id="taluka" readonly>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                     @if(count($customerInfo->address) < 3)
-                                                    <div class="form-group">
-                                                        <button type="submit" class="btn btn-primary btn-icon">Add new address</button>
-                                                    </div>
-                                                     @endif
-                                                </div>
-                                            </form>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="address-list-wrap">
-                                                <label>Saved Address</label>
-                                                <div class="address-list" id="address-list">
-                                                    @if($customerInfo->address != null)
-                                                        @foreach($customerInfo->address as $address)
-                                                            <div class="address-item" id="address_{{$address->id}}">
-                                                                <input type="radio" name="customer_address_id" value="{{$address->id}}" style="width: 30px; height: 30px">
-                                                                <div class="full-address" id="delivery_address_{!! $address->id !!}">
-                                                                    <div class="name">{{ucwords($address->full_name)}}</div>
-                                                                    <div class="mobile"><span><i class="fa fa-phone"></i> {{$address->mobile}}</span></div>
-                                                                    <div class="address">{{$address->flat_door_block_house_no}}, {{$address->name_of_premise_building_village}}, {{$address->area_locality_wadi}}, {{$address->road_street_lane}}, {{$address->at_post}}, {{$address->taluka}}, {{$address->district}} - {{$address->pincode}}, {{ucwords(strtolower($address->state))}}, INDIA</div>
-                                                                </div>
-                                                                <div class="col-md-12 col-sm-4">
-                                                                    <div class="edit-delete-btns">
-                                                                        <button type="button" class="btn-edit btn btn-success" data-edit="{{$address->id}}">Edit address</button>
-                                                                        <button type="button" class="btn-delete btn btn-danger" data-delete="{{$address->id}}">delete address</button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        @endforeach
-                                                    @endif
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <form class="form-horizontal" method="post" role="form" action="/customer/create-order" >
-                        {{ csrf_field() }}
+                </div>
+                <form class="form-horizontal" method="post" role="form" action="/customer/create-order" >
+                    {{ csrf_field() }}
                     <div id="select_products" class="modal fade bs-modal-md" tabindex="-1" role="dialog" style="height: 500%">
                         <div class="modal-dialog modal-lg">
                             <!-- Modal content-->
@@ -599,9 +589,9 @@
                                         <div class=container>
                                             <div class="menu clearfix">
                                                 <ul class="clearfix">
-                                                     <li class="select-category" id="search_header_main">
-                                                         <input type="text" id="product_name" class="typeahead" placeholder=" Search Products" style=""/>
-                                                     </li>
+                                                    <li class="select-category" id="search_header_main">
+                                                        <input type="text" id="product_name" class="typeahead" placeholder=" Search Products" style=""/>
+                                                    </li>
                                                 </ul>
                                             </div>
                                         </div>
@@ -673,249 +663,245 @@
                                             <input class="form-control" type="hidden" value="{{$user->id}}" name="sales_id">
                                             <input class="form-control" type="hidden" value="{{$id}}" name="crm_customer_id">
                                             <input class="form-control" type="hidden" value="{{$mobile}}" name="customer_mobile">
-                                        <button type="submit" class="btn btn-primary btn-icon pull-right">Confirm Order</button>
-                                        </div>
-                                    </div>
-                            </div>
-                        </div>
-                    </div>
-                    </div>
-                    </form>
-                    {{--End of modal for place orders--}}
-                    {{--Modal for Profile edit--}}
-                    <div id="profile-edit-modal" class="modal fade bs-modal-md" tabindex="-1" role="dialog">
-                        <div class="modal-dialog modal-md">
-                            <!-- Modal content-->
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                    <h4 class="modal-title" style="text-align: center"><b>Customer Profile Edit</b></h4>
-                                </div>
-                                <hr>
-                                <form method="post" action="/customer/edit-customer">
-                                    {{ csrf_field() }}
-                                    @if($id == 'null')
-                                        <input type="hidden" name="create_lead" value="true">
-                                    @endif
-                                    <input type="hidden" value="{{$customerInfo->profile->id}}" name="user_id">
-                                    <div class="modal-body">
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label class="col-md-3 control-label">First Name : </label>
-                                                    <div class="col-md-6">
-                                                        @if($id == 'null')
-                                                            <input type="text" class="form-control" id="f_name" value="{{ucwords($customerInfo->profile->first_name)}}" name="f_name" required>
-                                                        @else
-                                                            <input type="text" class="form-control" id="f_name" value="{{ucwords($customerInfo->profile->first_name)}}" name="f_name" readonly>
-                                                        @endif
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <br>
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label class="col-md-3 control-label">Last Name :</label>
-                                                    <div class="col-md-6">
-                                                        @if($id == 'null')
-                                                            <input type="text" class="form-control" id="l_name" value="{{ucwords($customerInfo->profile->last_name)}}" name="l_name" required>
-                                                        @else
-                                                            <input type="text" class="form-control" id="l_name" value="{{ucwords($customerInfo->profile->last_name)}}" name="l_name" readonly>
-                                                        @endif
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <br>
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label class="col-md-3 control-label">Birth date : </label>
-                                                    <div class="col-md-6">
-                                                        <input type="date" class="form-control" id="dob" value="{{$customerInfo->profile->dob}}" name="dob">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <br>
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label class="col-md-3 control-label">Email id : </label>
-                                                    <div class="col-md-6">
-                                                        @if($id == 'null')
-                                                            <input type="email" class="form-control" id="profile_email" value="{{$customerInfo->profile->email}}" name="profile_email">
-                                                        @else
-                                                            <input type="email" class="form-control" id="profile_email" value="{{$customerInfo->profile->email}}" name="profile_email" readonly>
-                                                        @endif
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <br>
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label class="col-md-3 control-label">Mobile Number : <span class="required">*</span></label>
-                                                    <div class="col-md-6">
-                                                        <input type="text" class="form-control" id="profile_mobile" value="{{ucwords($customerInfo->profile->mobile)}}" name="profile_mobile" readonly>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <br>
-                                        <div class="row">
-                                            <div class="col-md-10">
-                                                <button type="submit" class="btn btn-sm btn-success pull-right">Save</button>
-                                            </div>
-                                            <div class="col-md-2">
-                                                <button class="btn btn-sm btn-danger pull-right" data-dismiss="modal">Cancel</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                    {{--END of Modal for Profile edit--}}
-
-                    {{--Modal for edit address--}}
-                    @if($customerInfo->address != null)
-                        @foreach($customerInfo->address as $address)
-                            <div id="edit_address_{{$address->id}}" class="modal fade bs-modal-md" tabindex="-1" role="dialog">
-                                <div class="modal-dialog modal-md">
-                                    <!-- Modal content-->
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                            <h4 class="modal-title" style="text-align: center"><b>Edit Address</b></h4>
-                                        </div>
-                                        <div class="modal-body">
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <form method="post" role="form" action="/customer/edit-address" >
-                                                        {{ csrf_field() }}
-                                                        <input type="hidden" value="{{$address->id}}" name="id">
-                                                        <input class="form-control" type="hidden" value="{{$id}}" name="crm_customer_id">
-                                                        <input class="form-control" type="hidden" value="{{$mobile}}" name="customer_mobile">
-                                                        <div class="address-form">
-                                                            <div class="form-group">
-                                                                <label for="company">Full Name</label><span class="required">*</span>
-                                                                <input type="text" class="form-control" name="full_name" id="full_name_{{$address->id}}" value="{{$address->full_name}}" required>
-                                                            </div>
-                                                            <div class="form-group">
-                                                                <label for="mobile">Mobile</label><span class="required">*</span>
-                                                                <input type="text" class="form-control" name="mobile" id="mobile_{{$address->id}}" value="{{$address->mobile}}" required>
-                                                            </div>
-                                                            <div class="form-group">
-                                                                <label for="company">Flat/Door/Block No.</label><span class="required">*</span>
-                                                                <input type="text" class="form-control" name="flat_door_block_house_no" id="flat_door_block_house_no_{{$address->id}}" value="{{$address->flat_door_block_house_no}}" required>
-                                                            </div>
-                                                            <div class="form-group">
-                                                                <label for="company">Name of the Premise/Building/Village</label><span class="required">*</span>
-                                                                <input type="text" class="form-control" name="name_of_premise_building_village" id="name_of_premise_building_village_{{$address->id}}" value="{{$address->name_of_premise_building_village}}" required>
-                                                            </div>
-                                                            <div class="row">
-                                                                <div class="col-md-6">
-                                                                    <div class="form-group">
-                                                                        <label for="area">Area/Locality/Wadi</label><span class="required">*</span>
-                                                                        <input class="form-control area" id="area_{{$address->id}}" name="area_locality_wadi" value="{{$address->area_locality_wadi}}" required>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-md-6">
-                                                                    <div class="form-group">
-                                                                        <label for="post">Road/Street/Lane</label><span class="required">*</span>
-                                                                        <div id="at-post">
-                                                                            <input class="form-control" type="text" id="road_street_lane_{{$address->id}}" name="road_street_lane" value="{{$address->road_street_lane}}" required>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="row">
-                                                                <div class="col-md-6">
-                                                                    <div class="form-group">
-                                                                        <label for="pin">Pin</label><span class="required">*</span>
-                                                                        <input class="form-control edit-pincode typeahead" type="text" id="pincode_{{$address->id}}" name="pincode" value="{{$address->pincode}}" required>
-                                                                        <span style="color: darkred"><h7>Make sure you choose the exact pincode from the dropdown values only</h7></span>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-md-6">
-                                                                    <div class="form-group">
-                                                                        <label for="post">Post</label><span class="required">*</span>
-                                                                        <div id="at-post">
-                                                                            <select class="form-control edit-atPost" name="at_post" id="atPost_{{$address->id}}" required>
-                                                                                <option value="{{$address->at_post}}">{{$address->at_post}}</option>
-                                                                            </select>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="row">
-                                                                <div class="col-md-6">
-                                                                    <div class="form-group">
-                                                                        <label for="state">State</label><span class="required">*</span>
-                                                                        <input class="form-control edit-stateName" type="text" id="stateName_{{$address->id}}" name="state" value="{{$address->state}}" readonly>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-md-6">
-                                                                    <div class="form-group">
-                                                                        <label for="dist">District</label><span class="required">*</span>
-                                                                        <input type="text" class="form-control edit-district" name="district" id="district_{{$address->id}}" value="{{$address->district}}" readonly>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="row">
-                                                                <div class="col-md-6">
-                                                                    <div class="form-group">
-                                                                        <label for="taluka">Taluka</label><span class="required">*</span>
-                                                                        <input type="text" class="form-control edit-taluka" name="taluka" id="taluka_{{$address->id}}" value="{{$address->taluka}}" readonly>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-
-                                                            <div class="form-group">
-                                                                <button type="submit" class="btn btn-primary btn-icon">Edit address</button>
-                                                            </div>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            </div>
+                                            <button type="submit" class="btn btn-primary btn-icon pull-right">Confirm Order</button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        @endforeach
-                    @endif
-
-                    {{--End of Modal for Edit Address--}}
-                    {{--Modal For Abandoned Details--}}
-                    <div id="AbandonedDetailModal" class="modal container fade" tabindex="-1">
-                            <!-- Modal content-->
+                        </div>
+                    </div>
+                </form>
+                {{--End of modal for place orders--}}
+                {{--Modal for Profile edit--}}
+                <div id="profile-edit-modal" class="modal fade bs-modal-md" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-md">
+                        <!-- Modal content-->
                         <div class="modal-content">
                             <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-                                <h4 class="modal-title">Abandoned Cart Details</h4>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title" style="text-align: center"><b>Customer Profile Edit</b></h4>
+                            </div>
+                            <hr>
+                            <form method="post" action="/customer/edit-customer">
+                                {{ csrf_field() }}
+                                @if($id == 'null')
+                                <input type="hidden" name="create_lead" value="true">
+                                @endif
+                                <input type="hidden" value="{{$customerInfo->profile->id}}" name="user_id">
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label class="col-md-3 control-label">First Name : </label>
+                                                <div class="col-md-6">
+                                                    @if($id == 'null')
+                                                    <input type="text" class="form-control" id="f_name" value="{{ucwords($customerInfo->profile->first_name)}}" name="f_name" required>
+                                                    @else
+                                                    <input type="text" class="form-control" id="f_name" value="{{ucwords($customerInfo->profile->first_name)}}" name="f_name" readonly>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label class="col-md-3 control-label">Last Name :</label>
+                                                <div class="col-md-6">
+                                                    @if($id == 'null')
+                                                    <input type="text" class="form-control" id="l_name" value="{{ucwords($customerInfo->profile->last_name)}}" name="l_name" required>
+                                                    @else
+                                                    <input type="text" class="form-control" id="l_name" value="{{ucwords($customerInfo->profile->last_name)}}" name="l_name" readonly>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label class="col-md-3 control-label">Birth date : </label>
+                                                <div class="col-md-6">
+                                                    <input type="date" class="form-control" id="dob" value="{{$customerInfo->profile->dob}}" name="dob">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label class="col-md-3 control-label">Email id : </label>
+                                                <div class="col-md-6">
+                                                    @if($id == 'null')
+                                                    <input type="email" class="form-control" id="profile_email" value="{{$customerInfo->profile->email}}" name="profile_email">
+                                                    @else
+                                                    <input type="email" class="form-control" id="profile_email" value="{{$customerInfo->profile->email}}" name="profile_email" readonly>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label class="col-md-3 control-label">Mobile Number : <span class="required">*</span></label>
+                                                <div class="col-md-6">
+                                                    <input type="text" class="form-control" id="profile_mobile" value="{{ucwords($customerInfo->profile->mobile)}}" name="profile_mobile" readonly>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <div class="row">
+                                        <div class="col-md-10">
+                                            <button type="submit" class="btn btn-sm btn-success pull-right">Save</button>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button class="btn btn-sm btn-danger pull-right" data-dismiss="modal">Cancel</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {{--END of Modal for Profile edit--}}
+
+                {{--Modal for edit address--}}
+                @if($customerInfo->address != null)
+                @foreach($customerInfo->address as $address)
+                <div id="edit_address_{{$address->id}}" class="modal fade bs-modal-md" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-md">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title" style="text-align: center"><b>Edit Address</b></h4>
                             </div>
                             <div class="modal-body">
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" data-dismiss="modal" class="btn btn-outline dark">Close</button>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <form method="post" role="form" action="/customer/edit-address" >
+                                            {{ csrf_field() }}
+                                            <input type="hidden" value="{{$address->id}}" name="id">
+                                            <input class="form-control" type="hidden" value="{{$id}}" name="crm_customer_id">
+                                            <input class="form-control" type="hidden" value="{{$mobile}}" name="customer_mobile">
+                                            <div class="address-form">
+                                                <div class="form-group">
+                                                    <label for="company">Full Name</label><span class="required">*</span>
+                                                    <input type="text" class="form-control" name="full_name" id="full_name_{{$address->id}}" value="{{$address->full_name}}" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="mobile">Mobile</label><span class="required">*</span>
+                                                    <input type="text" class="form-control" name="mobile" id="mobile_{{$address->id}}" value="{{$address->mobile}}" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="company">Flat/Door/Block No.</label><span class="required">*</span>
+                                                    <input type="text" class="form-control" name="flat_door_block_house_no" id="flat_door_block_house_no_{{$address->id}}" value="{{$address->flat_door_block_house_no}}" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="company">Name of the Premise/Building/Village</label><span class="required">*</span>
+                                                    <input type="text" class="form-control" name="name_of_premise_building_village" id="name_of_premise_building_village_{{$address->id}}" value="{{$address->name_of_premise_building_village}}" required>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label for="area">Area/Locality/Wadi</label><span class="required">*</span>
+                                                            <input class="form-control area" id="area_{{$address->id}}" name="area_locality_wadi" value="{{$address->area_locality_wadi}}" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label for="post">Road/Street/Lane</label><span class="required">*</span>
+                                                            <div id="at-post">
+                                                                <input class="form-control" type="text" id="road_street_lane_{{$address->id}}" name="road_street_lane" value="{{$address->road_street_lane}}" required>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label for="pin">Pin</label><span class="required">*</span>
+                                                            <input class="form-control edit-pincode typeahead" type="text" id="pincode_{{$address->id}}" name="pincode" value="{{$address->pincode}}" required>
+                                                            <span style="color: darkred"><h7>Make sure you choose the exact pincode from the dropdown values only</h7></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label for="post">Post</label><span class="required">*</span>
+                                                            <div id="at-post">
+                                                                <select class="form-control edit-atPost" name="at_post" id="atPost_{{$address->id}}" required>
+                                                                    <option value="{{$address->at_post}}">{{$address->at_post}}</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label for="state">State</label><span class="required">*</span>
+                                                            <input class="form-control edit-stateName" type="text" id="stateName_{{$address->id}}" name="state" value="{{$address->state}}" readonly>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label for="dist">District</label><span class="required">*</span>
+                                                            <input type="text" class="form-control edit-district" name="district" id="district_{{$address->id}}" value="{{$address->district}}" readonly>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label for="taluka">Taluka</label><span class="required">*</span>
+                                                            <input type="text" class="form-control edit-taluka" name="taluka" id="taluka_{{$address->id}}" value="{{$address->taluka}}" readonly>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <button type="submit" class="btn btn-primary btn-icon">Edit address</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
+                </div>
+                @endforeach
+                @endif
+
+                {{--End of Modal for Edit Address--}}
+                {{--Modal For Abandoned Details--}}
+                <div id="AbandonedDetailModal" class="modal container fade" tabindex="-1">
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                            <h4 class="modal-title">Abandoned Cart Details</h4>
+                        </div>
+                        <div class="modal-body">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" data-dismiss="modal" class="btn btn-outline dark">Close</button>
+                        </div>
+                    </div>
+                </div>
                 {{--End Modal--}}
                 <!-- END PAGE CONTENT INNER -->
             </div>
         </div>
-        <!-- END PAGE CONTENT BODY -->
-        <!-- END CONTENT BODY -->
+    <!-- END CONTENT BODY -->
     </div>
     <!-- END CONTENT -->
-    <!-- BEGIN QUICK SIDEBAR -->
-
-    <!-- END QUICK SIDEBAR -->
     <!-- END CONTAINER -->
 @endsection
 @section('javascript')
@@ -1012,10 +998,10 @@
                         '</div>'+
                         '<div class="col-md-3">'+
                                 '<a class="btn" onclick="updateProductQuantity('+POData.id+',false,'+POData.price+','+POData.minimum_quantity+','+POData.maximum_quantity+')" >-</a>'+
-                                '<input class="cart-quantity" type="text" id="product_'+POData.id+'" value="1" style="width: 30px; text-align: center" readonly>'+
+                                '<input class="cart-quantity" type="text" id="product_'+POData.id+'" value='+POData.minimum_quantity+' style="width: 30px; text-align: center" readonly>'+
                                 '<a class="btn" onclick="updateProductQuantity('+POData.id+',true,'+POData.price+','+POData.minimum_quantity+','+POData.maximum_quantity+')">+</a>'+
                         '</div>'+
-                        '<div class="col-md-2"><i class="fa fa-rupee"></i><span id="price_'+POData.id+'">'+POData.price+'</span> &nbsp;&nbsp;<a><span onclick="removeProduct('+POData.id+')">x</span></a></div>'+
+                        '<div class="col-md-2"><i class="fa fa-rupee"></i><span id="price_'+POData.id+'">'+POData.price * POData.minimum_quantity+'</span> &nbsp;&nbsp;<a><span onclick="removeProduct('+POData.id+')">x</span></a></div>'+
                         '</div>'+
                         '<input class="form-control product-list" type="hidden" id="product_id_'+POData.id+'" name="product_id[]" value="'+POData.id+'">'+
                         '<input class="form-control" type="hidden" id="product_qnt'+POData.id+'" name="product_qnt['+POData.id+']" value="1">';
@@ -1145,7 +1131,7 @@
             var qnt = $('#product_'+id).val();
             if(add == true){
                 if(qnt >= maxQnt){
-                    alert('Maximum Inventory for this product is '+maxQnt);
+                    alert('Maximum allowed quantity for this product is '+maxQnt);
                 }else{
                     qnt++;
                     price = price*qnt;
@@ -1156,14 +1142,18 @@
                     $('#product_qnt'+id).val(qnt);
                 }
             } else {
-                qnt--;
-                if(qnt > 0){
-                    price = price*qnt;
-                    $('#price_'+id).text(price);
-                    $('#products_price_'+id).text(price);
-                    $('#selected_product_qnt'+id).val(qnt);
-                    $('#product_'+id).val(qnt);
-                    $('#product_qnt'+id).val(qnt);
+                if(qnt <= minQnt){
+                    alert('Minimum allowed quantity for this product is '+minQnt);
+                }else{
+                    if(qnt > 0){
+                        qnt--;
+                        price = price*qnt;
+                        $('#price_'+id).text(price);
+                        $('#products_price_'+id).text(price);
+                        $('#selected_product_qnt'+id).val(qnt);
+                        $('#product_'+id).val(qnt);
+                        $('#product_qnt'+id).val(qnt);
+                    }
                 }
             }
 
@@ -1186,12 +1176,16 @@
             $('#schedule_modal').modal('show');
         })
         $('#select_product_modal').on('click',function () {
-            $('#select_products').modal('show');
-            $('#place_order').modal('hide');
             var addressId = $('input[name=customer_address_id]:checked').val();
-            var str = $('#delivery_address_'+addressId).html();
-            $('#address_id').val(addressId);
-            $('#delivery_address').html(str);
+            if(addressId){
+                $('#select_products').modal('show');
+                $('#place_order').modal('hide');
+                var str = $('#delivery_address_'+addressId).html();
+                $('#address_id').val(addressId);
+                $('#delivery_address').html(str);
+            }else{
+                $('#select_address_msg').show();
+            }
         });
 
         $('#place_order_modal').on('click',function () {

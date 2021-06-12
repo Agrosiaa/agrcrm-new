@@ -23,7 +23,7 @@ class CrmController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('logged-customer-profile',['except'=>array('CustomerDetailsView','createLead','saleChat')]);
+        $this->middleware('logged-customer-profile',['except'=>array('createLead','setSchedule')]);
 
     }
     public function manage(Request $request){
