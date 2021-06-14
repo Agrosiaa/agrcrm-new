@@ -628,8 +628,24 @@
                                         <div class="row col-md-offset-1" id="selected_products">
                                         </div>
                                         <hr>
+                                        <div class="row" id="del_charge_div" hidden="">
+                                            <div class="col-md-3 col-md-offset-7 text-right">
+                                                <h4>Delivery Charges:</h4>
+                                            </div>
+                                            <div class="col-md-1">
+                                                <h4 class="pull-right">50</h4>
+                                            </div>
+                                        </div>
+                                        <div class="row" id="discount_div" hidden="">
+                                            <div class="col-md-3 col-md-offset-7 text-right">
+                                                <h4>Agrosiaa Discount:</h4>
+                                            </div>
+                                            <div class="col-md-1">
+                                                <h4 class="pull-right" id="discount_val"></h4>
+                                            </div>
+                                        </div>
                                         <div class="row">
-                                            <div class="col-md-2 col-md-offset-8">
+                                            <div class="col-md-2 col-md-offset-8 text-right">
                                                 <h4>Total:</h4>
                                             </div>
                                             <div class="col-md-1">
@@ -652,6 +668,14 @@
                                         <div class="row col-md-offset-1">
                                             <div class="col-md-5">
                                                 <input type="text" class="form-control" id="referral_code" name="referral_code" placeholder="Enter referral code" style=""/>
+                                            </div>
+                                            <div class="col-md-1">
+                                                <a class="btn btn-primary" id="apply_referral">Apply</a>
+                                            </div>
+                                        </div>
+                                        <div class="row col-md-offset-1">
+                                            <div class="col-md-8">
+                                                <span id="referal_code_valid"></span>
                                             </div>
                                         </div>
                                     </div>
@@ -1195,13 +1219,95 @@
 
         $('#confirm_order_modal').on('click',function () {
             $('#confirm_order').modal('show');
+            $('#del_charge_div').hide();
+            $('#referral_code').val('');
+            $('#discount_div').hide();
+            $('#referal_code_valid').text('');
             $('#select_products').modal('hide');
             var sum = 0;
             $('.product-price-total').each(function()
             {
                 sum += parseFloat($(this).text());
             });
+            if(sum <= 500){
+                sum += 50;
+                $('#del_charge_div').show();
+            }
             $('#order_total').text(sum);
+        });
+
+        $('#apply_referral').on('click',function () {
+            var referral = $('#referral_code').val();
+            var sum = 0;
+            var discount = 0;
+            var discountFloat = 0;
+            $('.product-price-total').each(function()
+            {
+                sum += parseFloat($(this).text());
+            });
+            var discountedSum = sum;
+            if(sum <= 500){
+                $('#discount_div').hide();
+                $('#order_total').text(sum);
+                $('#referal_code_valid').removeClass("text-success");
+                $('#referal_code_valid').addClass("text-danger");
+                $('#referal_code_valid').text("Discount is applicable if order total grater than 500");
+            }else{
+                if(sum > 2500){
+                    discountFloat = (2 * sum)/100;
+                    discount = discountFloat.toFixed(2);
+                }else{
+                    discount = 50;
+                }
+                discountedSum -= discount;
+                $.ajax({
+                    url: '{{env('BASE_URL')}}/validate-referral',
+                    type: 'POST',
+                    dataType: 'array',
+                    data: {
+                        'referral' : referral
+                    },
+                    success: function(response, ){
+                        data= JSON.parse(response.responseText);
+                        if(data != null){
+                            if(data.is_validate){
+                                $('#referal_code_valid').removeClass("text-danger");
+                                $('#referal_code_valid').addClass("text-success");
+                                $('#referal_code_valid').text("Referral code applied successfully");
+                                $('#discount_div').show();
+                                $('#order_total').text(discountedSum);
+                                $('#discount_val').text(discount);
+                            }else{
+                                $('#discount_div').hide();
+                                $('#order_total').text(sum);
+                                $('#referal_code_valid').removeClass("text-success");
+                                $('#referal_code_valid').addClass("text-danger");
+                                $('#referal_code_valid').text("Invalid referral code");
+
+                            }
+                        }
+                    },
+                    error:function(response){
+                        data= JSON.parse(response.responseText);
+                        if(data != null){
+                            if(data.is_validate){
+                                $('#discount_div').show();
+                                $('#referal_code_valid').removeClass("text-danger");
+                                $('#referal_code_valid').addClass("text-success");
+                                $('#referal_code_valid').text("Referral code applied successfully");
+                                $('#order_total').text(discountedSum);
+                                $('#discount_val').text(discount);
+                            }else{
+                                $('#discount_div').hide();
+                                $('#order_total').text(sum);
+                                $('#referal_code_valid').removeClass("text-success");
+                                $('#referal_code_valid').addClass("text-danger");
+                                $('#referal_code_valid').text("Invalid referral code");
+                            }
+                        }
+                    }
+                });
+            }
         });
 
         $('#select_order_modal').on('click',function () {
