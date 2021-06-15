@@ -430,12 +430,14 @@
                                     '</div>'+
                                     '<div class="col-md-1">'+
                                     '<button class="btn blue rounded chat_reply" id="'+data['work_order_status_id']+'" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply"><i class="fa fa-comments"></i></button>'+
-                                    '</div>'+
-                                    '<div class="col-md-1" >'+
-                                    '<button class="btn red rounded order_cancel" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#cancel"><i class="fa fa-close"></i></button>'+
-                                    '</div>'+
-                                    '</div>'+
-                                    '<br>';
+                                    '</div>';
+                                    if(data['order_status_id'] != 4 && data['sales_id'] != null){
+                                        str +=  '<div class="col-md-1" >'+
+                                            '<button class="btn red rounded order_cancel" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#cancel"><i class="fa fa-close"></i></button>'+
+                                            '</div>';
+                                    }
+                                str += '</div>'+
+                                        '<br>';
                                 $('#pdtv_data').html(str);
                             });
                         } if (value['pending_for_customer_cancel']['length'] == 0) {
@@ -466,11 +468,13 @@
                                     '</div>'+
                                     '<div class="col-md-1">'+
                                     '<button class="btn blue rounded chat_reply" id="'+data['work_order_status_id']+'" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply"><i class="fa fa-comments"></i></button>'+
-                                    '</div>'+
-                                    '<div class="col-md-1" >'+
-                                    '<button  class="btn red rounded order_cancel" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#cancel"><i class="fa fa-close"></i></button>'+
-                                    '</div>'+
-                                    '</div>'+
+                                    '</div>';
+                                    if(data['order_status_id'] != 4 && data['sales_id'] != null){
+                                            str +=  '<div class="col-md-1" >'+
+                                                    '<button class="btn red rounded order_cancel" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#cancel"><i class="fa fa-close"></i></button>'+
+                                                    '</div>';
+                                    }
+                                str += '</div>'+
                                     '<br>';
                                 $('#pfcc_data').append(str);
                             });
@@ -503,12 +507,14 @@
                                         '</div>'+
                                             '<div class="col-md-1">'+
                                             '<button class="btn blue rounded chat_reply" id="'+data['work_order_status_id']+'" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply"><i class="fa fa-comments"></i></button>'+
-                                            '</div>'+
-                                            '<div class="col-md-1" >'+
-                                            '<button  class="btn red rounded order_cancel" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#cancel"><i class="fa fa-close"></i></button>'+
-                                            '</div>'+
-                                        '</div>'+
-                                        '<br>';
+                                            '</div>';
+                                            if(data['order_status_id'] != 4 && data['sales_id'] != null){
+                                                    str +=  '<div class="col-md-1" >'+
+                                                            '<button class="btn red rounded order_cancel" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#cancel"><i class="fa fa-close"></i></button>'+
+                                                            '</div>';
+                                            }
+                                        str += '</div>'+
+                                                '<br>';
                                     $('#pfvc_data').append(str);
                                 });
                             }if (value['pending_for_pickup']['length'] == 0) {
@@ -539,11 +545,13 @@
                                     '</div>'+
                                     '<div class="col-md-1">'+
                                     '<button class="btn blue rounded chat_reply" id="'+data['work_order_status_id']+'" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply"><i class="fa fa-comments"></i></button>'+
-                                    '</div>'+
-                                    '<div class="col-md-1" >'+
-                                    '<button  class="btn red rounded order_cancel" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#cancel"><i class="fa fa-close"></i></button>'+
-                                    '</div>'+
-                                    '</div>'+
+                                    '</div>';
+                                    if(data['order_status_id'] != 4 && data['sales_id'] != null){
+                                        str +=  '<div class="col-md-1" >'+
+                                                '<button class="btn red rounded order_cancel" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#cancel"><i class="fa fa-close"></i></button>'+
+                                                '</div>';
+                                    }
+                                str += '</div>'+
                                     '<br>';
                                 $('#pfp_data').append(str);
                             });
@@ -577,11 +585,13 @@
                                     '</div>'+
                                     '<div class="col-md-1">'+
                                     '<button class="btn blue rounded chat_reply" id="'+data['work_order_status_id']+'" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#reply"><i class="fa fa-comments"></i></button>'+
-                                    '</div>'+
-                                    '<div class="col-md-1" >'+
-                                    '<button  class="btn red rounded order_cancel" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#cancel"><i class="fa fa-close"></i></button>'+
-                                    '</div>'+
-                                    '</div>'+
+                                    '</div>';
+                                    if(data['order_status_id'] != 4 && data['sales_id'] != null){
+                                        str +=  '<div class="col-md-1" >'+
+                                                '<button class="btn red rounded order_cancel" type="submit" value="'+data['order_id']+'" data-toggle="modal" data-target="#cancel"><i class="fa fa-close"></i></button>'+
+                                                '</div>';
+                                    }
+                                str += '</div>'+
                                     '<br>';
                                 $('#ci_data').append(str);
                             });
