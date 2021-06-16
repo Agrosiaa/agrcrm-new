@@ -65,6 +65,14 @@ class CustomerController extends Controller
                     }
                 }
 
+                if($resultFlag == true && $request->has('shipment') && $tableData['shipment']!=""){
+                    $customerOrders = Curl::to(env('BASE_URL')."/customer-orders")
+                        ->withData( array( 'mobile' => $mobile, 'filter' => true,'shipment' => $tableData['shipment'], 'ids' => $customerOrders->orders))->asJson()->get();
+                    if(empty($customerOrders->orders)){
+                        $resultFlag = false;
+                    }
+                }
+
                 if($resultFlag == true && $request->has('skuid') && $tableData['skuid']!=""){
                     $customerOrders = Curl::to(env('BASE_URL')."/customer-orders")
                         ->withData( array( 'mobile' => $mobile, 'filter' => true,'skuid' => $tableData['skuid'],'ids' => $customerOrders->orders))->asJson()->get();
@@ -116,6 +124,7 @@ class CustomerController extends Controller
                         $limitedOrders[$j]->quantity,
                         $limitedOrders[$j]->seller_sku,
                         $limitedOrders[$j]->status,
+                        $limitedOrders[$j]->shipment,
                         $limitedOrders[$j]->consignment_number,
                         $displayPrice,
                     );
@@ -298,11 +307,16 @@ class CustomerController extends Controller
             if($response == 200){
                 $newRequestObject = new Request();
                 $request->session()->flash('success','Customer created successfully');
+                if(isset($request->lead_crm_id)){
+                    CrmCustomer::where('id',$request->lead_crm_id)
+                                ->update(['customer_number_status_id' => 3]);
+                }
                 $this->CustomerDetailsView($newRequestObject,$data['mobile'],'null');
+
             }else{
                 $request->session()->flash('error','Customer not created');
-                return back();
             }
+            return back();
         }catch (\Exception $e){
             abort(500,$e->getMessage());
         }
@@ -414,7 +428,7 @@ class CustomerController extends Controller
             abort(500,$e->getMessage());
         }
     }
-        public function createNewCustomerTag($tagName, $crmCustId, $custNumber, $tagType){
+    public function createNewCustomerTag($tagName, $crmCustId, $custNumber, $tagType){
         try{
             $tag = TagCloud::where('name',$tagName)->first();
             $tagTypeId = TagType::where('slug',$tagType)->value('id');

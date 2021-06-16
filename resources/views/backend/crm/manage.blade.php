@@ -10,15 +10,6 @@
     <link rel="stylesheet" type="text/css" href="/assets/custom/crm/css/demo.css" />
     <link rel="stylesheet" type="text/css" href="/assets/custom/crm/css/component.css" />
     <link rel="stylesheet" type="text/css" href="/assets/frontend/global/css/bootstrap.css">
-    <link rel="stylesheet" type="text/css" href="/assets/frontend/global/css/mCustomScrollbar.min.css">
-    {{--<link rel="stylesheet" type="text/css" href="/assets/frontend/global/css/styles/style.css">
-    --}}<link href="/assets/global/plugins/datatables/datatables.min.css" rel="stylesheet" type="text/css" />
-    <link href="/assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.css" rel="stylesheet" type="text/css" />
-    <link href="/assets/global/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css" rel="stylesheet" type="text/css" />
-    <link href="/assets/global/plugins/fancybox/source/jquery.fancybox.css" rel="stylesheet" type="text/css" />
-    <link href="/assets/global/css/plugins.min.css" rel="stylesheet" type="text/css" />
-    <link href="/assets/global/plugins/jstree/dist/themes/default/style.css" rel="stylesheet" type="text/css" />
-    <link href="/assets/global/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css" rel="stylesheet" type="text/css" />
     <!--[if IE]>
     <!-- END PAGE LEVEL PLUGINS -->
     <script type="text/css">
@@ -47,7 +38,7 @@
                         <span class="morphsearch-close"></span>
                     </div><!-- /morphsearch -->
                     <header class="codrops-header">
-                        <h1>CRM Search<span>A search input that morphs into a fullscreen search page.</span></h1>
+                        <h1>CRM Search</h1>
                     </header>
                     <div class="overlay"></div>
                     <!-- End: life time stats -->
@@ -141,23 +132,6 @@
     <!-- END PAGE CONTENT BODY -->
 @endsection
 @section('javascript')
-    <!-- BEGIN CORE PLUGINS -->
-    <script src="/assets/global/plugins/jquery.min.js" type="text/javascript"></script>
-    <script src="/assets/global/plugins/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
-    <script src="/assets/global/plugins/js.cookie.min.js" type="text/javascript"></script>
-    <script src="/assets/global/plugins/bootstrap-hover-dropdown/bootstrap-hover-dropdown.min.js" type="text/javascript"></script>
-    <script src="/assets/global/plugins/jquery-slimscroll/jquery.slimscroll.min.js" type="text/javascript"></script>
-    <script src="/assets/global/plugins/jquery.blockui.min.js" type="text/javascript"></script>
-    <script src="/assets/global/plugins/uniform/jquery.uniform.min.js" type="text/javascript"></script>
-    <script src="/assets/global/plugins/bootstrap-switch/js/bootstrap-switch.min.js" type="text/javascript"></script>
-    <!-- END CORE PLUGINS -->
-    <!-- BEGIN PAGE LEVEL PLUGINS -->
-    <script src="/assets/global/scripts/datatable.js" type="text/javascript"></script>
-    <script src="/assets/global/plugins/datatables/datatables.min.js" type="text/javascript"></script>
-    <script src="/assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.js" type="text/javascript"></script>
-    <script src="/assets/global/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js" type="text/javascript"></script>
-    <script src="/assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js" type="text/javascript"></script>
-    <!-- END PAGE LEVEL PLUGINS -->
     <!-- BEGIN THEME GLOBAL SCRIPTS -->
     <script src="/assets/global/scripts/app.min.js" type="text/javascript"></script>
     <!-- END THEME GLOBAL SCRIPTS -->

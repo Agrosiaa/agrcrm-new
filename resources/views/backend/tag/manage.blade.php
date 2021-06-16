@@ -2,22 +2,13 @@
 @section('title','Agrosiaa | Tags')
 @include('backend.partials.common.nav')
 @section('css')
-    <style>
-        .sortable-handler {
-            touch-action: none;
-        }
-    </style>
     <!-- BEGIN PAGE LEVEL PLUGINS -->
-    <link rel="stylesheet" type="text/css" href="/assets/frontend/global/css/bootstrap.css">
-    <link rel="stylesheet" type="text/css" href="/assets/frontend/global/css/mCustomScrollbar.min.css">
-    <link rel="stylesheet" type="text/css" href="/assets/frontend/global/css/styles/style.css">
     <link href="/assets/global/plugins/datatables/datatables.min.css" rel="stylesheet" type="text/css" />
     <link href="/assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.css" rel="stylesheet" type="text/css" />
     <link href="/assets/global/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css" rel="stylesheet" type="text/css" />
     <link href="/assets/global/plugins/fancybox/source/jquery.fancybox.css" rel="stylesheet" type="text/css" />
     <link href="/assets/global/css/plugins.min.css" rel="stylesheet" type="text/css" />
     <link href="/assets/global/plugins/jstree/dist/themes/default/style.css" rel="stylesheet" type="text/css" />
-    <link href="/assets/global/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css" rel="stylesheet" type="text/css" />
     <!-- END PAGE LEVEL PLUGINS -->
     <script type="text/css">
     </script>
@@ -36,16 +27,14 @@
                         <!-- Begin: life time stats -->
                         <div class="portlet light portlet-fit portlet-datatable ">
                             <div class="portlet-title row">
-                                <div class="caption col-sm-9">
+                                <div class="caption">
                                     <i class="icon-settings font-green"></i>
                                     <span class="caption-subject font-green sbold uppercase"> Tag Listing </span>
                                 </div>
-                                <div class="col-sm-1" style="padding-top: 8px;">
+                                <div class="text-right" style="margin-right: 10px">
                                     <a href="javascript:void(0);" class="btn blue m-icon" id="open-tag-modal">
                                         Create Tag
                                     </a>
-                                </div>
-                                <div class="col-sm-1" style="padding-top: 8px; margin-left: 5px">
                                     <a href="/tag/sync-tag" class="btn green m-icon">Sync Tag</a>
                                 </div>
                             </div>
@@ -140,19 +129,8 @@
     </div>
     </div>
     <!-- END PAGE CONTENT BODY -->
-    <!-- END PAGE CONTENT BODY -->
 @endsection
 @section('javascript')
-    <!-- BEGIN CORE PLUGINS -->
-    <script src="/assets/global/plugins/jquery.min.js" type="text/javascript"></script>
-    <script src="/assets/global/plugins/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
-    <script src="/assets/global/plugins/js.cookie.min.js" type="text/javascript"></script>
-    <script src="/assets/global/plugins/bootstrap-hover-dropdown/bootstrap-hover-dropdown.min.js" type="text/javascript"></script>
-    <script src="/assets/global/plugins/jquery-slimscroll/jquery.slimscroll.min.js" type="text/javascript"></script>
-    <script src="/assets/global/plugins/jquery.blockui.min.js" type="text/javascript"></script>
-    <script src="/assets/global/plugins/uniform/jquery.uniform.min.js" type="text/javascript"></script>
-    <script src="/assets/global/plugins/bootstrap-switch/js/bootstrap-switch.min.js" type="text/javascript"></script>
-    <!-- END CORE PLUGINS -->
     <!-- BEGIN PAGE LEVEL PLUGINS -->
     <script src="/assets/global/scripts/datatable.js" type="text/javascript"></script>
     <script src="/assets/global/plugins/datatables/datatables.min.js" type="text/javascript"></script>
@@ -166,13 +144,10 @@
     <!-- BEGIN PAGE LEVEL SCRIPTS -->
     <script src="/assets/pages/scripts/components-date-time-pickers.min.js" type="text/javascript"></script>
     <script src="/assets/pages/scripts/tag/ecommerce-orders.min.js" type="text/javascript"></script>
-    <script src="/assets/global/plugins/jquery-validation/js/jquery.validate.min.js" type="text/javascript"></script>
-
     <!-- END PAGE LEVEL SCRIPTS -->
     <!-- BEGIN THEME LAYOUT SCRIPTS -->
     <script src="/assets/layouts/layout3/scripts/layout.min.js" type="text/javascript"></script>
     <script src="/assets/layouts/layout3/scripts/demo.min.js" type="text/javascript"></script>
-
     <!-- END THEME LAYOUT SCRIPTS -->
     <script>
         function editTag(id,name,typeId) {

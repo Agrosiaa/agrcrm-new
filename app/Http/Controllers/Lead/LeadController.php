@@ -134,88 +134,55 @@ class LeadController extends Controller
                 for($i=0,$j = $iDisplayStart; $j < $end; $i++,$j++) {
                     $chat = SalesChat::where('crm_customer_id',$limitedProducts[$j]['id'])->first();
                     $reminder = Reminder::where('crm_customer_id',$limitedProducts[$j]['id'])->first();
+                    $new = null;
+                    if($chat == null && $reminder == null){
+                        $new = '<span class="tag label label-info" style="font-size: 90%;">new</span>';
+                    }
+                    $abandoned = null;
+                    if($limitedProducts[$j]['is_abandoned']){
+                        $abandoned = '<br><br><span class="tag label label-info" style="font-size: 90%;">Abandoned Cart</span>';
+                    }
+                    $callBack = null;
+                    if($limitedProducts[$j]['customer_number_status_id'] == 2){
+                        $remind = Reminder::join('call_back','call_back.id','=','reminder.call_back_id')
+                                ->whereNotNull('reminder.call_back_id')
+                                ->where('reminder.crm_customer_id',$limitedProducts[$j]['id'])
+                                ->orderBy('reminder.id','DESC')
+                                ->select('call_back.name')->first();
+                        $callBack = '<br><br><span class="tag label label-info" style="font-size: 90%;">'.$remind['name'].'</span>';
+                    }
+                    $log = '<a href="#" class="btn btn-sm btn-default btn-circle btn-editable chat_reply" onclick="passId('.$limitedProducts[$j]['id'].','.$limitedProducts[$j]['number'].')"><i class="fa fa-pencil"></i> Log</a>';
+                    $delete = '<a href="/leads/remove-lead/'.$limitedProducts[$j]['id'].'" class="btn btn-sm btn-default btn-circle btn-editable"><i class="fa fa-pencil"></i> Remove</a>';
+                    $profile = '<a target="_blank" href="/customer/customer-details/'.$limitedProducts[$j]['number'].'/'.$limitedProducts[$j]['id'].'">'.$limitedProducts[$j]['number'].'</a>';
                     if ($user['role_id'] == 1) {
                         if(in_array($limitedProducts[$j]['number'],$createdCustomers)){
-                            if($limitedProducts[$j]['is_abandoned'] == true){
-                                $records["data"][] = array(
-                                    '<a target="_blank" href="/customer/customer-details/'.$limitedProducts[$j]['number'].'/'.$limitedProducts[$j]['id'].'">'.$limitedProducts[$j]['number'].'</a>'.'<br><br>'.'<span class="tag label label-info" style="font-size: 90%;">'.'Abandoned Cart'.'</span>',
-                                    User::where('id',$limitedProducts[$j]['user_id'])->pluck('name'),
-                                    date('d F Y H:i:s',strtotime($limitedProducts[$j]['created_at'])),
-                                    '<a href="#" class="btn btn-sm btn-default btn-circle btn-editable chat_reply" onclick="passId('.$limitedProducts[$j]['id'].','.$limitedProducts[$j]['number'].')"><i class="fa fa-pencil"></i> Log</a>',
-                                );
-                            }else{
-                                $records["data"][] = array(
-                                    '<a target="_blank" href="/customer/customer-details/'.$limitedProducts[$j]['number'].'/'.$limitedProducts[$j]['id'].'">'.$limitedProducts[$j]['number'].'</a>',
-                                    User::where('id',$limitedProducts[$j]['user_id'])->pluck('name'),
-                                    date('d F Y H:i:s',strtotime($limitedProducts[$j]['created_at'])),
-                                    '<a href="#" class="btn btn-sm btn-default btn-circle btn-editable chat_reply" onclick="passId('.$limitedProducts[$j]['id'].','.$limitedProducts[$j]['number'].')"><i class="fa fa-pencil"></i> Log</a>',
-                                );
-                            }
-                            /*$mobileNumber = CrmCustomer::where('number',$limitedProducts[$j]['number'])->get()->toArray();
-                            if(count($mobileNumber) == 1){
-                                if($limitedProducts[$j]['customer_number_status_id'] != $completeStatusId){
-                                    $updateStatus['customer_number_status_id'] = $completeStatusId;
-                                    CrmCustomer::where('id',$limitedProducts[$j]['id'])->update($updateStatus);
-                                }
-                            }*/
+                            $records["data"][] = array(
+                                $profile.$abandoned.$callBack,
+                                User::where('id',$limitedProducts[$j]['user_id'])->pluck('name'),
+                                date('d F Y H:i:s',strtotime($limitedProducts[$j]['created_at'])),
+                                $log,
+                            );
                         }else {
-                            if($chat == null && $reminder == null){
-                                $records["data"][] = array(
-                                    $limitedProducts[$j]['number'].'<span class="tag label label-info" style="font-size: 90%;">'.'new'.'</span>',
-                                    User::where('id',$limitedProducts[$j]['user_id'])->pluck('name'),
-                                    date('d F Y H:i:s',strtotime($limitedProducts[$j]['created_at'])),
-                                    '<a href="#" class="btn btn-sm btn-default btn-circle btn-editable chat_reply" onclick="passId('.$limitedProducts[$j]['id'].','.$limitedProducts[$j]['number'].')"><i class="fa fa-pencil"></i> Log</a>
-                                <a href="/leads/remove-lead/'.$limitedProducts[$j]['id'].'" class="btn btn-sm btn-default btn-circle btn-editable"><i class="fa fa-pencil"></i> Remove</a>',
-                                );
-                            }else{
-                                $records["data"][] = array(
-                                    $limitedProducts[$j]['number'],
-                                    User::where('id',$limitedProducts[$j]['user_id'])->pluck('name'),
-                                    date('d F Y H:i:s',strtotime($limitedProducts[$j]['created_at'])),
-                                    '<a href="#" class="btn btn-sm btn-default btn-circle btn-editable chat_reply" onclick="passId('.$limitedProducts[$j]['id'].','.$limitedProducts[$j]['number'].')"><i class="fa fa-pencil"></i> Log</a>
-                                <a href="/leads/remove-lead/'.$limitedProducts[$j]['id'].'" class="btn btn-sm btn-default btn-circle btn-editable"><i class="fa fa-pencil"></i> Remove</a>',
-                                );
-                            }
+                            $records["data"][] = array(
+                                $limitedProducts[$j]['number'].$new.$callBack,
+                                User::where('id',$limitedProducts[$j]['user_id'])->pluck('name'),
+                                date('d F Y H:i:s',strtotime($limitedProducts[$j]['created_at'])),
+                                $log.$delete,
+                            );
                         }
                     } else {
                         if(in_array($limitedProducts[$j]['number'],$createdCustomers)){
-                            if($limitedProducts[$j]['is_abandoned'] == true){
-                                $records["data"][] = array(
-                                    '<a target="_blank" href="/customer/customer-details/'.$limitedProducts[$j]['number'].'/'.$limitedProducts[$j]['id'].'">'.$limitedProducts[$j]['number'].'</a>'.'<br><br>'.'<span class="tag label label-info" style="font-size: 90%;">'.'Abandoned Cart'.'</span>',
-                                    date('d F Y H:i:s', strtotime($limitedProducts[$j]['created_at'])),
-                                    '<a class="btn btn-sm btn-default btn-circle btn-editable chat_reply" onclick="passId(' . $limitedProducts[$j]['id'] . ',' . $limitedProducts[$j]['number'] . ')"><i class="fa fa-pencil"></i> Log</a>'
-                                );
-                            }else{
-                                $records["data"][] = array(
-                                    '<a target="_blank" href="/customer/customer-details/'.$limitedProducts[$j]['number'].'/'.$limitedProducts[$j]['id'].'">'.$limitedProducts[$j]['number'].'</a>',
-                                    date('d F Y H:i:s', strtotime($limitedProducts[$j]['created_at'])),
-                                    '<a class="btn btn-sm btn-default btn-circle btn-editable chat_reply" onclick="passId(' . $limitedProducts[$j]['id'] . ',' . $limitedProducts[$j]['number'] . ')"><i class="fa fa-pencil"></i> Log</a>'
-                                );
-                            }
-                            /*$mobileNumber = CrmCustomer::where('number',$limitedProducts[$j]['number'])->get()->toArray();
-                            if(count($mobileNumber) == 1){
-                                if($limitedProducts[$j]['customer_number_status_id'] != $completeStatusId){
-                                    $updateStatus['customer_number_status_id'] = $completeStatusId;
-                                    CrmCustomer::where('id',$limitedProducts[$j]['id'])->update($updateStatus);
-                                }
-                            }*/
+                            $records["data"][] = array(
+                                $profile.$abandoned.$callBack,
+                                date('d F Y H:i:s', strtotime($limitedProducts[$j]['created_at'])),
+                                $log
+                            );
                         }else {
-                            if($chat == null && $reminder == null){
-                                $records["data"][] = array(
-                                    $limitedProducts[$j]['number'].'<span class="tag label label-info" style="font-size: 90%;">'.'new'.'</span>',
-                                    date('d F Y H:i:s', strtotime($limitedProducts[$j]['created_at'])),
-                                    '<a class="btn btn-sm btn-default btn-circle btn-editable chat_reply" onclick="passId(' . $limitedProducts[$j]['id'] . ',' . $limitedProducts[$j]['number'] . ')"><i class="fa fa-pencil"></i> Log</a>
-                                    <a class="btn btn-sm btn-default btn-circle btn-editable" onclick="createCustomer(' . $limitedProducts[$j]['number'] . ')"><i class="fa fa-pencil"></i> Create</a>',
-                                );
-                            }else{
-                                $records["data"][] = array(
-                                    $limitedProducts[$j]['number'],
-                                    date('d F Y H:i:s', strtotime($limitedProducts[$j]['created_at'])),
-                                    '<a class="btn btn-sm btn-default btn-circle btn-editable chat_reply" onclick="passId(' . $limitedProducts[$j]['id'] . ',' . $limitedProducts[$j]['number'] . ')"><i class="fa fa-pencil"></i> Log</a>
-                                    <a class="btn btn-sm btn-default btn-circle btn-editable" onclick="createCustomer(' . $limitedProducts[$j]['number'] . ')"><i class="fa fa-pencil"></i> Create</a>',
-                                );
-                            }
-
+                            $records["data"][] = array(
+                                $limitedProducts[$j]['number'].$new.$callBack,
+                                date('d F Y H:i:s', strtotime($limitedProducts[$j]['created_at'])),
+                                $log.'<a class="btn btn-sm btn-default btn-circle btn-editable" onclick="createCustomer(' . $limitedProducts[$j]['id'] . ',' . $limitedProducts[$j]['number'] . ')"><i class="fa fa-pencil"></i> Create</a>'
+                            );
                         }
                     }
                 }

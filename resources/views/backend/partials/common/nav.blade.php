@@ -65,6 +65,9 @@
                 <div class="hor-menu">
                     <ul class="nav navbar-nav">
                         <li class="menu-dropdown classic-menu-dropdown">
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;&nbsp;&nbsp;
+                        </li>
+                        <li class="menu-dropdown classic-menu-dropdown">
                             <?php
                             $user = \Illuminate\Support\Facades\Auth::User();
                             $currentDateTime = \Carbon\Carbon::now();

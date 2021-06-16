@@ -1,5 +1,5 @@
 @extends('backend.seller.layouts.master')
-@section('title','Agrosiaa | Customer')
+@section('title','Agrosiaa | Product')
 @include('backend.partials.common.nav')
 @section('css')
 <link rel="stylesheet" type="text/css" href="/assets/frontend/global/css/bootstrap.css">
@@ -369,8 +369,6 @@
     <script type="text/javascript" src="/assets/frontend/global/js/jquery.cycle2.min.js"></script>
     <script type="text/javascript" src="/assets/frontend/global/js/jquery.cycle2.carousel.min.js"></script>
     <script type="text/javascript" src="/assets/frontend/global/js/custom.js"></script>
-<script src="/assets/pages/scripts/components-date-time-pickers.min.js" type="text/javascript"></script>
-<script src="/assets/global/plugins/jquery-validation/js/jquery.validate.min.js" type="text/javascript"></script>
 
 <!-- END PAGE LEVEL SCRIPTS -->
 <!-- BEGIN THEME LAYOUT SCRIPTS -->
