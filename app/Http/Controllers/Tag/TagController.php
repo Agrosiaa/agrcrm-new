@@ -119,28 +119,68 @@ class TagController extends Controller
     public function syncTag(Request $request){
         try{
             $user = Auth::User();
-            $lastUpdate = TagCloud::whereIn('tag_type_id',[1,2,3])->orderBy('id','DESC')->value('created_at');
+            $lastUpdate = TagCloud::whereIn('tag_type_id',[10])->orderBy('id','DESC')->value('created_at');
             if($lastUpdate != null){
                 $lastUpdate = $lastUpdate->toDateTimeString();
             }
             $tagData = Curl::to(env('BASE_URL')."/get-tags")->withData( array('last_update' => $lastUpdate))->asJson()->get();
+            dd($tagData);
             if($tagData != null){
                 $data['user_id'] = $user['id'];
                 foreach ($tagData as $key => $tagDatum){
                     if($key == 'categories'){
                         $data['tag_type_id'] = TagType::where('slug','category')->value('id');
+                        foreach ($tagDatum as $tag){
+                            $tagPresent = TagCloud::where('name',$tag->tag_name)->where('tag_type_id',$data['tag_type_id'])->first();
+                            if($tagPresent == null){
+                                $data['name'] = $tag->tag_name;
+                                TagCloud::create($data);
+                            }
+                        }
                     }elseif ($key == 'products'){
-                        $data['tag_type_id'] = TagType::where('slug','product')->value('id');
+                        foreach ($tagDatum as $tag){
+                            $data['tag_type_id'] = TagType::where('slug','product')->value('id');
+                            $tagPresent = TagCloud::where('name',$tag->tag_name)->where('tag_type_id',$data['tag_type_id'])->first();
+                            if($tagPresent == null){
+                                $data['name'] = $tag->tag_name;
+                                TagCloud::create($data);
+                            }
+                            if($tag->cat_slug == 'tools-a-machinery'){
+                                $data['tag_type_id'] = TagType::where('slug','tools')->value('id');
+                                $tagPresent = TagCloud::where('name',$tag->tag_name)->where('tag_type_id',$data['tag_type_id'])->first();
+                                if($tagPresent == null){
+                                    $data['name'] = $tag->tag_name;
+                                    TagCloud::create($data);
+                                }
+                            }
+                            if($tag->cat_slug == 'seeds'){
+                                $data['tag_type_id'] = TagType::where('slug','crop')->value('id');
+                                $tagPresent = TagCloud::where('name',$tag->tag_name)->where('tag_type_id',$data['tag_type_id'])->first();
+                                if($tagPresent == null){
+                                    $data['name'] = $tag->tag_name;
+                                    TagCloud::create($data);
+                                }
+                            }
+                            if($tag->sub_cat_slug == 'pesticide' || $tag->sub_cat_slug == 'organic-pesticide' || $tag->item_head_slug == 'organic-pesticide1'){
+                                $data['tag_type_id'] = TagType::where('slug','pesticide')->value('id');
+                                $tagPresent = TagCloud::where('name',$tag->tag_name)->where('tag_type_id',$data['tag_type_id'])->first();
+                                if($tagPresent == null){
+                                    $data['name'] = $tag->tag_name;
+                                    TagCloud::create($data);
+                                }
+                            }
+                        }
                     }elseif ($key == 'agronomy'){
                         $data['tag_type_id'] = TagType::where('slug','crop')->value('id');
-                    }
-                    foreach ($tagDatum as $tag){
-                        $tagPresent = TagCloud::where('name',$tag->tag_name)->first();
-                        if($tagPresent == null){
-                            $data['name'] = $tag->tag_name;
-                            TagCloud::create($data);
+                        foreach ($tagDatum as $tag){
+                            $tagPresent = TagCloud::where('name',$tag->tag_name)->where('tag_type_id',$data['tag_type_id'])->first();
+                            if($tagPresent == null){
+                                $data['name'] = $tag->tag_name;
+                                TagCloud::create($data);
+                            }
                         }
                     }
+
                 }
             }
             $request->session()->flash('success','All tags synced successfully');
