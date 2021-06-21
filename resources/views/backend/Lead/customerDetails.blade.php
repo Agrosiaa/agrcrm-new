@@ -35,13 +35,14 @@
                         @endif
                     </div>
                     @endif
-                    @if($id != 'null')
-                    <div class="col-md-12 col-md-offset-9">
-                        <a href="#" onclick="chatHistory('{{$id}}','{{$mobile}}')" class="btn yellow">Make a Log </a>
-                        <a href="#" id="place_order_button" class="btn blue">Place Order </a>
-                        <a href="#" id="schedule-button" class="btn red-intense">Schedule </a>
+                    <div class="col-md-12 col-md-offset-8">
+                        @if($id != 'null')
+                            <a href="#" onclick="chatHistory('{{$id}}','{{$mobile}}')" class="btn yellow">Make a Log </a>
+                            <a href="#" id="place_order_button" class="btn blue">Place Order </a>
+                            <a href="#" id="schedule-button" class="btn red-intense">Schedule </a>
+                        @endif
+                        <a href="/customer/customer-profile/{{$mobile}}" class="btn green">Profile</a>
                     </div>
-                    @endif
                 </div>
                 <hr>
                 <div class="row">
@@ -166,7 +167,7 @@
                         <div class="portlet-body">
                             <div class="bootstrap-tagsinput" id="customer-tag-div">
                                 @foreach($customerTags as $customerTag)
-                                @if(isset($customerTag['tag_type_name']))
+                                @if( ($customerTag['tag_type_name']))
                                 <button id="tag{{$customerTag['tag_cloud_id']}}{{$customerTag['crm_customer_id']}}" class="lable" style="background-color:rgb(241 243 244);display: inline;font-size: 90%;margin-left: 2px;margin-top:3px;margin-bottom:3px;padding-bottom: 2px;padding-top: 2px">{{$customerTag['name']}}&nbsp;<span style="border-radius: 4px !important;background: green;">{{$customerTag['tag_type_name']}}</span>&nbsp;<span style="color: red;" onclick="removeCustTag({{$customerTag['tag_cloud_id']}},{{$customerTag['crm_customer_id']}})">&nbsp;×</span></button>&nbsp;&nbsp;&nbsp;
                                 @else
                                 <button id="tag{{$customerTag['tag_cloud_id']}}{{$customerTag['crm_customer_id']}}" class="lable" style="background-color: rgb(241 243 244);display: inline;font-size: 90%;margin-left: 2px;margin-top:3px;margin-bottom:3px;padding-bottom: 2px;padding-top: 2px">{{$customerTag['name']}}<span style="color: red;" onclick="removeCustTag({{$customerTag['tag_cloud_id']}},{{$customerTag['crm_customer_id']}})">&nbsp;×</span></button>&nbsp;&nbsp;&nbsp;

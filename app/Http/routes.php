@@ -45,6 +45,7 @@ Route::group(['prefix' => 'customer'], function () {
     Route::post('edit-address',array('uses' => 'Customer\CustomerController@editAddress'));
     Route::post('create-assign-tag',array('uses' => 'Customer\CustomerController@createAssignTag'));
     Route::get('customer-details/{mobile}/{id}',array('uses' => 'Customer\CustomerController@CustomerDetailsView'));
+    Route::get('customer-profile/{mobile}',array('uses' => 'Customer\CustomerController@CustomerProfileView'));
     Route::get('abandoned-cart-detail/{id}',array('uses' => 'Customer\CustomerController@cartDetails'));
     Route::get('remove-tag/{tagId}/{custId}',array('uses' => 'Customer\CustomerController@removeTag'));
     Route::post('edit-customer',array('uses' => 'Customer\CustomerController@editCustomer'));
