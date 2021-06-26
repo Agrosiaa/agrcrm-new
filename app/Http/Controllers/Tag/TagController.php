@@ -124,7 +124,6 @@ class TagController extends Controller
                 $lastUpdate = $lastUpdate->toDateTimeString();
             }
             $tagData = Curl::to(env('BASE_URL')."/get-tags")->withData( array('last_update' => $lastUpdate))->asJson()->get();
-            dd($tagData);
             if($tagData != null){
                 $data['user_id'] = $user['id'];
                 foreach ($tagData as $key => $tagDatum){
@@ -197,10 +196,22 @@ class TagController extends Controller
     public function createCustomerTag(Request $request){
         try{
             $user = Auth::user();
-            if($request->has('crm_cust_id') && $request->crm_cust_id != null){
-                CustomerTagRelation::create(['user_id' => $user['id'],'crm_customer_id' => $request->crm_cust_id, 'tag_cloud_id' => $request->tag_id, 'tag_type_id' => null]);
+            if(isset($request->crm_cust_id)){
+                $tagTypeId = null;
+                if(isset($request->tag_type)){
+                    $tagTypeId = TagType::where('slug',$request->tag_type)->value('id');
+                }
+                $check = CustomerTagRelation::where('crm_customer_id',$request->crm_cust_id)
+                    ->where('tag_cloud_id',$request->tag_id)->where('tag_type_id',$tagTypeId)->first();
+                    if(!$check){
+                        CustomerTagRelation::create([
+                            'user_id' => $user['id'],
+                            'crm_customer_id' => $request->crm_cust_id,
+                            'tag_cloud_id' => $request->tag_id,
+                            'tag_type_id' => $tagTypeId
+                        ]);
+                    }
             }
-            return back();
         }catch (\Exception $exception){
             $data = [
                 'action' => 'Create/Edit Assign new tag',
@@ -219,7 +230,8 @@ class TagController extends Controller
                 $relevantResult = "";
                 $status = 500;
             }else{
-                $relevantResult = $this->getRelevantResult($request->tag_name);
+                Log::info('sds h iufh '.$request->tag_type);
+                $relevantResult = $this->getRelevantResult($request->tag_name, $request->tag_type);
             }
         }catch (\Exception $e){
             $status = 500;
@@ -233,14 +245,21 @@ class TagController extends Controller
         }
         return response()->json($relevantResult,$status);
     }
-    public function getRelevantResult($keyword)
+    public function getRelevantResult($keyword, $tagType)
     {
         $tag_id = array();
         $relevantData = array();
         $searchResultsTake = env('SEARCH_RESULT');
         $keywordLower = strtolower($keyword);
-        $tagsDataArray = TagCloud::whereIn('id',$tag_id)->where('is_active',1)->select('id','name')->orderBy('created_at','desc')->take($searchResultsTake)->skip(0)->get()->toArray();
-        $tags = $this->getTags($keywordLower,$searchResultsTake);
+        if(isset($tagType)){
+            $tagTypeId = TagType::where('slug',$tagType)->value('id');
+            $tagsDataArray = TagCloud::whereIn('id',$tag_id)->where('is_active',1)->where('tag_type_id',$tagTypeId)
+                ->select('id','name')->orderBy('created_at','desc')
+                ->take($searchResultsTake)->skip(0)->get()->toArray();
+        }else{
+            $tagsDataArray = TagCloud::whereIn('id',$tag_id)->where('is_active',1)->select('id','name')->orderBy('created_at','desc')->take($searchResultsTake)->skip(0)->get()->toArray();
+        }
+        $tags = $this->getTags($keywordLower,$searchResultsTake, $tagType);
         $tag = $tags['data'];
         $tagCount = count($tag);
         $tagDataCount = count($tagsDataArray);
@@ -265,12 +284,22 @@ class TagController extends Controller
         }
         return $relevantData;
     }
-    public function getTags($keywordLower,$searchResultsTake) {
-        $tagsDataArray = TagCloud::where('name','like','%'.$keywordLower.'%')
-            ->where('is_active',1)
-            ->orderBy('id','desc')
-            ->select('id','name','tag_type_id')
-            ->take($searchResultsTake)->skip(0)->get()->toArray();
+    public function getTags($keywordLower,$searchResultsTake, $tagType) {
+        if(isset($tagType)){
+            $tagTypeId = TagType::where('slug',$tagType)->value('id');
+            $tagsDataArray = TagCloud::where('name','like','%'.$keywordLower.'%')
+                ->where('is_active',1)
+                ->where('tag_type_id',$tagTypeId)
+                ->orderBy('id','desc')
+                ->select('id','name','tag_type_id')
+                ->take($searchResultsTake)->skip(0)->get()->toArray();
+        }else{
+            $tagsDataArray = TagCloud::where('name','like','%'.$keywordLower.'%')
+                ->where('is_active',1)
+                ->orderBy('id','desc')
+                ->select('id','name','tag_type_id')
+                ->take($searchResultsTake)->skip(0)->get()->toArray();
+        }
         $k = 0;
         $tagData = array();
         foreach($tagsDataArray as $tag) {

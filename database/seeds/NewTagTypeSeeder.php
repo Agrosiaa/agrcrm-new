@@ -26,8 +26,8 @@ class NewTagTypeSeeder extends Seeder
                 'updated_at' => Carbon::now()
             ],
             [
-                'name' => 'Seed Variety',
-                'slug' => 'seed-variety',
+                'name' => 'Seed',
+                'slug' => 'seed',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],

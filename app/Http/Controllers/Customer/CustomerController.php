@@ -201,12 +201,40 @@ class CustomerController extends Controller
         }
     }
 
-    public function CustomerProfileView(Request $request, $mobile){
+    public function CustomerProfileView(Request $request, $mobile, $id){
         try{
             $user = Auth::user();
+            if($id == 'null'){
+                $id = CrmCustomer::where('number','=',$mobile)->value('id');
+                if(empty($id)){
+                    $id = 'null';
+                }
+            }
             $crops = TagCloud::join('tag_type','tag_type.id','=','tag_cloud.tag_type_id')
                 ->where('tag_type.name','=','crop')
                 ->select('tag_cloud.name','tag_cloud.id')->get()->toArray();
+
+            $pesticideTags = CrmCustomer::join('customer_tag_relation','customer_tag_relation.crm_customer_id','=','crm_customer.id')
+                ->join('tag_cloud','customer_tag_relation.tag_cloud_id','=','tag_cloud.id')
+                ->join('tag_type','tag_type.id','=','customer_tag_relation.tag_type_id')
+                ->where('tag_type.slug','=','pesticide')
+                ->where('crm_customer.number','=',$mobile)
+                ->where('is_deleted','!=',true)
+                ->select('tag_type.name as tag_type_name','customer_tag_relation.tag_cloud_id','tag_cloud.name','customer_tag_relation.crm_customer_id')->get()->toArray();
+            $toolTags = CrmCustomer::join('customer_tag_relation','customer_tag_relation.crm_customer_id','=','crm_customer.id')
+                ->join('tag_cloud','customer_tag_relation.tag_cloud_id','=','tag_cloud.id')
+                ->join('tag_type','tag_type.id','=','customer_tag_relation.tag_type_id')
+                ->where('tag_type.slug','=','tool')
+                ->where('crm_customer.number','=',$mobile)
+                ->where('is_deleted','!=',true)
+                ->select('tag_type.name as tag_type_name','customer_tag_relation.tag_cloud_id','tag_cloud.name','customer_tag_relation.crm_customer_id')->get()->toArray();
+            $seedTags = CrmCustomer::join('customer_tag_relation','customer_tag_relation.crm_customer_id','=','crm_customer.id')
+                ->join('tag_cloud','customer_tag_relation.tag_cloud_id','=','tag_cloud.id')
+                ->join('tag_type','tag_type.id','=','customer_tag_relation.tag_type_id')
+                ->where('tag_type.slug','=','seed')
+                ->where('crm_customer.number','=',$mobile)
+                ->where('is_deleted','!=',true)
+                ->select('tag_type.name as tag_type_name','customer_tag_relation.tag_cloud_id','tag_cloud.name','customer_tag_relation.crm_customer_id')->get()->toArray();
             $typeTags = CrmCustomer::join('customer_tag_relation','customer_tag_relation.crm_customer_id','=','crm_customer.id')
                 ->join('tag_cloud','customer_tag_relation.tag_cloud_id','=','tag_cloud.id')
                 ->join('tag_type','tag_type.id','=','customer_tag_relation.tag_type_id')
@@ -220,7 +248,7 @@ class CustomerController extends Controller
                 ->where('customer_tag_relation.tag_type_id','=',0)
                 ->select('customer_tag_relation.tag_cloud_id','tag_cloud.name','customer_tag_relation.crm_customer_id')->get()->toArray();
             $customerTags = array_merge($typeTags,$nonTypeTags);
-            return view('backend.Lead.customerProfile')->with(compact('mobile','customerTags','crops'));
+            return view('backend.Lead.customerProfile')->with(compact('id','mobile','customerTags','crops','pesticideTags','toolTags','seedTags'));
         }catch(\Exception $exception){
             $data =[
                 'action' => 'customer Profile',

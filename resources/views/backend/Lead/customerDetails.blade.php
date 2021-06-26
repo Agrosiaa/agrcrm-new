@@ -41,7 +41,7 @@
                             <a href="#" id="place_order_button" class="btn blue">Place Order </a>
                             <a href="#" id="schedule-button" class="btn red-intense">Schedule </a>
                         @endif
-                        <a href="/customer/customer-profile/{{$mobile}}" class="btn green">Profile</a>
+                        <a href="/customer/customer-profile/{{$mobile}}/{{$id}}" class="btn green">Profile</a>
                     </div>
                 </div>
                 <hr>

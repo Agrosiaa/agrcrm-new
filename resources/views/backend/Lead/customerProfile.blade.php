@@ -21,6 +21,8 @@
             <!-- BEGIN PAGE CONTENT INNER -->
             <div class="page-content-inner">
                 <div class="row">
+                    @include('backend.partials.error-messages')
+                    <input type="hidden" id="crm_customer_id" value="{{$id}}">
                     <div class="portlet">
                         <div class="portlet-body">
                             <div class="tabbable-bordered">
@@ -196,7 +198,7 @@
                                                     <div class="col-md-6">
                                                         <div class="row border">
                                                             <div class="bootstrap-tagsinput" id="customer-tag-div">
-                                                                @foreach($customerTags as $customerTag)
+                                                                @foreach($pesticideTags as $customerTag)
                                                                     <button id="tag{{$customerTag['tag_cloud_id']}}{{$customerTag['crm_customer_id']}}" class="lable" style="background-color:rgb(241 243 244);display: inline;font-size: 90%;margin-left: 2px;margin-top:3px;margin-bottom:3px;padding-bottom: 2px;padding-top: 2px">{{$customerTag['name']}}&nbsp;<span style="color: red;" onclick="removeCustTag({{$customerTag['tag_cloud_id']}},{{$customerTag['crm_customer_id']}})">&nbsp;×</span></button>&nbsp;&nbsp;&nbsp;
                                                                 @endforeach
                                                             </div>
@@ -205,7 +207,7 @@
                                                                     <div class="menu clearfix">
                                                                         <ul class="clearfix">
                                                                             <li class="select-category select-pesticide" id="search_header_main">
-                                                                                <input type="text" id="tag_name" class="typeahead" placeholder="Search Pesticide" style=""/>
+                                                                                <input type="text"  data-tag_type="pesticide" class="typeahead" placeholder="Search Pesticide" style=""/>
                                                                             </li>
                                                                         </ul>
                                                                     </div>
@@ -229,7 +231,7 @@
                                                                     <div class="menu clearfix">
                                                                         <ul class="clearfix">
                                                                             <li class="select-category select-pesticide" id="search_header_main">
-                                                                                <input type="text" id="tag_name" class="typeahead" placeholder="Search seeds and pesticide brands" style=""/>
+                                                                                <input type="text" class="typeahead" placeholder="Search seeds and pesticide brands" style=""/>
                                                                             </li>
                                                                         </ul>
                                                                     </div>
@@ -244,7 +246,7 @@
                                                     <div class="col-md-6">
                                                         <div class="row border">
                                                             <div class="bootstrap-tagsinput" id="customer-tag-div">
-                                                                @foreach($customerTags as $customerTag)
+                                                                @foreach($seedTags as $customerTag)
                                                                     <button id="tag{{$customerTag['tag_cloud_id']}}{{$customerTag['crm_customer_id']}}" class="lable" style="background-color:rgb(241 243 244);display: inline;font-size: 90%;margin-left: 2px;margin-top:3px;margin-bottom:3px;padding-bottom: 2px;padding-top: 2px">{{$customerTag['name']}}&nbsp;<span style="color: red;" onclick="removeCustTag({{$customerTag['tag_cloud_id']}},{{$customerTag['crm_customer_id']}})">&nbsp;×</span></button>&nbsp;&nbsp;&nbsp;
                                                                 @endforeach
                                                             </div>
@@ -253,7 +255,7 @@
                                                                     <div class="menu clearfix">
                                                                         <ul class="clearfix">
                                                                             <li class="select-category select-pesticide" id="search_header_main">
-                                                                                <input type="text" id="tag_name" class="typeahead" placeholder="Search seed variety" style=""/>
+                                                                                <input type="text" data-tag_type="seed" class="typeahead" placeholder="Search seed variety" style=""/>
                                                                             </li>
                                                                         </ul>
                                                                     </div>
@@ -268,7 +270,7 @@
                                                     <div class="col-md-6">
                                                         <div class="row border">
                                                             <div class="bootstrap-tagsinput" id="customer-tag-div">
-                                                                @foreach($customerTags as $customerTag)
+                                                                @foreach($toolTags as $customerTag)
                                                                     <button id="tag{{$customerTag['tag_cloud_id']}}{{$customerTag['crm_customer_id']}}" class="lable" style="background-color:rgb(241 243 244);display: inline;font-size: 90%;margin-left: 2px;margin-top:3px;margin-bottom:3px;padding-bottom: 2px;padding-top: 2px">{{$customerTag['name']}}&nbsp;<span style="color: red;" onclick="removeCustTag({{$customerTag['tag_cloud_id']}},{{$customerTag['crm_customer_id']}})">&nbsp;×</span></button>&nbsp;&nbsp;&nbsp;
                                                                 @endforeach
                                                             </div>
@@ -277,7 +279,7 @@
                                                                     <div class="menu clearfix">
                                                                         <ul class="clearfix">
                                                                             <li class="select-category select-pesticide" id="search_header_main">
-                                                                                <input type="text" id="tag_name" class="typeahead" placeholder="Search tools" style=""/>
+                                                                                <input type="text" class="typeahead" data-tag_type="tool" placeholder="Search tools" style=""/>
                                                                             </li>
                                                                         </ul>
                                                                     </div>
@@ -402,7 +404,7 @@
                                                                     <div class="menu clearfix">
                                                                         <ul class="clearfix">
                                                                             <li class="select-category select-pesticide" id="search_header_main">
-                                                                                <input type="text" id="tag_name" class="typeahead" placeholder="Search tools" style=""/>
+                                                                                <input type="text" class="typeahead" placeholder="Search tools" style=""/>
                                                                             </li>
                                                                         </ul>
                                                                     </div>
@@ -426,7 +428,7 @@
                                                                     <div class="menu clearfix">
                                                                         <ul class="clearfix">
                                                                             <li class="select-category select-pesticide" id="search_header_main">
-                                                                                <input type="text" id="tag_name" class="typeahead" placeholder="Search tools" style=""/>
+                                                                                <input type="text" class="typeahead" placeholder="Search tools" style=""/>
                                                                             </li>
                                                                         </ul>
                                                                     </div>
@@ -450,7 +452,7 @@
                                                                     <div class="menu clearfix">
                                                                         <ul class="clearfix">
                                                                             <li class="select-category select-pesticide" id="search_header_main">
-                                                                                <input type="text" id="tag_name" class="typeahead" placeholder="Search tools" style=""/>
+                                                                                <input type="text" class="typeahead" placeholder="Search tools" style=""/>
                                                                             </li>
                                                                         </ul>
                                                                     </div>
@@ -474,7 +476,7 @@
                                                                     <div class="menu clearfix">
                                                                         <ul class="clearfix">
                                                                             <li class="select-category select-pesticide" id="search_header_main">
-                                                                                <input type="text" id="tag_name" class="typeahead" placeholder="Search tools" style=""/>
+                                                                                <input type="text" class="typeahead" placeholder="Search tools" style=""/>
                                                                             </li>
                                                                         </ul>
                                                                     </div>
@@ -498,7 +500,7 @@
                                                                     <div class="menu clearfix">
                                                                         <ul class="clearfix">
                                                                             <li class="select-category select-pesticide" id="search_header_main">
-                                                                                <input type="text" id="tag_name" class="typeahead" placeholder="Search tools" style=""/>
+                                                                                <input type="text" class="typeahead" placeholder="Search tools" style=""/>
                                                                             </li>
                                                                         </ul>
                                                                     </div>
@@ -522,7 +524,7 @@
                                                                     <div class="menu clearfix">
                                                                         <ul class="clearfix">
                                                                             <li class="select-category select-pesticide" id="search_header_main">
-                                                                                <input type="text" id="tag_name" class="typeahead" placeholder="Search tools" style=""/>
+                                                                                <input type="text" class="typeahead" placeholder="Search tools" style=""/>
                                                                             </li>
                                                                         </ul>
                                                                     </div>
@@ -546,7 +548,7 @@
                                                                     <div class="menu clearfix">
                                                                         <ul class="clearfix">
                                                                             <li class="select-category select-pesticide" id="search_header_main">
-                                                                                <input type="text" id="tag_name" class="typeahead" placeholder="Search tools" style=""/>
+                                                                                <input type="text" class="typeahead" placeholder="Search tools" style=""/>
                                                                             </li>
                                                                         </ul>
                                                                     </div>
@@ -570,7 +572,7 @@
                                                                     <div class="menu clearfix">
                                                                         <ul class="clearfix">
                                                                             <li class="select-category select-pesticide" id="search_header_main">
-                                                                                <input type="text" id="tag_name" class="typeahead" placeholder="Search tools" style=""/>
+                                                                                <input type="text" class="typeahead" placeholder="Search tools" style=""/>
                                                                             </li>
                                                                         </ul>
                                                                     </div>
@@ -594,7 +596,7 @@
                                                                     <div class="menu clearfix">
                                                                         <ul class="clearfix">
                                                                             <li class="select-category select-pesticide" id="search_header_main">
-                                                                                <input type="text" id="tag_name" class="typeahead" placeholder="Search tools" style=""/>
+                                                                                <input type="text" class="typeahead" placeholder="Search tools" style=""/>
                                                                             </li>
                                                                         </ul>
                                                                     </div>
@@ -689,92 +691,111 @@
         <!-- END PAGE LEVEL SCRIPTS -->
     <!-- BEGIN THEME LAYOUT SCRIPTS -->
     <script src="/assets/layouts/layout3/scripts/demo.min.js" type="text/javascript"></script>
-    <script>
-        $(document).ready(function () {
-            $('#tag_name').on('select',function () {
-                $('#tag_name').val('');
-            });
-            var crmCustId = $('#crm_customer_id').val();
-            var tagList = new Bloodhound({
-                datumTokenizer: Bloodhound.tokenizers.obj.whitespace('office_name'),
-                queryTokenizer: Bloodhound.tokenizers.whitespace,
-                remote: {
-                    url: "/get-tags?tag_name=%QUERY",
-                    filter: function(x) {
-                        return $.map(x, function (data) {
-                            return {
-                                id: data.id,
-                                name: data.name
-                            };
-                        });
-                    },
-                    wildcard: "%QUERY"
-                }
-            });
-            var language = $('#language').val();
-            tagList.initialize();
-            $('#tag_name').typeahead(null, {
-                displayKey: 'name',
-                engine: Handlebars,
-                source: tagList.ttAdapter(),
-                limit: 30,
-                templates: {
-                    empty: [
-                        '<div class="empty-message">',
-                        'Unable to find any Result that match the current query',
-                        '</div>'
-                    ].join('\n'),
-                    suggestion: Handlebars.compile('<div style="text-transform: capitalize;"><strong>@{{name}}</strong></div>')
-                }
-            }).on('typeahead:selected', function (obj, datum) {
-                var POData = new Array();
-                POData = $.parseJSON(JSON.stringify(datum));
-                POData.name = POData.name.replace(/\&/g,'%26');
-                str = '<button id="tag'+POData.id+crmCustId+'" class="lable" style="display: inline;font-size: 90%;margin-left: 2px;margin-top:3px;margin-bottom:3px;padding-bottom: 2px;padding-top: 2px">'+POData.name+'<span style="color: red;" onclick="removeCustTag('+POData.id+','+crmCustId+')"> ×</span></button>&nbsp;&nbsp;&nbsp';
-                $('#customer-tag-div').append(str);
-                if(crmCustId != 'null'){
-                    $.ajax({
-                        url: '/tag/customer-tag',
-                        type: 'POST',
-                        dataType: 'array',
-                        data: {
-                            "_token": "{{ csrf_token() }}",
-                            'crm_cust_id' : crmCustId,
-                            'tag_id' : POData.id
-                        },
-                        success: function (responce) {
-                        },
-                        error: function (responce) {
+        <script>
+            $(document).ready(function () {
+                $('.typeahead').on('change',function () {
+                    var crmCustId = $('#crm_customer_id').val();
+                    var tagType = $(this).data('tag_type');
+                    var tagList = new Bloodhound({
+                        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('office_name'),
+                        queryTokenizer: Bloodhound.tokenizers.whitespace,
+                        remote: {
+                            url: "/get-tags?tag_name=%QUERY&tag_type="+tagType,
+                            filter: function(x) {
+                                return $.map(x, function (data) {
+                                    return {
+                                        id: data.id,
+                                        name: data.name
+                                    };
+                                });
+                            },
+                            wildcard: "%QUERY"
                         }
-                    })
-                }
-            }).on('typeahead:open', function (obj, datum) {
+                    });
+                    tagList.initialize();
+                    $(this).typeahead(null, {
+                        displayKey: 'name',
+                        engine: Handlebars,
+                        source: tagList.ttAdapter(),
+                        limit: 30,
+                        templates: {
+                            empty: [
+                                '<div class="empty-message">',
+                                'Unable to find any Result that match the current query',
+                                '</div>'
+                            ].join('\n'),
+                            suggestion: Handlebars.compile('<div style="text-transform: capitalize;"><strong>@{{name}}</strong></div>')
+                        }
+                    }).on('typeahead:selected', function (obj, datum) {
+                        var POData = new Array();
+                        POData = $.parseJSON(JSON.stringify(datum));
+                        POData.name = POData.name.replace(/\&/g,'%26');
+                        str = '<button id="tag'+POData.id+crmCustId+'" class="lable" style="display: inline;font-size: 90%;margin-left: 2px;margin-top:3px;margin-bottom:3px;padding-bottom: 2px;padding-top: 2px">'+POData.name+'<span style="color: red;" onclick="removeCustTag('+POData.id+','+crmCustId+')"> ×</span></button>&nbsp;&nbsp;&nbsp';
+                        $('#customer-tag-div').append(str);
+                        if(crmCustId != 'null'){
+                            $.ajax({
+                                url: '/tag/customer-tag',
+                                type: 'POST',
+                                dataType: 'array',
+                                data: {
+                                    "_token": "{{ csrf_token() }}",
+                                    'crm_cust_id' : crmCustId,
+                                    'tag_id' : POData.id,
+                                    'tag_type' : tagType
+                                },
+                                success: function (responce) {
+                                },
+                                error: function (responce) {
+                                }
+                            })
+                        }
+                    }).on('typeahead:open', function (obj, datum) {
 
-            });
-            $('#tag_name').keypress(function (e) {
-                var key = e.which;
-                if(key == '13'){
-                    var singleQuote = "'";
-                    var tagName = singleQuote+$('#tag_name').val()+singleQuote;
-                    var tag = $('#tag_name').val().replace(/ /g,"_");
-                    var tagStr = '<button id="tag'+tag+crmCustId+'" class="lable" style="display: inline;font-size: 90%;margin-left: 2px;margin-top:3px;margin-bottom:3px;padding-bottom: 2px;padding-top: 2px">'+tag+'<span style="color: red;" onclick="removeCustTag('+tagName+','+crmCustId+')"> ×</span></button>&nbsp;&nbsp;&nbsp';
-                    $('#customer-tag-div').append(tagStr);
-                    $.ajax({
-                        url: '/customer/create-assign-tag',
-                        type: 'POST',
-                        dataType: 'array',
-                        data: {
-                            "_token": "{{ csrf_token() }}",
-                            'tag_name' : $('#tag_name').val(),
-                            'customer_id' : crmCustId
-                        },
-                        success: function (status) {
-                        },
-                        error: function (status) {
+                    });
+                    $(this).keypress(function (e) {
+                        var key = e.which;
+                        if(key == '13'){
+                            var singleQuote = "'";
+                            var tagName = singleQuote+$('#tag_name').val()+singleQuote;
+                            var tag = $(this).val().replace(/ /g,"_");
+                            var tagStr = '<button id="tag'+tag+crmCustId+'" class="lable" style="display: inline;font-size: 90%;margin-left: 2px;margin-top:3px;margin-bottom:3px;padding-bottom: 2px;padding-top: 2px">'+tag+'<span style="color: red;" onclick="removeCustTag('+tagName+','+crmCustId+')"> ×</span></button>&nbsp;&nbsp;&nbsp';
+                            $('#customer-tag-div').append(tagStr);
+                            $.ajax({
+                                url: '/customer/create-assign-tag',
+                                type: 'POST',
+                                dataType: 'array',
+                                data: {
+                                    "_token": "{{ csrf_token() }}",
+                                    'tag_name' : $('#tag_name').val(),
+                                    'customer_id' : crmCustId
+                                },
+                                success: function (status) {
+                                },
+                                error: function (status) {
+                                }
+                            })
                         }
-                    })
+                    });
+                });
+
+                function removeCustTag(tagId,crmCustId){
+                    var tag = 'tag'+tagId+crmCustId;
+                    tag = tag.replace(/ /g,"_");
+                    $('#'+tag).remove();
+                    $.ajax({
+                        url: '/customer/remove-tag/'+tagId+'/'+crmCustId,
+                        type: 'GET',
+                        async: true,
+                        success: function(data,textStatus,xhr){
+                            console.log('IN sucess');
+                            console.log(data);
+                        },
+                        error:function(errorData){
+                            console.log('In Error');
+                            console.log(errorData);
+                        }
+                    });
                 }
             });
-        });
-    </script>
+        </script>
 @endsection
