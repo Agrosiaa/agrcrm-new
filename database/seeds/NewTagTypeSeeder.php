@@ -36,7 +36,13 @@ class NewTagTypeSeeder extends Seeder
                 'slug' => 'seed-pesticide-brand',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
-            ]
+            ],
+            [
+                'name' => 'Seed Variety',
+                'slug' => 'seed-variety',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
         ]);
     }
 }

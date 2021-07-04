@@ -16,11 +16,12 @@ class CreateCustomerProfileTable extends Migration
             $table->increments('id');
             $table->string('mobile')->unique();
             $table->string('full_name');
+            $table->string('allied_job');
             $table->string('communication_lang');
             $table->string('mother_tongue');
             $table->string('income_level');
-            $table->string('cropping_pattern');
             $table->string('product_sold_market');
+            $table->string('product_purchase_from');
             $table->float('total_land');
             $table->boolean('use_microirrigation');
             $table->timestamps();

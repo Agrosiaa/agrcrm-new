@@ -200,6 +200,8 @@ class TagController extends Controller
                 $tagTypeId = null;
                 if(isset($request->tag_type)){
                     $tagTypeId = TagType::where('slug',$request->tag_type)->value('id');
+                }else{
+                    $tagTypeId = TagCloud::where('id',$request->tag_id)->value('tag_type_id');
                 }
                 $check = CustomerTagRelation::where('crm_customer_id',$request->crm_cust_id)
                     ->where('tag_cloud_id',$request->tag_id)->where('tag_type_id',$tagTypeId)->first();
@@ -210,6 +212,8 @@ class TagController extends Controller
                             'tag_cloud_id' => $request->tag_id,
                             'tag_type_id' => $tagTypeId
                         ]);
+                    }elseif($check['is_deleted']){
+                        $check->update(['is_deleted' => false]);
                     }
             }
         }catch (\Exception $exception){
@@ -230,7 +234,6 @@ class TagController extends Controller
                 $relevantResult = "";
                 $status = 500;
             }else{
-                Log::info('sds h iufh '.$request->tag_type);
                 $relevantResult = $this->getRelevantResult($request->tag_name, $request->tag_type);
             }
         }catch (\Exception $e){
@@ -247,39 +250,40 @@ class TagController extends Controller
     }
     public function getRelevantResult($keyword, $tagType)
     {
-        $tag_id = array();
         $relevantData = array();
         $searchResultsTake = env('SEARCH_RESULT');
         $keywordLower = strtolower($keyword);
         if(isset($tagType)){
             $tagTypeId = TagType::where('slug',$tagType)->value('id');
-            $tagsDataArray = TagCloud::whereIn('id',$tag_id)->where('is_active',1)->where('tag_type_id',$tagTypeId)
+            $tagsDataArray = TagCloud::where('is_active',1)->where('tag_type_id',$tagTypeId)
                 ->select('id','name')->orderBy('created_at','desc')
                 ->take($searchResultsTake)->skip(0)->get()->toArray();
         }else{
-            $tagsDataArray = TagCloud::whereIn('id',$tag_id)->where('is_active',1)->select('id','name')->orderBy('created_at','desc')->take($searchResultsTake)->skip(0)->get()->toArray();
+            $tagsDataArray = TagCloud::where('is_active',1)->select('id','name')->orderBy('created_at','desc')->take($searchResultsTake)->skip(0)->get()->toArray();
         }
         $tags = $this->getTags($keywordLower,$searchResultsTake, $tagType);
         $tag = $tags['data'];
-        $tagCount = count($tag);
-        $tagDataCount = count($tagsDataArray);
-        $max = max($tagCount,$tagDataCount);
-        $k = 0;
-        for($i = 0 ; $i  < $max ; $i++) {
-            if(!empty($tag[$i])) {
-                $relevantData[$k]['id'] = $tag[$i]['id'];
-                $relevantData[$k]['tag_type_id'] = $tag[$i]['tag_type_id'];
-                $relevantData[$k]['name'] = ucwords($tag[$i]['name']);
-                $stringPosition = stripos($tag[$i]['name'],$keywordLower);
-                if(is_int($stringPosition)){
-                    $relevantData[$k]['position'] = $stringPosition;
-                } else {
-                    $relevantData[$k]['position'] = 25;
+        if($tags['condition']){
+            $tagCount = count($tag);
+            $tagDataCount = count($tagsDataArray);
+            $max = max($tagCount,$tagDataCount);
+            $k = 0;
+            for($i = 0 ; $i  < $max ; $i++) {
+                if(!empty($tag[$i])) {
+                    $relevantData[$k]['id'] = $tag[$i]['id'];
+                    $relevantData[$k]['tag_type_id'] = $tag[$i]['tag_type_id'];
+                    $relevantData[$k]['name'] = ucwords($tag[$i]['name']);
+                    $stringPosition = stripos($tag[$i]['name'],$keywordLower);
+                    if(is_int($stringPosition)){
+                        $relevantData[$k]['position'] = $stringPosition;
+                    } else {
+                        $relevantData[$k]['position'] = 25;
+                    }
+                    $relevantData[$k]['translated_slug'] = trans('product');
+                    $relevantData[$k]['class'] = "btn-danger";
+                    $relevantData[$k]['url_param'] = '';
+                    $k++;
                 }
-                $relevantData[$k]['translated_slug'] = trans('product');
-                $relevantData[$k]['class'] = "btn-danger";
-                $relevantData[$k]['url_param'] = '';
-                $k++;
             }
         }
         return $relevantData;

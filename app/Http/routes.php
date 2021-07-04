@@ -49,6 +49,7 @@ Route::group(['prefix' => 'customer'], function () {
     Route::get('abandoned-cart-detail/{id}',array('uses' => 'Customer\CustomerController@cartDetails'));
     Route::get('remove-tag/{tagId}/{custId}',array('uses' => 'Customer\CustomerController@removeTag'));
     Route::post('edit-customer',array('uses' => 'Customer\CustomerController@editCustomer'));
+    Route::post('customer-profile',array('uses' => 'Customer\CustomerController@createCustomerProfile'));
 });
 Route::group(['prefix' => 'leads'], function () {
     Route::get('manage/{type}',array('uses' => 'Lead\LeadController@manage'));
