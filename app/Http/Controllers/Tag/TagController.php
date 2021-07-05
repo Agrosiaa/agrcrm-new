@@ -152,14 +152,14 @@ class TagController extends Controller
                                     TagCloud::create($data);
                                 }
                             }
-                            if($tag->cat_slug == 'seeds'){
+                            /*if($tag->cat_slug == 'seeds'){
                                 $data['tag_type_id'] = TagType::where('slug','crop')->value('id');
                                 $tagPresent = TagCloud::where('name',$tag->tag_name)->where('tag_type_id',$data['tag_type_id'])->first();
                                 if($tagPresent == null){
                                     $data['name'] = $tag->tag_name;
                                     TagCloud::create($data);
                                 }
-                            }
+                            }*/
                             if($tag->sub_cat_slug == 'pesticide' || $tag->sub_cat_slug == 'organic-pesticide' || $tag->item_head_slug == 'organic-pesticide1'){
                                 $data['tag_type_id'] = TagType::where('slug','pesticide')->value('id');
                                 $tagPresent = TagCloud::where('name',$tag->tag_name)->where('tag_type_id',$data['tag_type_id'])->first();
