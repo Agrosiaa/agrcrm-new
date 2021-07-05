@@ -50,6 +50,7 @@ Route::group(['prefix' => 'customer'], function () {
     Route::get('remove-tag/{tagId}/{custId}',array('uses' => 'Customer\CustomerController@removeTag'));
     Route::post('edit-customer',array('uses' => 'Customer\CustomerController@editCustomer'));
     Route::post('customer-profile',array('uses' => 'Customer\CustomerController@createCustomerProfile'));
+    Route::post('crop-spraying',array('uses' => 'Customer\CustomerController@cropSpraying'));
 });
 Route::group(['prefix' => 'leads'], function () {
     Route::get('manage/{type}',array('uses' => 'Lead\LeadController@manage'));

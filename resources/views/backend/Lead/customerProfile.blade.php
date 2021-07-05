@@ -393,7 +393,7 @@
                                                 </div>
                                                 <div class="tab-pane" id="tab_3">
                                                     <div class="row">
-                                                        <form class="form-horizontal form-row-seperated" id="spraying-form" action="/customer/customer-profile" method="POST">
+                                                        <form class="form-horizontal form-row-seperated" id="spraying-form" action="/customer/crop-spraying" method="POST">
                                                             {{ csrf_field() }}
                                                             <input type="hidden" name="mobile" value="{{$mobile}}">
                                                         <!--<div class="col-md-12 border border-dark">
@@ -426,6 +426,13 @@
                                                                 </div>
                                                             </div>
                                                         </div>-->
+                                                            <div class="form-group">
+                                                                <div class="col-md-11 text-right">
+                                                                    <button class="btn base-color" type="submit">
+                                                                        <i class="fa fa-check-circle"></i> Save
+                                                                    </button>
+                                                                </div>
+                                                            </div>
                                                         </form>
                                                     </div>
                                                 </div>

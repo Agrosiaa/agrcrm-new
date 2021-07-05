@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Customer;
 
 use App\CropSowed;
+use App\CropSpraying;
 use App\CustomerNumberStatus;
 use App\CrmCustomer;
 use App\CustomerProfile;
@@ -561,6 +562,34 @@ class CustomerController extends Controller
                 }
             }
             $request->session()->flash('success','Customer profile data updated successfully');
+            return back();
+        }catch (\Exception $e){
+            abort(500,$e->getMessage());
+        }
+    }
+
+    public function cropSpraying(Request $request){
+        try{
+            $data = $request->all();
+            $profileData = CustomerProfile::where('mobile',$data['mobile'])->first();
+            if($profileData){
+                $pesticides = $data['pesticides'];
+                $sprayingDates = $data['spraying_date'];
+                foreach($pesticides as  $cropSowedId => $pesticide){
+                    $i = 0;
+                    foreach($pesticide as $pesticideId){
+                        $lastSprayNum = CropSpraying::where('crop_sowed_id',$cropSowedId)->max('spraying_number');
+                        $spray['spraying_number'] = $lastSprayNum + 1;
+                        $spray['customer_profile_id'] = $profileData['id'];
+                        $spray['pesticide_tag_cloud_id'] = $pesticideId;
+                        $spray['crop_sowed_id'] = $cropSowedId;
+                        $spray['spraying_date'] = $sprayingDates[$cropSowedId][$i];
+                        CropSpraying::create($spray);
+                        $i++;
+                    }
+                }
+            }
+            $request->session()->flash('success','Customer crop spraying data updated successfully');
             return back();
         }catch (\Exception $e){
             abort(500,$e->getMessage());
