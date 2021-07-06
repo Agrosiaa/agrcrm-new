@@ -2910,7 +2910,6 @@ Mon – Sat (9:00 – 18:00)</font></font></p>
 <script src="/assets/global/plugins/fancybox/source/jquery.fancybox.pack.js" type="text/javascript"></script>
 <script type="text/javascript" src="/assets/frontend/custom/registration/js/typeahead.bundle.js"></script>
 <script type="text/javascript" src="/assets/frontend/custom/registration/js/handlebars-v3.0.3.js"></script>
-<script src="/assets/custom/superadmin/product/getAdderesses.js" type="text/javascript"></script>
 
 <script type="text/javascript">
     $(document).ready(function(){

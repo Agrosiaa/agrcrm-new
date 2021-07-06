@@ -35,13 +35,14 @@
                         @endif
                     </div>
                     @endif
-                    @if($id != 'null')
-                    <div class="col-md-12 col-md-offset-9">
-                        <a href="#" onclick="chatHistory('{{$id}}','{{$mobile}}')" class="btn yellow">Make a Log </a>
-                        <a href="#" id="place_order_button" class="btn blue">Place Order </a>
-                        <a href="#" id="schedule-button" class="btn red-intense">Schedule </a>
+                    <div class="col-md-12 col-md-offset-8">
+                        @if($id != 'null')
+                            <a href="#" onclick="chatHistory('{{$id}}','{{$mobile}}')" class="btn yellow">Make a Log </a>
+                            <a href="#" id="place_order_button" class="btn blue">Place Order </a>
+                            <a href="#" id="schedule-button" class="btn red-intense">Schedule </a>
+                        @endif
+                        <a href="/customer/customer-profile/{{$mobile}}/{{$id}}" class="btn green">Profile</a>
                     </div>
-                    @endif
                 </div>
                 <hr>
                 <div class="row">
@@ -166,10 +167,10 @@
                         <div class="portlet-body">
                             <div class="bootstrap-tagsinput" id="customer-tag-div">
                                 @foreach($customerTags as $customerTag)
-                                @if(isset($customerTag['tag_type_name']))
-                                <button id="tag{{$customerTag['tag_cloud_id']}}{{$customerTag['crm_customer_id']}}" class="lable" style="background-color:rgb(241 243 244);display: inline;font-size: 90%;margin-left: 2px;margin-top:3px;margin-bottom:3px;padding-bottom: 2px;padding-top: 2px">{{$customerTag['name']}}&nbsp;<span style="border-radius: 4px !important;background: green;">{{$customerTag['tag_type_name']}}</span>&nbsp;<span style="color: red;" onclick="removeCustTag({{$customerTag['tag_cloud_id']}},{{$customerTag['crm_customer_id']}})">&nbsp;×</span></button>&nbsp;&nbsp;&nbsp;
+                                @if( ($customerTag['tag_type_name']))
+                                <button id="tag{{$customerTag['tag_cloud_id']}}{{$customerTag['crm_customer_id']}}" class="lable" style="background-color:rgb(241 243 244);display: inline;font-size: 90%;margin-left: 2px;margin-top:3px;margin-bottom:3px;padding-bottom: 2px;padding-top: 2px">{{$customerTag['name']}}&nbsp;<span style="border-radius: 4px !important;background: green;">{{$customerTag['tag_type_name']}}</span> @if($user->role->slug == 'admin') &nbsp;<span style="color: red;" onclick="removeCustTag({{$customerTag['tag_cloud_id']}},{{$customerTag['crm_customer_id']}})">&nbsp;×</span> @endif </button>&nbsp;&nbsp;&nbsp;
                                 @else
-                                <button id="tag{{$customerTag['tag_cloud_id']}}{{$customerTag['crm_customer_id']}}" class="lable" style="background-color: rgb(241 243 244);display: inline;font-size: 90%;margin-left: 2px;margin-top:3px;margin-bottom:3px;padding-bottom: 2px;padding-top: 2px">{{$customerTag['name']}}<span style="color: red;" onclick="removeCustTag({{$customerTag['tag_cloud_id']}},{{$customerTag['crm_customer_id']}})">&nbsp;×</span></button>&nbsp;&nbsp;&nbsp;
+                                <button id="tag{{$customerTag['tag_cloud_id']}}{{$customerTag['crm_customer_id']}}" class="lable" style="background-color: rgb(241 243 244);display: inline;font-size: 90%;margin-left: 2px;margin-top:3px;margin-bottom:3px;padding-bottom: 2px;padding-top: 2px">{{$customerTag['name']}} @if($user->role->slug == 'admin')<span style="color: red;" onclick="removeCustTag({{$customerTag['tag_cloud_id']}},{{$customerTag['crm_customer_id']}})">&nbsp;×</span> @endif </button>&nbsp;&nbsp;&nbsp;
                                 @endif
                                 @endforeach
                             </div>
@@ -390,7 +391,7 @@
                                     <h4 class="modal-title reply-title" style="color: black"> </h4>
                                 </div>
                                 <div class="col-md-4">
-                                    @if($user['role_id'] == 2)
+                                    @if($user->role->slug == 'sales_employee')
                                         <select id="select-call-status" class="" style="-webkit-appearance: menulist; align-self: center">Select Call Status
                                             <option>Select Call Status</option>
                                             @foreach($callStatuses as $callStatus)
@@ -1142,11 +1143,9 @@
                 async: true,
                 success: function(data,textStatus,xhr){
                     console.log('IN sucess');
-                    console.log(data);
                 },
                 error:function(errorData){
                     console.log('In Error');
-                    console.log(errorData);
                 }
             });
         }

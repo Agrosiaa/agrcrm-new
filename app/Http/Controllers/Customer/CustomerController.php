@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers\Customer;
 
+use App\CropSowed;
+use App\CropSpraying;
 use App\CustomerNumberStatus;
 use App\CrmCustomer;
+use App\CustomerProfile;
 use App\CustomerTagRelation;
 use App\LoggedCustomerProfile;
 use App\Reminder;
@@ -200,6 +203,80 @@ class CustomerController extends Controller
             abort(500,$exception->getMessage());
         }
     }
+
+    public function CustomerProfileView(Request $request, $mobile, $id){
+        try{
+            $user = Auth::user();
+            if($id == 'null'){
+                $id = CrmCustomer::where('number','=',$mobile)->value('id');
+                if(empty($id)){
+                    $id = 'null';
+                }
+            }
+            $cropSpraying = array();
+            $profileData = CustomerProfile::where('mobile',$mobile)->with(['CropsSowed'])->first();
+
+            $crops = TagCloud::join('tag_type','tag_type.id','=','tag_cloud.tag_type_id')
+                ->where('tag_type.name','=','crop')
+                ->select('tag_cloud.name','tag_cloud.id')->get()->toArray();
+            if($profileData){
+                $cropSpraying = CropSowed::with('CropSpraying')
+                    ->where('customer_profile_id',$profileData['id'])->get();
+            }
+
+            $pesticideTags = CrmCustomer::join('customer_tag_relation','customer_tag_relation.crm_customer_id','=','crm_customer.id')
+                ->join('tag_cloud','customer_tag_relation.tag_cloud_id','=','tag_cloud.id')
+                ->join('tag_type','tag_type.id','=','customer_tag_relation.tag_type_id')
+                ->where('tag_type.slug','=','pesticide')
+                ->where('crm_customer.number','=',$mobile)
+                ->where('is_deleted','!=',true)
+                ->select('tag_type.name as tag_type_name','customer_tag_relation.tag_cloud_id','tag_cloud.name','customer_tag_relation.crm_customer_id')->get()->toArray();
+            $toolTags = CrmCustomer::join('customer_tag_relation','customer_tag_relation.crm_customer_id','=','crm_customer.id')
+                ->join('tag_cloud','customer_tag_relation.tag_cloud_id','=','tag_cloud.id')
+                ->join('tag_type','tag_type.id','=','customer_tag_relation.tag_type_id')
+                ->where('tag_type.slug','=','tool')
+                ->where('crm_customer.number','=',$mobile)
+                ->where('is_deleted','!=',true)
+                ->select('tag_type.name as tag_type_name','customer_tag_relation.tag_cloud_id','tag_cloud.name','customer_tag_relation.crm_customer_id')->get()->toArray();
+            $seedPesticideBrandTags = CrmCustomer::join('customer_tag_relation','customer_tag_relation.crm_customer_id','=','crm_customer.id')
+                ->join('tag_cloud','customer_tag_relation.tag_cloud_id','=','tag_cloud.id')
+                ->join('tag_type','tag_type.id','=','customer_tag_relation.tag_type_id')
+                ->where('tag_type.slug','=','seed-pesticide-brand')
+                ->where('crm_customer.number','=',$mobile)
+                ->where('is_deleted','!=',true)
+                ->select('tag_type.name as tag_type_name','customer_tag_relation.tag_cloud_id','tag_cloud.name','customer_tag_relation.crm_customer_id')->get()->toArray();
+            $seedVarietyTags = CrmCustomer::join('customer_tag_relation','customer_tag_relation.crm_customer_id','=','crm_customer.id')
+                ->join('tag_cloud','customer_tag_relation.tag_cloud_id','=','tag_cloud.id')
+                ->join('tag_type','tag_type.id','=','customer_tag_relation.tag_type_id')
+                ->where('tag_type.slug','=','seed-variety')
+                ->where('crm_customer.number','=',$mobile)
+                ->where('is_deleted','!=',true)
+                ->select('tag_type.name as tag_type_name','customer_tag_relation.tag_cloud_id','tag_cloud.name','customer_tag_relation.crm_customer_id')->get()->toArray();
+            $typeTags = CrmCustomer::join('customer_tag_relation','customer_tag_relation.crm_customer_id','=','crm_customer.id')
+                ->join('tag_cloud','customer_tag_relation.tag_cloud_id','=','tag_cloud.id')
+                ->join('tag_type','tag_type.id','=','customer_tag_relation.tag_type_id')
+                ->where('crm_customer.number','=',$mobile)
+                ->where('is_deleted','!=',true)
+                ->select('tag_type.name as tag_type_name','customer_tag_relation.tag_cloud_id','tag_cloud.name','customer_tag_relation.crm_customer_id')->get()->toArray();
+            $nonTypeTags = CrmCustomer::join('customer_tag_relation','customer_tag_relation.crm_customer_id','=','crm_customer.id')
+                ->join('tag_cloud','customer_tag_relation.tag_cloud_id','=','tag_cloud.id')
+                ->where('crm_customer.number','=',$mobile)
+                ->where('is_deleted','!=',true)
+                ->where('customer_tag_relation.tag_type_id','=',0)
+                ->select('customer_tag_relation.tag_cloud_id','tag_cloud.name','customer_tag_relation.crm_customer_id')->get()->toArray();
+            $customerTags = array_merge($typeTags,$nonTypeTags);
+
+                return view('backend.Lead.customerProfile')->with(compact('user','id','mobile','profileData','customerTags','crops',
+                    'pesticideTags','toolTags','seedVarietyTags','seedPesticideBrandTags','cropSpraying'));
+        }catch(\Exception $exception){
+            $data =[
+                'action' => 'customer Profile',
+                'exception' => $exception->getMessage()
+            ];
+            Log::critical(json_encode($data));
+            abort(500,$exception->getMessage());
+        }
+    }
     public function abandonedCartListing(Request $request, $mobile){
         try{
             $user = Auth::user();
@@ -289,10 +366,7 @@ class CustomerController extends Controller
                 CustomerTagRelation::where('crm_customer_id',$crmCustId)->where('tag_cloud_id',$tagId)->update($updateData);
             }else{
                 $tagName = trim($tagId);
-                Log::info($tagName);
                 $tag = TagCloud::where('name',$tagName)->value('id');
-                Log::info($tag);
-                Log::info($crmCustId);
                 CustomerTagRelation::where('crm_customer_id',$crmCustId)->where('tag_cloud_id',$tag)->update($updateData);
             }
             return back();
@@ -445,6 +519,85 @@ class CustomerController extends Controller
                 }
             }
             return true;
+        }catch (\Exception $e){
+            abort(500,$e->getMessage());
+        }
+    }
+    public function createCustomerProfile(Request $request){
+        try{
+            $data = $request->all();
+            $sowedDate = array();
+            $sowedCropIds = array();
+            $cropingPattern = array();
+            $crops = null;
+
+            unset($data['_token']);
+            if(isset($data['crops'])){
+                $crops = $data['crops'];
+                $sowedDate = $data['sowed_date'];
+                $cropingPattern = $data['cropping_pattern'];
+                $sowedCropIds = $data['cropSowedIds'];
+
+                unset($data['crops']);
+                unset($data['sowed_date']);
+                unset($data['cropping_pattern']);
+                unset($data['cropSowedIds']);
+            }
+            $profileData = CustomerProfile::where('mobile',$data['mobile'])->first();
+            if($profileData){
+                $profileData->update($data);
+            }else{
+                $profileData = CustomerProfile::create($data);
+            }
+            if($profileData && $crops){
+                $cropSowed['customer_profile_id'] = $profileData['id'];
+                $i = 0;
+                foreach($crops as $crop){
+                    if($crop){
+                        $cropName = TagCloud::where('id',$crop)->value('name');
+                        $cropSowed['crop_tag_cloud_id'] = $crop;
+                        $cropSowed['crop'] = $cropName;
+                        $cropSowed['sowed_date'] = $sowedDate[$i];
+                        $cropSowed['cropping_pattern'] = $cropingPattern[$i];
+                        if(isset($sowedCropIds[$i])){
+                            CropSowed::where('id',$sowedCropIds[$i])->update($cropSowed);
+                        }else{
+                            CropSowed::create($cropSowed);
+                        }
+                    }
+                    $i++;
+                }
+            }
+            $request->session()->flash('success','Customer profile data updated successfully');
+            return back();
+        }catch (\Exception $e){
+            abort(500,$e->getMessage());
+        }
+    }
+
+    public function cropSpraying(Request $request){
+        try{
+            $data = $request->all();
+            $profileData = CustomerProfile::where('mobile',$data['mobile'])->first();
+            if($profileData){
+                $pesticides = $data['pesticides'];
+                $sprayingDates = $data['spraying_date'];
+                foreach($pesticides as  $cropSowedId => $pesticide){
+                    $i = 0;
+                    foreach($pesticide as $pesticideId){
+                        $lastSprayNum = CropSpraying::where('crop_sowed_id',$cropSowedId)->max('spraying_number');
+                        $spray['spraying_number'] = $lastSprayNum + 1;
+                        $spray['customer_profile_id'] = $profileData['id'];
+                        $spray['pesticide_tag_cloud_id'] = $pesticideId;
+                        $spray['crop_sowed_id'] = $cropSowedId;
+                        $spray['spraying_date'] = $sprayingDates[$cropSowedId][$i];
+                        CropSpraying::create($spray);
+                        $i++;
+                    }
+                }
+            }
+            $request->session()->flash('success','Customer crop spraying data updated successfully');
+            return back();
         }catch (\Exception $e){
             abort(500,$e->getMessage());
         }

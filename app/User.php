@@ -37,8 +37,8 @@ class User extends Model implements AuthenticatableContract,
      */
     protected $hidden = ['password'];
 
-    public function roles()
+    public function role()
     {
-        return $this->belongsTo('roles', 'role_id');
+        return $this->belongsTo('App\UserRoles', 'role_id');
     }
 }
