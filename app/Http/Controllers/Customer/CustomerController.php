@@ -213,11 +213,16 @@ class CustomerController extends Controller
                     $id = 'null';
                 }
             }
+            $cropSpraying = array();
             $profileData = CustomerProfile::where('mobile',$mobile)->with(['CropsSowed'])->first();
 
             $crops = TagCloud::join('tag_type','tag_type.id','=','tag_cloud.tag_type_id')
                 ->where('tag_type.name','=','crop')
                 ->select('tag_cloud.name','tag_cloud.id')->get()->toArray();
+            if($profileData){
+                $cropSpraying = CropSowed::with('CropSpraying')
+                    ->where('customer_profile_id',$profileData['id'])->get();
+            }
 
             $pesticideTags = CrmCustomer::join('customer_tag_relation','customer_tag_relation.crm_customer_id','=','crm_customer.id')
                 ->join('tag_cloud','customer_tag_relation.tag_cloud_id','=','tag_cloud.id')
@@ -260,7 +265,9 @@ class CustomerController extends Controller
                 ->where('customer_tag_relation.tag_type_id','=',0)
                 ->select('customer_tag_relation.tag_cloud_id','tag_cloud.name','customer_tag_relation.crm_customer_id')->get()->toArray();
             $customerTags = array_merge($typeTags,$nonTypeTags);
-            return view('backend.Lead.customerProfile')->with(compact('user','id','mobile','profileData','customerTags','crops','pesticideTags','toolTags','seedVarietyTags','seedPesticideBrandTags'));
+
+                return view('backend.Lead.customerProfile')->with(compact('user','id','mobile','profileData','customerTags','crops',
+                    'pesticideTags','toolTags','seedVarietyTags','seedPesticideBrandTags','cropSpraying'));
         }catch(\Exception $exception){
             $data =[
                 'action' => 'customer Profile',

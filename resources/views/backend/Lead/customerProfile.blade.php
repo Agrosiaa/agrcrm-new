@@ -396,36 +396,42 @@
                                                         <form class="form-horizontal form-row-seperated" id="spraying-form" action="/customer/crop-spraying" method="POST">
                                                             {{ csrf_field() }}
                                                             <input type="hidden" name="mobile" value="{{$mobile}}">
-                                                        <!--<div class="col-md-12 border border-dark">
-                                                            <div class="portlet light " id="blockui_sample_1_portlet_body">
-                                                                <div class="portlet-title">
-                                                                    <div class="caption">
-                                                                        <i class="icon-crop font-green-sharp"></i>
-                                                                        <span class="caption-subject font-green-sharp sbold">Portlet Blocking</span>
+                                                            @foreach($cropSpraying as $cropSpray)
+                                                            @if($cropSpray->CropSpraying->count() > 0)
+                                                            <div class="col-md-12 border border-dark">
+                                                                <div class="portlet light " id="blockui_sample_1_portlet_body">
+                                                                    <div class="portlet-title">
+                                                                        <div class="caption">
+                                                                            <i class="icon-crop font-green-sharp"></i>
+                                                                            <span class="caption-subject font-green-sharp sbold">$cropSpray->crop ({{date('d-m-Y', strtotime($cropSpray->sowed_date))}})</span>
+                                                                        </div>
                                                                     </div>
-                                                                </div>
-                                                                <div class="portlet-body">
-                                                                    <div class="form-body">
-                                                                        <div class="form-group">
-                                                                            <label class="col-md-3 control-label">Spraying 1:
-                                                                                <span class="required"> * </span>
-                                                                            </label>
-                                                                            <div class="col-md-3">
-                                                                                <input type="text" class="form-control" name="full_name" placeholder="" @if($profileData) value="{{$profileData['full_name']}}" @endif>
-                                                                            </div>
-                                                                            <div class="col-md-3">
-                                                                                <input type="date" class="form-control" name="full_name" placeholder="" @if($profileData) value="{{$profileData['full_name']}}" @endif>
-                                                                            </div>
-                                                                            <div class="col-md-1">
-                                                                                <a href="javascript:;" class="btn btn-sm green add-crop-spraying"> Add
-                                                                                    <i class="fa fa-plus"></i>
-                                                                                </a>
+                                                                    <div class="portlet-body">
+                                                                        <div class="form-body">
+                                                                            <div class="form-group">
+                                                                                @foreach($cropSpray->CropSpraying as $key => $spray)
+                                                                                <label class="col-md-3 control-label">Spraying {{$spray->spraying_number}}:</label>
+                                                                                <div class="col-md-4">
+                                                                                    <input type="text" class="form-control" value="{{$spray->PesticideTag->name}}" disabled>
+                                                                                </div>
+                                                                                <div class="col-md-4">
+                                                                                    <input type="date" class="form-control" value="{{$spray->spraying_date}}" disabled>
+                                                                                </div>
+                                                                                @if($key == 0)
+                                                                                <div class="col-md-1">
+                                                                                    <a href="javascript:;" class="btn btn-sm green add-crop-spraying"> Add
+                                                                                        <i class="fa fa-plus"></i>
+                                                                                    </a>
+                                                                                </div>
+                                                                                @endif
+                                                                                @endforeach
                                                                             </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                        </div>-->
+                                                            @endif
+                                                            @endforeach
                                                             <div class="form-group">
                                                                 <div class="col-md-11 text-right">
                                                                     <button class="btn base-color" type="submit">
