@@ -393,9 +393,10 @@
                                                 </div>
                                                 <div class="tab-pane" id="tab_3">
                                                     <div class="row">
-                                                        <form class="form-horizontal form-row-seperated" id="spraying-form" action="/customer/crop-spraying" method="POST">
+                                                        <form class="form-horizontal form-row-seperated" action="/customer/crop-spraying" method="POST">
                                                             {{ csrf_field() }}
                                                             <input type="hidden" name="mobile" value="{{$mobile}}">
+                                                            <div id="spraying-form">
                                                             @foreach($cropSpraying as $cropSpray)
                                                             @if($cropSpray->CropSpraying->count() > 0)
                                                             <div class="col-md-12 border border-dark">
@@ -403,13 +404,13 @@
                                                                     <div class="portlet-title">
                                                                         <div class="caption">
                                                                             <i class="icon-crop font-green-sharp"></i>
-                                                                            <span class="caption-subject font-green-sharp sbold">$cropSpray->crop ({{date('d-m-Y', strtotime($cropSpray->sowed_date))}})</span>
+                                                                            <span class="caption-subject font-green-sharp sbold">{{$cropSpray->crop}} ({{date('d-m-Y', strtotime($cropSpray->sowed_date))}})</span>
                                                                         </div>
                                                                     </div>
                                                                     <div class="portlet-body">
-                                                                        <div class="form-body">
+                                                                        <div class="form-body" data-spraying_done="{{$cropSpray->CropSpraying->count()}}">
+                                                                            @foreach($cropSpray->CropSpraying as $key => $spray)
                                                                             <div class="form-group">
-                                                                                @foreach($cropSpray->CropSpraying as $key => $spray)
                                                                                 <label class="col-md-3 control-label">Spraying {{$spray->spraying_number}}:</label>
                                                                                 <div class="col-md-4">
                                                                                     <input type="text" class="form-control" value="{{$spray->PesticideTag->name}}" disabled>
@@ -419,19 +420,21 @@
                                                                                 </div>
                                                                                 @if($key == 0)
                                                                                 <div class="col-md-1">
-                                                                                    <a href="javascript:;" class="btn btn-sm green add-crop-spraying"> Add
+                                                                                    <a href="javascript:;" class="btn btn-sm green add-spray-row" data-crop_spray_id="{{$cropSpray->id}}" > Add
                                                                                         <i class="fa fa-plus"></i>
                                                                                     </a>
                                                                                 </div>
                                                                                 @endif
-                                                                                @endforeach
                                                                             </div>
+                                                                            @endforeach
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                             @endif
                                                             @endforeach
+                                                            </div>
+                                                            <div class="row">
                                                             <div class="form-group">
                                                                 <div class="col-md-11 text-right">
                                                                     <button class="btn base-color" type="submit">
@@ -439,13 +442,16 @@
                                                                     </button>
                                                                 </div>
                                                             </div>
+                                                            </div>
                                                         </form>
                                                     </div>
                                                 </div>
                                             </div>
                                     </div>
                                     <div class="tab-pane" id="gardener">
-                                        <form class="form-horizontal form-row-seperated" action="#" method="POST">
+                                        <form class="form-horizontal form-row-seperated" action="/customer/customer-profile" method="POST">
+                                            {{ csrf_field() }}
+                                            <input type="hidden" name="mobile" value="{{$mobile}}">
                                             <div class="form-body">
                                                 <div class="form-group">
                                                     <label class="col-md-3 control-label"><h3>MY BASIC INFO</h3></label>
@@ -460,7 +466,9 @@
                                                         <span class="required"> * </span>
                                                     </label>
                                                     <div class="col-md-6">
-                                                        <input type="text" class="form-control" name="product_name" placeholder=""  value="">
+                                                        <input type="text" class="form-control" name="full_name" placeholder="Enter gardener name"
+                                                            @if($profileData) value="{{$profileData['full_name']}}" @endif
+                                                        >
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
@@ -468,7 +476,9 @@
                                                         <span class="required"> * </span>
                                                     </label>
                                                     <div class="col-md-6">
-                                                        <input type="text" class="form-control" name="product_name" placeholder=""  value="">
+                                                        <input type="text" class="form-control" name="business_job" placeholder=""
+                                                            @if($profileData) value="{{$profileData['business_job']}}" @endif
+                                                        >
                                                     </div>
                                                 </div>
                                                 <hr>
@@ -479,11 +489,11 @@
                                                     <label class="col-md-3 control-label">Gardening type
                                                     </label>
                                                     <div class="col-md-6">
-                                                        <select class="form-control" name="communication_lang">
+                                                        <select class="form-control" name="gardening_type">
                                                             <option value="">Please select gardening type</option>
-                                                            <option value="terrace-gardening">Terrace gardening</option>
-                                                            <option value="balcony-gardening">Balcony gardening</option>
-                                                            <option value="backyard-gardening">Backyard gardening</option>
+                                                            <option value="terrace-gardening" @if($profileData && $profileData['gardening_type'] == 'terrace-gardening') selected @endif>Terrace gardening</option>
+                                                            <option value="balcony-gardening" @if($profileData && $profileData['gardening_type'] == 'balcony-gardening') selected @endif>Balcony gardening</option>
+                                                            <option value="backyard-gardening" @if($profileData && $profileData['gardening_type'] == 'backyard-gardening') selected @endif>Backyard gardening</option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -493,10 +503,14 @@
                                                     <div class="col-md-6">
                                                         <div class="form-check" style="margin-top: 7px;">
                                                             <label class="form-check-label">
-                                                                <input class="form-check-input radio-inline" type="radio" name="intercropping" value="Intercropping">
+                                                                <input class="form-check-input radio-inline" type="radio" name="plant_used" value="indoor-plants"
+                                                                    @if($profileData && $profileData['plant_used'] == 'indoor-plants') checked @endif
+                                                                >
                                                                 Indoor plants</label>
                                                             <label class="form-check-label">
-                                                                <input class="form-check-input radio-inline" type="radio" name="monocropping" value="Monocropping">
+                                                                <input class="form-check-input radio-inline" type="radio" name="plant_used" value="outdoor-plants"
+                                                                    @if($profileData && $profileData['plant_used'] == 'outdoor-plants') checked @endif
+                                                                >
                                                                 Outdoor plants</label>
                                                         </div>
                                                     </div>
@@ -504,12 +518,14 @@
                                                 <div class="form-group">
                                                     <label class="col-md-3 control-label">Indoor plants:
                                                     </label>
-                                                    <div class="col-md-6">
+                                                    <div class="col-md-8">
                                                         <div class="row border border-dark">
-                                                            <div class="bootstrap-tagsinput" id="">
-                                                                @foreach($customerTags as $customerTag)
+                                                            <div class="bootstrap-tagsinput" id="indoor_plant_div">
+                                                                @foreach($indoorPlantTags as $customerTag)
                                                                 <button id="tag{{$customerTag['tag_cloud_id']}}{{$customerTag['crm_customer_id']}}" class="lable" style="background-color:rgb(241 243 244);display: inline;font-size: 90%;margin-left: 2px;margin-top:3px;margin-bottom:3px;padding-bottom: 2px;padding-top: 2px">{{$customerTag['name']}}
+                                                                    @if($user->role->slug == 'admin')
                                                                     &nbsp;<span style="color: red;" onclick="removeCustTag({{$customerTag['tag_cloud_id']}},{{$customerTag['crm_customer_id']}})">&nbsp;×</span>
+                                                                    @endIf
                                                                 </button>&nbsp;&nbsp;&nbsp;
                                                                 @endforeach
                                                             </div>
@@ -518,33 +534,7 @@
                                                                     <div class="menu clearfix">
                                                                         <ul class="clearfix">
                                                                             <li class="select-category select-pesticide" id="search_header_main">
-                                                                                <input type="text" class="typeahead" placeholder="Search tools" style=""/>
-                                                                            </li>
-                                                                        </ul>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label class="col-md-3 control-label">Indoor plants:
-                                                    </label>
-                                                    <div class="col-md-6">
-                                                        <div class="row border border-dark">
-                                                            <div class="bootstrap-tagsinput" id="">
-                                                                @foreach($customerTags as $customerTag)
-                                                                <button id="tag{{$customerTag['tag_cloud_id']}}{{$customerTag['crm_customer_id']}}" class="lable" style="background-color:rgb(241 243 244);display: inline;font-size: 90%;margin-left: 2px;margin-top:3px;margin-bottom:3px;padding-bottom: 2px;padding-top: 2px">{{$customerTag['name']}}
-                                                                    &nbsp;<span style="color: red;" onclick="removeCustTag({{$customerTag['tag_cloud_id']}},{{$customerTag['crm_customer_id']}})">&nbsp;×</span>
-                                                                </button>&nbsp;&nbsp;&nbsp;
-                                                                @endforeach
-                                                            </div>
-                                                            <div class="logo-wrap">
-                                                                <div class=container>
-                                                                    <div class="menu clearfix">
-                                                                        <ul class="clearfix">
-                                                                            <li class="select-category select-pesticide" id="search_header_main">
-                                                                                <input type="text" class="typeahead" placeholder="Search tools" style=""/>
+                                                                                <input type="text" class="typeahead" data-ref_div="indoor_plant_div" data-tag_type="indoor-plant" placeholder="Search tools" style=""/>
                                                                             </li>
                                                                         </ul>
                                                                     </div>
@@ -556,12 +546,14 @@
                                                 <div class="form-group">
                                                     <label class="col-md-3 control-label">Outdoor plants:
                                                     </label>
-                                                    <div class="col-md-6">
+                                                    <div class="col-md-8">
                                                         <div class="row border border-dark">
-                                                            <div class="bootstrap-tagsinput" id="">
-                                                                @foreach($customerTags as $customerTag)
+                                                            <div class="bootstrap-tagsinput" id="outdoor_plant_div">
+                                                                @foreach($outdoorPlantTags as $customerTag)
                                                                 <button id="tag{{$customerTag['tag_cloud_id']}}{{$customerTag['crm_customer_id']}}" class="lable" style="background-color:rgb(241 243 244);display: inline;font-size: 90%;margin-left: 2px;margin-top:3px;margin-bottom:3px;padding-bottom: 2px;padding-top: 2px">{{$customerTag['name']}}
+                                                                    @if($user->role->slug == 'admin')
                                                                     &nbsp;<span style="color: red;" onclick="removeCustTag({{$customerTag['tag_cloud_id']}},{{$customerTag['crm_customer_id']}})">&nbsp;×</span>
+                                                                    @endIf
                                                                 </button>&nbsp;&nbsp;&nbsp;
                                                                 @endforeach
                                                             </div>
@@ -570,7 +562,7 @@
                                                                     <div class="menu clearfix">
                                                                         <ul class="clearfix">
                                                                             <li class="select-category select-pesticide" id="search_header_main">
-                                                                                <input type="text" class="typeahead" placeholder="Search tools" style=""/>
+                                                                                <input type="text" class="typeahead" data-ref_div="outdoor_plant_div" data-tag_type="outdoor-plant" placeholder="Search tools" style=""/>
                                                                             </li>
                                                                         </ul>
                                                                     </div>
@@ -582,12 +574,14 @@
                                                 <div class="form-group">
                                                     <label class="col-md-3 control-label">Plants grown in garden:
                                                     </label>
-                                                    <div class="col-md-6">
+                                                    <div class="col-md-8">
                                                         <div class="row border border-dark">
-                                                            <div class="bootstrap-tagsinput" id="">
-                                                                @foreach($customerTags as $customerTag)
+                                                            <div class="bootstrap-tagsinput" id="garden_plant_div">
+                                                                @foreach($gardenPlantTags as $customerTag)
                                                                 <button id="tag{{$customerTag['tag_cloud_id']}}{{$customerTag['crm_customer_id']}}" class="lable" style="background-color:rgb(241 243 244);display: inline;font-size: 90%;margin-left: 2px;margin-top:3px;margin-bottom:3px;padding-bottom: 2px;padding-top: 2px">{{$customerTag['name']}}
+                                                                    @if($user->role->slug == 'admin')
                                                                     &nbsp;<span style="color: red;" onclick="removeCustTag({{$customerTag['tag_cloud_id']}},{{$customerTag['crm_customer_id']}})">&nbsp;×</span>
+                                                                    @endIf
                                                                 </button>&nbsp;&nbsp;&nbsp;
                                                                 @endforeach
                                                             </div>
@@ -596,7 +590,7 @@
                                                                     <div class="menu clearfix">
                                                                         <ul class="clearfix">
                                                                             <li class="select-category select-pesticide" id="search_header_main">
-                                                                                <input type="text" class="typeahead" placeholder="Search tools" style=""/>
+                                                                                <input type="text" class="typeahead" data-ref_div="garden_plant_div" data-tag_type="garden-plant" placeholder="Search tools" style=""/>
                                                                             </li>
                                                                         </ul>
                                                                     </div>
@@ -608,12 +602,14 @@
                                                 <div class="form-group">
                                                     <label class="col-md-3 control-label">Flower/Ornamental
                                                     </label>
-                                                    <div class="col-md-6">
+                                                    <div class="col-md-8">
                                                         <div class="row border border-dark">
-                                                            <div class="bootstrap-tagsinput" id="">
-                                                                @foreach($customerTags as $customerTag)
+                                                            <div class="bootstrap-tagsinput" id="flower_div">
+                                                                @foreach($flowerTags as $customerTag)
                                                                 <button id="tag{{$customerTag['tag_cloud_id']}}{{$customerTag['crm_customer_id']}}" class="lable" style="background-color:rgb(241 243 244);display: inline;font-size: 90%;margin-left: 2px;margin-top:3px;margin-bottom:3px;padding-bottom: 2px;padding-top: 2px">{{$customerTag['name']}}
+                                                                    @if($user->role->slug == 'admin')
                                                                     &nbsp;<span style="color: red;" onclick="removeCustTag({{$customerTag['tag_cloud_id']}},{{$customerTag['crm_customer_id']}})">&nbsp;×</span>
+                                                                    @endIf
                                                                 </button>&nbsp;&nbsp;&nbsp;
                                                                 @endforeach
                                                             </div>
@@ -622,7 +618,7 @@
                                                                     <div class="menu clearfix">
                                                                         <ul class="clearfix">
                                                                             <li class="select-category select-pesticide" id="search_header_main">
-                                                                                <input type="text" class="typeahead" placeholder="Search tools" style=""/>
+                                                                                <input type="text" class="typeahead" data-ref_div="flower_div" data-tag_type="flower" placeholder="Search tools" style=""/>
                                                                             </li>
                                                                         </ul>
                                                                     </div>
@@ -634,12 +630,14 @@
                                                 <div class="form-group">
                                                     <label class="col-md-3 control-label">Vegetable:
                                                     </label>
-                                                    <div class="col-md-6">
+                                                    <div class="col-md-8">
                                                         <div class="row border border-dark">
-                                                            <div class="bootstrap-tagsinput" id="">
-                                                                @foreach($customerTags as $customerTag)
+                                                            <div class="bootstrap-tagsinput" id="vegetable_div">
+                                                                @foreach($vegetableTags as $customerTag)
                                                                 <button id="tag{{$customerTag['tag_cloud_id']}}{{$customerTag['crm_customer_id']}}" class="lable" style="background-color:rgb(241 243 244);display: inline;font-size: 90%;margin-left: 2px;margin-top:3px;margin-bottom:3px;padding-bottom: 2px;padding-top: 2px">{{$customerTag['name']}}
+                                                                    @if($user->role->slug == 'admin')
                                                                     &nbsp;<span style="color: red;" onclick="removeCustTag({{$customerTag['tag_cloud_id']}},{{$customerTag['crm_customer_id']}})">&nbsp;×</span>
+                                                                    @endIf
                                                                 </button>&nbsp;&nbsp;&nbsp;
                                                                 @endforeach
                                                             </div>
@@ -648,7 +646,7 @@
                                                                     <div class="menu clearfix">
                                                                         <ul class="clearfix">
                                                                             <li class="select-category select-pesticide" id="search_header_main">
-                                                                                <input type="text" class="typeahead" placeholder="Search tools" style=""/>
+                                                                                <input type="text" class="typeahead" data-ref_div="vegetable_div" data-tag_type="vegetable" placeholder="Search tools" style=""/>
                                                                             </li>
                                                                         </ul>
                                                                     </div>
@@ -660,12 +658,14 @@
                                                 <div class="form-group">
                                                     <label class="col-md-3 control-label">Fruit:
                                                     </label>
-                                                    <div class="col-md-6">
+                                                    <div class="col-md-8">
                                                         <div class="row border border-dark">
-                                                            <div class="bootstrap-tagsinput" id="">
-                                                                @foreach($customerTags as $customerTag)
+                                                            <div class="bootstrap-tagsinput" id="fruit_div">
+                                                                @foreach($fruitTags as $customerTag)
                                                                 <button id="tag{{$customerTag['tag_cloud_id']}}{{$customerTag['crm_customer_id']}}" class="lable" style="background-color:rgb(241 243 244);display: inline;font-size: 90%;margin-left: 2px;margin-top:3px;margin-bottom:3px;padding-bottom: 2px;padding-top: 2px">{{$customerTag['name']}}
+                                                                    @if($user->role->slug == 'admin')
                                                                     &nbsp;<span style="color: red;" onclick="removeCustTag({{$customerTag['tag_cloud_id']}},{{$customerTag['crm_customer_id']}})">&nbsp;×</span>
+                                                                    @endIf
                                                                 </button>&nbsp;&nbsp;&nbsp;
                                                                 @endforeach
                                                             </div>
@@ -674,7 +674,7 @@
                                                                     <div class="menu clearfix">
                                                                         <ul class="clearfix">
                                                                             <li class="select-category select-pesticide" id="search_header_main">
-                                                                                <input type="text" class="typeahead" placeholder="Search tools" style=""/>
+                                                                                <input type="text" class="typeahead" data-ref_div="fruit_div" data-tag_type="fruit" placeholder="Search tools" style=""/>
                                                                             </li>
                                                                         </ul>
                                                                     </div>
@@ -686,12 +686,14 @@
                                                 <div class="form-group">
                                                     <label class="col-md-3 control-label">Medicinal
                                                     </label>
-                                                    <div class="col-md-6">
+                                                    <div class="col-md-8">
                                                         <div class="row border border-dark">
-                                                            <div class="bootstrap-tagsinput" id="">
-                                                                @foreach($customerTags as $customerTag)
+                                                            <div class="bootstrap-tagsinput" id="medicinal_div">
+                                                                @foreach($medicinalTags as $customerTag)
                                                                 <button id="tag{{$customerTag['tag_cloud_id']}}{{$customerTag['crm_customer_id']}}" class="lable" style="background-color:rgb(241 243 244);display: inline;font-size: 90%;margin-left: 2px;margin-top:3px;margin-bottom:3px;padding-bottom: 2px;padding-top: 2px">{{$customerTag['name']}}
+                                                                    @if($user->role->slug == 'admin')
                                                                     &nbsp;<span style="color: red;" onclick="removeCustTag({{$customerTag['tag_cloud_id']}},{{$customerTag['crm_customer_id']}})">&nbsp;×</span>
+                                                                    @endIf
                                                                 </button>&nbsp;&nbsp;&nbsp;
                                                                 @endforeach
                                                             </div>
@@ -700,7 +702,7 @@
                                                                     <div class="menu clearfix">
                                                                         <ul class="clearfix">
                                                                             <li class="select-category select-pesticide" id="search_header_main">
-                                                                                <input type="text" class="typeahead" placeholder="Search tools" style=""/>
+                                                                                <input type="text" class="typeahead" data-ref_div="medicinal_div" data-tag_type="medicinal" placeholder="Search tools" style=""/>
                                                                             </li>
                                                                         </ul>
                                                                     </div>
@@ -712,12 +714,14 @@
                                                 <div class="form-group">
                                                     <label class="col-md-3 control-label">Tools used for gardening
                                                     </label>
-                                                    <div class="col-md-6">
+                                                    <div class="col-md-8">
                                                         <div class="row border border-dark">
-                                                            <div class="bootstrap-tagsinput" id="gard_tool_div">
-                                                                @foreach($customerTags as $customerTag)
+                                                            <div class="bootstrap-tagsinput" id="farm_tool_div">
+                                                                @foreach($toolTags as $customerTag)
                                                                 <button id="tag{{$customerTag['tag_cloud_id']}}{{$customerTag['crm_customer_id']}}" class="lable" style="background-color:rgb(241 243 244);display: inline;font-size: 90%;margin-left: 2px;margin-top:3px;margin-bottom:3px;padding-bottom: 2px;padding-top: 2px">{{$customerTag['name']}}
+                                                                    @if($user->role->slug == 'admin')
                                                                     &nbsp;<span style="color: red;" onclick="removeCustTag({{$customerTag['tag_cloud_id']}},{{$customerTag['crm_customer_id']}})">&nbsp;×</span>
+                                                                    @endIf
                                                                 </button>&nbsp;&nbsp;&nbsp;
                                                                 @endforeach
                                                             </div>
@@ -726,7 +730,7 @@
                                                                     <div class="menu clearfix">
                                                                         <ul class="clearfix">
                                                                             <li class="select-category select-pesticide" id="search_header_main">
-                                                                                <input type="text" class="typeahead" data-ref_div="gard_tool_div" placeholder="Search tools" style=""/>
+                                                                                <input type="text" class="typeahead" data-ref_div="farm_tool_div" data-tag_type="tool" placeholder="Search tools" style=""/>
                                                                             </li>
                                                                         </ul>
                                                                     </div>
@@ -741,13 +745,19 @@
                                                     <div class="col-md-6">
                                                         <div class="form-check">
                                                             <label class="form-check-label">
-                                                                <input class="form-check-input radio-inline" type="radio" name="intercropping" value="Intercropping">
+                                                                <input class="form-check-input radio-inline" type="radio" name="plant_fertilizer" value="chemical"
+                                                                    @if($profileData && $profileData['plant_fertilizer'] == 'chemical') checked @endif
+                                                                >
                                                                 Chemical</label>
                                                             <label class="form-check-label">
-                                                                <input class="form-check-input radio-inline" type="radio" name="monocropping" value="Monocropping">
+                                                                <input class="form-check-input radio-inline" type="radio" name="plant_fertilizer" value="organic"
+                                                                    @if($profileData && $profileData['plant_fertilizer'] == 'organic') checked @endif
+                                                                >
                                                                 Organic</label>
                                                             <label class="form-check-label">
-                                                                <input class="form-check-input radio-inline" type="radio" name="monocropping" value="Monocropping">
+                                                                <input class="form-check-input radio-inline" type="radio" name="plant_fertilizer" value="chemical-organic"
+                                                                    @if($profileData && $profileData['plant_fertilizer'] == 'chemical-organic') checked @endif
+                                                                >
                                                                 Both</label>
                                                         </div>
                                                     </div>
@@ -758,10 +768,14 @@
                                                     <div class="col-md-6">
                                                         <div class="form-check">
                                                             <label class="form-check-label">
-                                                                <input class="form-check-input radio-inline" type="radio" name="intercropping" value="Intercropping">
+                                                                <input class="form-check-input radio-inline" type="radio" name="plant_seed_purchase_from" value="local"
+                                                                @if($profileData && $profileData['plant_seed_purchase_from'] == 'local') checked @endif
+                                                                >
                                                                 Local</label>
                                                             <label class="form-check-label">
-                                                                <input class="form-check-input radio-inline" type="radio" name="monocropping" value="Monocropping">
+                                                                <input class="form-check-input radio-inline" type="radio" name="plant_seed_purchase_from" value="online"
+                                                                    @if($profileData && $profileData['plant_seed_purchase_from'] == 'online') checked @endif
+                                                                >
                                                                 Online</label>
                                                         </div>
                                                     </div>
@@ -772,13 +786,19 @@
                                                     <div class="col-md-6">
                                                         <div class="form-check">
                                                             <label class="form-check-label">
-                                                                <input class="form-check-input radio-inline" type="radio" name="intercropping" value="Intercropping">
+                                                                <input class="form-check-input radio-inline" type="radio" name="plant_watering" value="drip"
+                                                                    @if($profileData && $profileData['plant_watering'] == 'drip') checked @endif
+                                                                >
                                                                 Drip</label>
                                                             <label class="form-check-label">
-                                                                <input class="form-check-input radio-inline" type="radio" name="monocropping" value="Monocropping">
+                                                                <input class="form-check-input radio-inline" type="radio" name="plant_watering" value="sprinkler"
+                                                                    @if($profileData && $profileData['plant_watering'] == 'sprinkler') checked @endif
+                                                                >
                                                                 Sprinkler</label>
                                                             <label class="form-check-label">
-                                                                <input class="form-check-input radio-inline" type="radio" name="monocropping" value="Monocropping">
+                                                                <input class="form-check-input radio-inline" type="radio" name="plant_watering" value="water-can-bucket"
+                                                                    @if($profileData && $profileData['plant_watering'] == 'water-can-bucket') checked @endif
+                                                                >
                                                                 Water can/Bucket</label>
                                                         </div>
                                                     </div>

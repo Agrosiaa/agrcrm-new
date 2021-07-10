@@ -231,6 +231,55 @@ class CustomerController extends Controller
                 ->where('crm_customer.number','=',$mobile)
                 ->where('is_deleted','!=',true)
                 ->select('tag_type.name as tag_type_name','customer_tag_relation.tag_cloud_id','tag_cloud.name','customer_tag_relation.crm_customer_id')->get()->toArray();
+            $medicinalTags = CrmCustomer::join('customer_tag_relation','customer_tag_relation.crm_customer_id','=','crm_customer.id')
+                ->join('tag_cloud','customer_tag_relation.tag_cloud_id','=','tag_cloud.id')
+                ->join('tag_type','tag_type.id','=','customer_tag_relation.tag_type_id')
+                ->where('tag_type.slug','=','medicinal')
+                ->where('crm_customer.number','=',$mobile)
+                ->where('is_deleted','!=',true)
+                ->select('tag_type.name as tag_type_name','customer_tag_relation.tag_cloud_id','tag_cloud.name','customer_tag_relation.crm_customer_id')->get()->toArray();
+            $fruitTags = CrmCustomer::join('customer_tag_relation','customer_tag_relation.crm_customer_id','=','crm_customer.id')
+                ->join('tag_cloud','customer_tag_relation.tag_cloud_id','=','tag_cloud.id')
+                ->join('tag_type','tag_type.id','=','customer_tag_relation.tag_type_id')
+                ->where('tag_type.slug','=','fruit')
+                ->where('crm_customer.number','=',$mobile)
+                ->where('is_deleted','!=',true)
+                ->select('tag_type.name as tag_type_name','customer_tag_relation.tag_cloud_id','tag_cloud.name','customer_tag_relation.crm_customer_id')->get()->toArray();
+            $vegetableTags = CrmCustomer::join('customer_tag_relation','customer_tag_relation.crm_customer_id','=','crm_customer.id')
+                ->join('tag_cloud','customer_tag_relation.tag_cloud_id','=','tag_cloud.id')
+                ->join('tag_type','tag_type.id','=','customer_tag_relation.tag_type_id')
+                ->where('tag_type.slug','=','vegetable')
+                ->where('crm_customer.number','=',$mobile)
+                ->where('is_deleted','!=',true)
+                ->select('tag_type.name as tag_type_name','customer_tag_relation.tag_cloud_id','tag_cloud.name','customer_tag_relation.crm_customer_id')->get()->toArray();
+            $flowerTags = CrmCustomer::join('customer_tag_relation','customer_tag_relation.crm_customer_id','=','crm_customer.id')
+                ->join('tag_cloud','customer_tag_relation.tag_cloud_id','=','tag_cloud.id')
+                ->join('tag_type','tag_type.id','=','customer_tag_relation.tag_type_id')
+                ->where('tag_type.slug','=','flower')
+                ->where('crm_customer.number','=',$mobile)
+                ->where('is_deleted','!=',true)
+                ->select('tag_type.name as tag_type_name','customer_tag_relation.tag_cloud_id','tag_cloud.name','customer_tag_relation.crm_customer_id')->get()->toArray();
+            $indoorPlantTags = CrmCustomer::join('customer_tag_relation','customer_tag_relation.crm_customer_id','=','crm_customer.id')
+                ->join('tag_cloud','customer_tag_relation.tag_cloud_id','=','tag_cloud.id')
+                ->join('tag_type','tag_type.id','=','customer_tag_relation.tag_type_id')
+                ->where('tag_type.slug','=','indoor-plant')
+                ->where('crm_customer.number','=',$mobile)
+                ->where('is_deleted','!=',true)
+                ->select('tag_type.name as tag_type_name','customer_tag_relation.tag_cloud_id','tag_cloud.name','customer_tag_relation.crm_customer_id')->get()->toArray();
+            $outdoorPlantTags = CrmCustomer::join('customer_tag_relation','customer_tag_relation.crm_customer_id','=','crm_customer.id')
+                ->join('tag_cloud','customer_tag_relation.tag_cloud_id','=','tag_cloud.id')
+                ->join('tag_type','tag_type.id','=','customer_tag_relation.tag_type_id')
+                ->where('tag_type.slug','=','outdoor-plant')
+                ->where('crm_customer.number','=',$mobile)
+                ->where('is_deleted','!=',true)
+                ->select('tag_type.name as tag_type_name','customer_tag_relation.tag_cloud_id','tag_cloud.name','customer_tag_relation.crm_customer_id')->get()->toArray();
+            $gardenPlantTags = CrmCustomer::join('customer_tag_relation','customer_tag_relation.crm_customer_id','=','crm_customer.id')
+                ->join('tag_cloud','customer_tag_relation.tag_cloud_id','=','tag_cloud.id')
+                ->join('tag_type','tag_type.id','=','customer_tag_relation.tag_type_id')
+                ->where('tag_type.slug','=','garden-plant')
+                ->where('crm_customer.number','=',$mobile)
+                ->where('is_deleted','!=',true)
+                ->select('tag_type.name as tag_type_name','customer_tag_relation.tag_cloud_id','tag_cloud.name','customer_tag_relation.crm_customer_id')->get()->toArray();
             $toolTags = CrmCustomer::join('customer_tag_relation','customer_tag_relation.crm_customer_id','=','crm_customer.id')
                 ->join('tag_cloud','customer_tag_relation.tag_cloud_id','=','tag_cloud.id')
                 ->join('tag_type','tag_type.id','=','customer_tag_relation.tag_type_id')
@@ -267,7 +316,8 @@ class CustomerController extends Controller
             $customerTags = array_merge($typeTags,$nonTypeTags);
 
                 return view('backend.Lead.customerProfile')->with(compact('user','id','mobile','profileData','customerTags','crops',
-                    'pesticideTags','toolTags','seedVarietyTags','seedPesticideBrandTags','cropSpraying'));
+                    'pesticideTags','toolTags','seedVarietyTags','seedPesticideBrandTags','cropSpraying','outdoorPlantTags','indoorPlantTags',
+                    'medicinalTags','flowerTags','fruitTags','vegetableTags','gardenPlantTags'));
         }catch(\Exception $exception){
             $data =[
                 'action' => 'customer Profile',

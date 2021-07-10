@@ -53,10 +53,9 @@ $(document).ready(function(){
                    '</div>'+
                '</div>'+
                '<div class="portlet-body">'+
-                   '<div class="form-body">'+
+                   '<div class="form-body" data-spraying_done="'+1+'">'+
                        '<div class="form-group">'+
                                '<label class="col-md-3 control-label">Spraying 1:'+
-                                   '<span class="required"> * </span>'+
                                '</label>'+
                                '<div class="col-md-3">'+
                                 '<select class="form-control" name="pesticides['+cropSowedId+'][]">';
@@ -79,11 +78,12 @@ $(document).ready(function(){
         $('#spraying-form').append(str);
 
         $('.add-spray-row').on('click', function(){
+            var sprayNum = $(this).parent().parent().parent().data('spraying_done') + 1;
             var str = '<div class="form-body">'+
                 '<div class="form-group">'+
-                '<label class="col-md-3 control-label">Spraying 1:'+
-                '<span class="required"> * </span>'+
-                '</label>'+
+                '<label class="col-md-3 control-label">Spraying ';
+            str += sprayNum+ ':';
+            str += '</label>'+
                 '<div class="col-md-3">'+
                 '<select class="form-control" name="pesticides['+cropSowedId+'][]">';
             str += pesticides;
@@ -95,8 +95,29 @@ $(document).ready(function(){
                 '</div>'+
                 '</div>';
             $(this).parent().parent().parent().append(str);
+            $(this).parent().parent().parent().data('spraying_done',sprayNum);
         });
     });
 
-
+    $('.add-spray-row').on('click', function(){
+        var cropSowedId = $(this).data('crop_spray_id');
+        var sprayNum = $(this).parent().parent().parent().data('spraying_done') + 1;
+        var str = '<div class="form-body">'+
+            '<div class="form-group">'+
+            '<label class="col-md-3 control-label">Spraying ';
+            str += sprayNum+ ':';
+        str += '</label>'+
+            '<div class="col-md-3">'+
+            '<select class="form-control" name="pesticides['+cropSowedId+'][]">';
+        str += pesticides;
+        str += '</select>'+
+            '</div>'+
+            '<div class="col-md-3">'+
+            '<input type="date" class="form-control" name="spraying_date['+cropSowedId+'][]" >'+
+            '</div>'+
+            '</div>'+
+            '</div>';
+        $(this).parent().parent().parent().append(str);
+        $(this).parent().parent().parent().data('spraying_done',sprayNum);
+    });
 });
