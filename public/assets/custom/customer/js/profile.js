@@ -84,12 +84,12 @@ $(document).ready(function(){
                 '<label class="col-md-3 control-label">Spraying ';
             str += sprayNum+ ':';
             str += '</label>'+
-                '<div class="col-md-3">'+
+                '<div class="col-md-5">'+
                 '<select class="form-control" name="pesticides['+cropSowedId+'][]">';
             str += pesticides;
             str += '</select>'+
                 '</div>'+
-                '<div class="col-md-3">'+
+                '<div class="col-md-2">'+
                 '<input type="date" class="form-control" name="spraying_date['+cropSowedId+'][]" >'+
                 '</div>'+
                 '</div>'+
@@ -107,12 +107,12 @@ $(document).ready(function(){
             '<label class="col-md-3 control-label">Spraying ';
             str += sprayNum+ ':';
         str += '</label>'+
-            '<div class="col-md-3">'+
+            '<div class="col-md-5">'+
             '<select class="form-control" name="pesticides['+cropSowedId+'][]">';
         str += pesticides;
         str += '</select>'+
             '</div>'+
-            '<div class="col-md-3">'+
+            '<div class="col-md-2">'+
             '<input type="date" class="form-control" name="spraying_date['+cropSowedId+'][]" >'+
             '</div>'+
             '</div>'+

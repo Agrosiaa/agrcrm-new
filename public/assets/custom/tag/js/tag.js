@@ -72,8 +72,9 @@ $(document).ready(function () {
                     dataType: 'array',
                     data: {
                         "_token": $('meta[name="csrf-token"]').attr('content'),
-                        'tag_name' : $('#tag_name').val(),
-                        'customer_id' : crmCustId
+                        'tag_name' : $(this).val(),
+                        'customer_id' : crmCustId,
+                        'tag_type' : tagType
                     },
                     success: function (status) {
                     },

@@ -3,7 +3,7 @@
 use Illuminate\Database\Seeder;
 use Carbon\Carbon;
 
-class TagTypeSeeder extends Seeder
+class GardenerTagTypeSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -14,59 +14,53 @@ class TagTypeSeeder extends Seeder
     {
         DB::table('tag_type')->insert([
             [
-                'name' => 'Product',
-                'slug' => 'product',
+                'name' => 'Indoor Plant',
+                'slug' => 'indoor-plant',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
             [
-                'name' => 'Category',
-                'slug' => 'category',
+                'name' => 'Outdoor Plant',
+                'slug' => 'outdoor-plant',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
             [
-                'name' => 'Crop',
-                'slug' => 'crop',
+                'name' => 'Garden Plant',
+                'slug' => 'garden-plant',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
             [
-                'name' => 'State',
-                'slug' => 'state',
+                'name' => 'Flower',
+                'slug' => 'flower',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
             [
-                'name' => 'District',
-                'slug' => 'district',
+                'name' => 'Vegetable',
+                'slug' => 'vegetable',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
             [
-                'name' => 'City',
-                'slug' => 'city',
+                'name' => 'Fruit',
+                'slug' => 'fruit',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
             [
-                'name' => 'Pincode',
-                'slug' => 'pincode',
+                'name' => 'Medicinal',
+                'slug' => 'medicinal',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
             [
-                'name' => 'Order',
-                'slug' => 'Order',
+                'name' => 'Gardening Tool',
+                'slug' => 'gardening-tool',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
-            [
-                'name' => 'Order Return',
-                'slug' => 'order-return',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
-            ]
         ]);
     }
 }
