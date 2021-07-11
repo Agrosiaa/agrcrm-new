@@ -12,6 +12,7 @@
     <link href="/assets/global/plugins/fancybox/source/jquery.fancybox.css" rel="stylesheet" type="text/css" />
     <link href="/assets/global/css/plugins.min.css" rel="stylesheet" type="text/css" />
     <link href="/assets/global/plugins/jstree/dist/themes/default/style.css" rel="stylesheet" type="text/css" />
+    <link href="/assets/custom/tag/css/tag.css" rel="stylesheet" type="text/css" />
 
 @endsection
 @section('content')
@@ -40,8 +41,8 @@
                             <a href="#" onclick="chatHistory('{{$id}}','{{$mobile}}')" class="btn yellow">Make a Log </a>
                             <a href="#" id="place_order_button" class="btn blue">Place Order </a>
                             <a href="#" id="schedule-button" class="btn red-intense">Schedule </a>
+                            <a href="/customer/customer-profile/{{$mobile}}/{{$id}}" class="btn green">Profile</a>
                         @endif
-                        <a href="/customer/customer-profile/{{$mobile}}/{{$id}}" class="btn green">Profile</a>
                     </div>
                 </div>
                 <hr>
@@ -167,10 +168,18 @@
                         <div class="portlet-body">
                             <div class="bootstrap-tagsinput" id="customer-tag-div">
                                 @foreach($customerTags as $customerTag)
-                                @if( ($customerTag['tag_type_name']))
-                                <button id="tag{{$customerTag['tag_cloud_id']}}{{$customerTag['crm_customer_id']}}" class="lable" style="background-color:rgb(241 243 244);display: inline;font-size: 90%;margin-left: 2px;margin-top:3px;margin-bottom:3px;padding-bottom: 2px;padding-top: 2px">{{$customerTag['name']}}&nbsp;<span style="border-radius: 4px !important;background: green;">{{$customerTag['tag_type_name']}}</span> @if($user->role->slug == 'admin') &nbsp;<span style="color: red;" onclick="removeCustTag({{$customerTag['tag_cloud_id']}},{{$customerTag['crm_customer_id']}})">&nbsp;×</span> @endif </button>&nbsp;&nbsp;&nbsp;
+                                @if(isset($customerTag['tag_type_name']))
+                                <button id="tag{{$customerTag['tag_cloud_id']}}{{$customerTag['crm_customer_id']}}" class="lable customer-tag">{{$customerTag['name']}}&nbsp;
+                                    <span class="tag-type">{{$customerTag['tag_type_name']}}</span>
+                                    @if($user->role->slug == 'admin') &nbsp;
+                                    <span style="color: red;" onclick="removeCustTag({{$customerTag['tag_cloud_id']}},{{$customerTag['crm_customer_id']}})">&nbsp;×</span>
+                                    @endif </button>&nbsp;&nbsp;&nbsp;
                                 @else
-                                <button id="tag{{$customerTag['tag_cloud_id']}}{{$customerTag['crm_customer_id']}}" class="lable" style="background-color: rgb(241 243 244);display: inline;font-size: 90%;margin-left: 2px;margin-top:3px;margin-bottom:3px;padding-bottom: 2px;padding-top: 2px">{{$customerTag['name']}} @if($user->role->slug == 'admin')<span style="color: red;" onclick="removeCustTag({{$customerTag['tag_cloud_id']}},{{$customerTag['crm_customer_id']}})">&nbsp;×</span> @endif </button>&nbsp;&nbsp;&nbsp;
+                                <button id="tag{{$customerTag['tag_cloud_id']}}{{$customerTag['crm_customer_id']}}" class="lable customer-tag">{{$customerTag['name']}}
+                                    @if($user->role->slug == 'admin')
+                                    <span style="color: red;" onclick="removeCustTag({{$customerTag['tag_cloud_id']}},{{$customerTag['crm_customer_id']}})">&nbsp;×</span>
+                                    @endif
+                                </button>&nbsp;&nbsp;&nbsp;
                                 @endif
                                 @endforeach
                             </div>
@@ -179,7 +188,7 @@
                                     <div class="menu clearfix">
                                         <ul class="clearfix">
                                             <li class="select-category" id="search_header_main">
-                                                <input type="text" id="tag_name" class="typeahead" placeholder="Search Tag" style=""/>
+                                                <input type="text" data-tag_type="" data-ref_div="customer-tag-div" id="tag_name" class="typeahead tag-typeahead" placeholder="Search Tag" style=""/>
                                             </li>
                                         </ul>
                                     </div>
@@ -578,10 +587,10 @@
                                     <h4 class="modal-title" style="text-align: center"><b>Step 2- Add Products For Checkout</b></h4>
                                     <div class="row">
                                         <div class="col-sm-6">
-                                            <a id="place_order_modal"><h4 style="text-align: left">Previous</h4></a>
+                                            <a><h4 class="text-left" id="place_order_modal">Previous</h4></a>
                                         </div>
                                         <div class="col-sm-6">
-                                            <a id="confirm_order_modal"><h4 style="text-align: right">Next</h4></a>
+                                            <a><h4 class="text-right" id="confirm_order_modal">Next</h4></a>
                                         </div>
                                     </div>
                                 </div>
@@ -930,16 +939,6 @@
     <!-- END CONTAINER -->
 @endsection
 @section('javascript')
-    <!-- BEGIN CORE PLUGINS -->
-    <script src="/assets/global/plugins/jquery.min.js" type="text/javascript"></script>
-    <script src="/assets/global/plugins/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
-    <script src="/assets/global/plugins/js.cookie.min.js" type="text/javascript"></script>
-    <script src="/assets/global/plugins/bootstrap-hover-dropdown/bootstrap-hover-dropdown.min.js" type="text/javascript"></script>
-    <script src="/assets/global/plugins/jquery-slimscroll/jquery.slimscroll.min.js" type="text/javascript"></script>
-    <script src="/assets/global/plugins/jquery.blockui.min.js" type="text/javascript"></script>
-    <script src="/assets/global/plugins/uniform/jquery.uniform.min.js" type="text/javascript"></script>
-    <script src="/assets/global/plugins/bootstrap-switch/js/bootstrap-switch.min.js" type="text/javascript"></script>
-    <!-- END CORE PLUGINS -->
     <!-- BEGIN PAGE LEVEL PLUGINS -->
     <script src="/assets/global/scripts/datatable.js" type="text/javascript"></script>
     <script src="/assets/global/plugins/datatables/datatables.min.js" type="text/javascript"></script>
@@ -956,13 +955,13 @@
     <script src="/assets/pages/scripts/components-date-time-pickers.min.js" type="text/javascript"></script>
     <script src="/assets/custom/pincode/addresses.js"></script>
     <script src="/assets/custom/pincode/editaddress.js"></script>
+    <script type="text/javascript" src="/assets/custom/order/order-place.js"></script>
+    <!--<script type="text/javascript" src="/assets/custom/tag/js/tag.js"></script>-->
     <script src="/assets/global/plugins/jquery-validation/js/jquery.validate.min.js" type="text/javascript"></script>
         <script src="/assets/pages/scripts/customer/order/ecommerce-orders.min.js" type="text/javascript"></script>
         <script src="/assets/pages/scripts/customer/abandonedCart/ecommerce-orders.min.js" type="text/javascript"></script>
 
         <!-- END PAGE LEVEL SCRIPTS -->
-    <!-- BEGIN THEME LAYOUT SCRIPTS -->
-    <script src="/assets/layouts/layout3/scripts/layout.min.js" type="text/javascript"></script>
     <script src="/assets/layouts/layout3/scripts/demo.min.js" type="text/javascript"></script>
     <script>
 
@@ -1034,9 +1033,9 @@
 
                 str2 = '<div class="row" id="selected_products_div_'+POData.id+'"><div class="col-md-7"><h5>'+POData.name+'<span class="tag label label-info" style="margin-left: 2px">'+POData.company+'</span></h5></div>'+
                     '<div class="col-md-3">'+
-                    '<input class="cart-quantity" type="text" id="selected_product_qnt'+POData.id+'" value="1" style="width: 30px; text-align: center" readonly>'+
+                    '<input type="text" id="selected_product_qnt'+POData.id+'" value='+POData.minimum_quantity+' style="width: 30px; text-align: center" readonly>'+
                     '</div>'+
-                    '<div class="col-md-2"><i class="fa fa-rupee"></i><span class="product-price-total" id="products_price_'+POData.id+'">'+POData.price+'</span></div>'+
+                    '<div class="col-md-2"><i class="fa fa-rupee"></i><span class="product-price-total" id="products_price_'+POData.id+'">'+POData.price * POData.minimum_quantity+'</span></div>'+
                     '</div>';
                 $('#check_out_preview').append(str);
                 $('#selected_products').append(str2);
@@ -1131,187 +1130,6 @@
                     })
                 }
             });
-        });
-
-        function removeCustTag(tagId,crmCustId){
-            var tag = 'tag'+tagId+crmCustId;
-            tag = tag.replace(/ /g,"_");
-            $('#'+tag).remove();
-            $.ajax({
-                url: '/customer/remove-tag/'+tagId+'/'+crmCustId,
-                type: 'GET',
-                async: true,
-                success: function(data,textStatus,xhr){
-                    console.log('IN sucess');
-                },
-                error:function(errorData){
-                    console.log('In Error');
-                }
-            });
-        }
-
-        function updateProductQuantity(id,add,price,minQnt,maxQnt) {
-            var qnt = $('#product_'+id).val();
-            if(add == true){
-                if(qnt >= maxQnt){
-                    alert('Maximum allowed quantity for this product is '+maxQnt);
-                }else{
-                    qnt++;
-                    price = price*qnt;
-                    $('#price_'+id).text(price);
-                    $('#products_price_'+id).text(price);
-                    $('#selected_product_qnt'+id).val(qnt);
-                    $('#product_'+id).val(qnt);
-                    $('#product_qnt'+id).val(qnt);
-                }
-            } else {
-                if(qnt <= minQnt){
-                    alert('Minimum allowed quantity for this product is '+minQnt);
-                }else{
-                    if(qnt > 0){
-                        qnt--;
-                        price = price*qnt;
-                        $('#price_'+id).text(price);
-                        $('#products_price_'+id).text(price);
-                        $('#selected_product_qnt'+id).val(qnt);
-                        $('#product_'+id).val(qnt);
-                        $('#product_qnt'+id).val(qnt);
-                    }
-                }
-            }
-
-        }
-
-        function removeProduct(id) {
-            $('#div_'+id).remove();
-            $('#selected_products_div_'+id).remove();
-            $('#product_qnt'+id).remove();
-            $('#product_id_'+id).remove();
-            if ( $('#check_out_preview').children().length == 0 ) {
-                $('#no_product_div').show();
-            }
-        }
-
-        $('#place_order_button').on('click',function () {
-            $('#place_order').modal('show');
-        });
-        $('#schedule-button').on('click',function () {
-            $('#schedule_modal').modal('show');
-        })
-        $('#select_product_modal').on('click',function () {
-            var addressId = $('input[name=customer_address_id]:checked').val();
-            if(addressId){
-                $('#select_products').modal('show');
-                $('#place_order').modal('hide');
-                var str = $('#delivery_address_'+addressId).html();
-                $('#address_id').val(addressId);
-                $('#delivery_address').html(str);
-            }else{
-                $('#select_address_msg').show();
-            }
-        });
-
-        $('#place_order_modal').on('click',function () {
-            $('#place_order').modal('show');
-            $('#select_products').modal('hide');
-        });
-
-        $('#confirm_order_modal').on('click',function () {
-            $('#confirm_order').modal('show');
-            $('#del_charge_div').hide();
-            $('#referral_code').val('');
-            $('#discount_div').hide();
-            $('#referal_code_valid').text('');
-            $('#select_products').modal('hide');
-            var sum = 0;
-            $('.product-price-total').each(function()
-            {
-                sum += parseFloat($(this).text());
-            });
-            if(sum <= 500){
-                sum += 50;
-                $('#del_charge_div').show();
-            }
-            $('#order_total').text(sum);
-        });
-
-        $('#apply_referral').on('click',function () {
-            var referral = $('#referral_code').val();
-            var sum = 0;
-            var discount = 0;
-            var discountFloat = 0;
-            $('.product-price-total').each(function()
-            {
-                sum += parseFloat($(this).text());
-            });
-            var discountedSum = sum;
-            if(sum <= 500){
-                $('#discount_div').hide();
-                $('#order_total').text(sum);
-                $('#referal_code_valid').removeClass("text-success");
-                $('#referal_code_valid').addClass("text-danger");
-                $('#referal_code_valid').text("Discount is applicable if order total grater than 500");
-            }else{
-                if(sum > 2500){
-                    discountFloat = (2 * sum)/100;
-                    discount = discountFloat.toFixed(2);
-                }else{
-                    discount = 50;
-                }
-                discountedSum -= discount;
-                $.ajax({
-                    url: '{{env('BASE_URL')}}/validate-referral',
-                    type: 'POST',
-                    dataType: 'array',
-                    data: {
-                        'referral' : referral
-                    },
-                    success: function(response, ){
-                        data= JSON.parse(response.responseText);
-                        if(data != null){
-                            if(data.is_validate){
-                                $('#referal_code_valid').removeClass("text-danger");
-                                $('#referal_code_valid').addClass("text-success");
-                                $('#referal_code_valid').text("Referral code applied successfully");
-                                $('#discount_div').show();
-                                $('#order_total').text(discountedSum);
-                                $('#discount_val').text(discount);
-                            }else{
-                                $('#discount_div').hide();
-                                $('#order_total').text(sum);
-                                $('#referal_code_valid').removeClass("text-success");
-                                $('#referal_code_valid').addClass("text-danger");
-                                $('#referal_code_valid').text("Invalid referral code");
-
-                            }
-                        }
-                    },
-                    error:function(response){
-                        data= JSON.parse(response.responseText);
-                        if(data != null){
-                            if(data.is_validate){
-                                $('#discount_div').show();
-                                $('#referal_code_valid').removeClass("text-danger");
-                                $('#referal_code_valid').addClass("text-success");
-                                $('#referal_code_valid').text("Referral code applied successfully");
-                                $('#order_total').text(discountedSum);
-                                $('#discount_val').text(discount);
-                            }else{
-                                $('#discount_div').hide();
-                                $('#order_total').text(sum);
-                                $('#referal_code_valid').removeClass("text-success");
-                                $('#referal_code_valid').addClass("text-danger");
-                                $('#referal_code_valid').text("Invalid referral code");
-                            }
-                        }
-                    }
-                });
-            }
-        });
-
-        $('#select_order_modal').on('click',function () {
-            $('#select_products').modal('show');
-            $('#confirm_order').modal('hide');
         });
 
         $(document).on("click",'.btn-delete',function (e) {
