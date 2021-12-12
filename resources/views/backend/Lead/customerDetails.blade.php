@@ -1363,6 +1363,13 @@
                                 '</span>' +
                                 '</div> '+
                                 '<br>';
+                        }else if(data['is_update_log'] == true){
+                            str += '<div class="item" style="text-align: center">' +
+                                '<span class="tag label label-info" style="font-size: 90%;">' +
+                                data['sale_agent'] +' updated field '+'<span style="color: #0e0e0e">' +data['field_name']+'</span>' + ' on '+ data['time'] +
+                                '</span>' +
+                                '</div> '+
+                                '<br>';
                         } else {
                             if(data['reminder_time'] == true){
                                 if(data['reminder'] != null){

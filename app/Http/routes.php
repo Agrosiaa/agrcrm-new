@@ -81,6 +81,10 @@ Route::group(['prefix' => 'tag'], function () {
     Route::post('customer-tag',array('uses' => 'Tag\TagController@createCustomerTag'));
     //Route::get('/get-tags',array('uses' => 'Tag\TagController@getTagsData'));
 });
+Route::group(['prefix' => 'log'], function () {
+    Route::get('manage',array('uses' => 'Logs\CustomerUpdateLogController@manage'));
+    Route::post('log-listing',array('uses' => 'Logs\CustomerUpdateLogController@logListing'));
+});
 Route::group(['prefix' => 'report'], function () {
     Route::get('view',array('uses' => 'Report\ReportController@view'));
     Route::post('generate',array('uses' => 'Report\ReportController@generateReport'));

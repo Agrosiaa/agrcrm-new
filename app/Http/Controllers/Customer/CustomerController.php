@@ -8,6 +8,7 @@ use App\CustomerNumberStatus;
 use App\CrmCustomer;
 use App\CustomerProfile;
 use App\CustomerTagRelation;
+use App\CustomerUpdateActionLog;
 use App\LoggedCustomerProfile;
 use App\Reminder;
 use App\TagCloud;
@@ -151,7 +152,7 @@ class CustomerController extends Controller
     public function CustomerDetailsView(Request $request, $mobile, $id){
         try{
             $user = Auth::user();
-            $admin = UserRoles::where('slug','admin')->value('id');
+            $csr = UserRoles::where('slug','sales_employee')->value('id');
             $callStatuses = CallStatus::get()->toArray();
             if($id == 'null'){
                 $id = CrmCustomer::where('number','=',$mobile)->value('id');
@@ -182,7 +183,7 @@ class CustomerController extends Controller
                 ->whereNull('customer_tag_relation.tag_type_id')
                 ->select('customer_tag_relation.tag_cloud_id','tag_cloud.name','customer_tag_relation.crm_customer_id')->get()->toArray();
             $customerTags = array_merge($typeTags,$nonTypeTags);
-            if($user['role_id'] != $admin){
+            if($user['role_id'] == $csr){
                 $sessionUrl = '/customer/customer-details/'.$mobile.'/'.$id;
                 $loggedCustomer = LoggedCustomerProfile::where('user_id',$user['id'])->first();
                 if($loggedCustomer != null){
@@ -595,6 +596,20 @@ class CustomerController extends Controller
             abort(500,$e->getMessage());
         }
     }
+
+    public function customerUpdateLog($fieldName, $value, $mobile){
+        try{
+            $user = Auth::user();
+            $data['user_id'] = $user->id;
+            $data['mobile'] = $mobile;
+            $data['field_value'] = $value;
+            $data['field_name'] = str_replace('_', ' ', $fieldName);
+            CustomerUpdateActionLog::create($data);
+            return back();
+        }catch (\Exception $e){
+            abort(500,$e->getMessage());
+        }
+    }
     public function createCustomerProfile(Request $request){
         try{
             $data = $request->all();
@@ -620,9 +635,17 @@ class CustomerController extends Controller
             }
             $profileData = CustomerProfile::where('mobile',$data['mobile'])->first();
             if($profileData){
+                foreach($data as $fieldName => $value){
+                    if($profileData[$fieldName] != $value){
+                        $this->customerUpdateLog($fieldName,$value,$profileData['mobile']);
+                    }
+                }
                 $profileData->update($data);
             }else{
                 $profileData = CustomerProfile::create($data);
+                foreach($data as $fieldName => $value){
+                    $this->customerUpdateLog($fieldName, $value, $profileData['mobile']);
+                }
             }
             if($profileData && $crops){
                 $cropSowed['customer_profile_id'] = $profileData['id'];
