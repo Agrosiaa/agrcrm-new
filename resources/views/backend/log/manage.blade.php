@@ -53,9 +53,9 @@
                                                         <i class="fa fa-calendar"></i>
                                                     </button>
                                                 </span>
-                                                                        </div>
-                                                                        <div class="input-group date" data-provide="datepicker">
-                                                                            <input type="text" size="10" name="to_date" readonly class="form-control form-filter input-sm">
+                                            </div>
+                                            <div class="input-group date" data-provide="datepicker">
+                                                <input type="text" size="10" name="to_date" readonly class="form-control form-filter input-sm">
                                                 <span class="input-group-btn">
                                                     <button class="btn default date-set" type="button">
                                                         <i class="fa fa-calendar"></i>

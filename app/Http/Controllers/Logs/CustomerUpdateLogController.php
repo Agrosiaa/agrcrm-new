@@ -56,6 +56,22 @@ class CustomerUpdateLogController extends Controller
                     }
                 }
 
+                if($resultFlag && $request->has('from_date') && $tableData['from_date']!=""){
+                    $customerLogId = CustomerUpdateActionLog::join('crm_customer','crm_customer.number','=','customer_update_action_log.mobile')
+                        ->whereIn('crm_customer.id',$customerLogId)->where('customer_update_action_log.created_at','>=',$tableData['from_date'])->lists('crm_customer.id');
+                    if(count($customerLogId) <= 0){
+                        $resultFlag = false;
+                    }
+                }
+
+                if($resultFlag && $request->has('to_date') && $tableData['to_date']!=""){
+                    $customerLogId = CustomerUpdateActionLog::join('crm_customer','crm_customer.number','=','customer_update_action_log.mobile')
+                        ->whereIn('crm_customer.id',$customerLogId)->where('customer_update_action_log.created_at','<=',$tableData['to_date'])->lists('crm_customer.id');
+                    if(count($customerLogId) <= 0){
+                        $resultFlag = false;
+                    }
+                }
+
                 $iTotalRecords = count($customerLogId);
                 $iDisplayLength = intval($request->length);
                 $iDisplayLength = $iDisplayLength < 0 ? $iTotalRecords : $iDisplayLength;
