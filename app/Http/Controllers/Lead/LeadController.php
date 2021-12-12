@@ -7,6 +7,7 @@ use App\CallStatus;
 use App\CustomerNumberStatus;
 use App\CrmCustomer;
 use App\CustomerTagRelation;
+use App\CustomerUpdateActionLog;
 use App\LoggedCustomerProfile;
 use App\Reminder;
 use App\SalesChat;
@@ -213,10 +214,11 @@ class LeadController extends Controller
             $chatData = SalesChat::whereIn('crm_customer_id',$custDetailIds)->orderBy('created_at','asc')->get()->toArray();
             $createdTagData = CustomerTagRelation::whereIn('crm_customer_id',$custDetailIds)->orderBy('created_at','asc')->get()->toArray();
             $deleteTagData = CustomerTagRelation::whereIn('crm_customer_id',$custDetailIds)->where('is_deleted',true)->orderBy('created_at','asc')->select('user_id','crm_customer_id','tag_cloud_id as deleted_tag_id','is_deleted','deleted_datetime as created_at','deleted_tag_user')->get()->toArray();
+            $custProfileUpdateData = CustomerUpdateActionLog::where('mobile',$mobileNumber)->get()->toArray();
             $tagData = array_merge($createdTagData,$deleteTagData);
             $chatRemainderData = array_merge($chatData,$reminderDetails);
             $chatRemainderAllocationData = array_merge($allocationData,$chatRemainderData);
-            $chatTagRemainderAllocationData = array_merge($chatRemainderAllocationData,$tagData);
+            $chatTagRemainderAllocationData = array_merge($chatRemainderAllocationData,$tagData,$custProfileUpdateData);
             $logData = collect($chatTagRemainderAllocationData)->sortBy('created_at');
             $i = 0;
             foreach ($logData as $value){
@@ -233,6 +235,11 @@ class LeadController extends Controller
                 }elseif (array_key_exists('tag_cloud_id',$value)){
                     $chatHistoryData[$i]['is_created_tag'] = true;
                     $chatHistoryData[$i]['name'] = TagCloud::where('id',$value['tag_cloud_id'])->value('name');
+                    $chatHistoryData[$i]['sale_agent'] = User::where('id',$value['user_id'])->value('name');
+                    $chatHistoryData[$i]['time'] = date('d F Y H:i:s',strtotime($value['created_at']));
+                }elseif (array_key_exists('field_name',$value)){
+                    $chatHistoryData[$i]['is_update_log'] = true;
+                    $chatHistoryData[$i]['field_name'] = $value['field_name'];
                     $chatHistoryData[$i]['sale_agent'] = User::where('id',$value['user_id'])->value('name');
                     $chatHistoryData[$i]['time'] = date('d F Y H:i:s',strtotime($value['created_at']));
                 } else {

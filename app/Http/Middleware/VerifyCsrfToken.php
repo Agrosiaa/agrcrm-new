@@ -13,6 +13,6 @@ class VerifyCsrfToken extends BaseVerifier
      */
     protected $except = [
         '/leads/sales-lead-listing/*','/leads/sales-chat','/agents/sales-agent-listing','/customer/customer-order-listing/*','/customer/abandoned-cart/*',
-        '/crm/csr-orders','/tag/tag-listing','/product/list'
+        '/crm/csr-orders','/tag/tag-listing','/product/list', '/log/log-listing'
     ];
 }

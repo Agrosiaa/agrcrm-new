@@ -67,6 +67,7 @@
                         <li class="menu-dropdown classic-menu-dropdown">
                             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;&nbsp;&nbsp;
                         </li>
+                        @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
                         <li class="menu-dropdown classic-menu-dropdown">
                             <?php
                             $user = \Illuminate\Support\Facades\Auth::User();
@@ -103,6 +104,7 @@
                                     </li>
                                 </ul>
                         </li>
+                        @endif
                         @if(Auth::user()->role_id == 1)
                             <li class="menu-dropdown classic-menu-dropdown">
                                 <a href="/tag/manage">Tag</a>
@@ -116,9 +118,16 @@
                                 <a href="/crm/csr-orders">My Orders</a>
                             </li>
                         @endif
+                        @if(Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
                         <li class="menu-dropdown classic-menu-dropdown">
                             <a href="/product/manage">Products</a>
                         </li>
+                        @endif
+                        @if(Auth::user()->role_id == 3)
+                            <li class="menu-dropdown classic-menu-dropdown">
+                                <a href="/log/manage">Customer logs</a>
+                            </li>
+                        @endif
                     </ul>
                 </div>
                 <!-- END MEGA MENU -->
