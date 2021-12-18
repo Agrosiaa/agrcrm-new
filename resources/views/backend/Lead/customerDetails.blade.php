@@ -25,7 +25,7 @@
                     @include('backend.partials.error-messages')
                     <input type="hidden" id="base_url" value="{{env('BASE_URL')}}">
                     <input type="hidden" id="crm_customer_id" value="{{$id}}">
-                    @if($id == 'null' && $user['role_id'] == 2)
+                    @if($id == 'null' && $user->role->slug == 'sales_employee')
                     <div class="col-md-12 col-md-offset-11">
                         @if($customerInfo->profile->first_name != null || $customerInfo->profile->last_name != null)
                         <a href="/crm/create-lead/{{$user['id']}}/{{$mobile}}" class="btn green">Create Lead</a>
@@ -39,8 +39,10 @@
                     <div class="col-md-12 col-md-offset-8">
                         @if($id != 'null')
                             <a href="#" onclick="chatHistory('{{$id}}','{{$mobile}}')" class="btn yellow">Make a Log </a>
+                            @if($user->role->slug != 'qc_admin')
                             <a href="#" id="place_order_button" class="btn blue">Place Order </a>
                             <a href="#" id="schedule-button" class="btn red-intense">Schedule </a>
+                            @endif
                             <a href="/customer/customer-profile/{{$mobile}}/{{$id}}" class="btn green">Profile</a>
                         @endif
                     </div>

@@ -35,6 +35,10 @@
                                     <li>
                                         <a href="#gardener" data-toggle="tab" id="gardener_a"> Urban Gardener </a>
                                     </li>
+                                    <li style="margin-left:70%;">
+                                                <a href="/customer/customer-details/{{$mobile}}/{{$id}}" class="btn btn-secondary-outline">
+                                                <i class="fa fa-angle-left"></i> Back</a>
+                                    </li>    
                                 </ul>
                                 <div class="tab-content">
                                     <div class="tab-pane active" id="farmer">
@@ -111,13 +115,15 @@
                                                                     <input type="text" class="form-control" name="mother_tongue" placeholder="" @if($profileData) value="{{$profileData['mother_tongue']}}" @endif>
                                                                 </div>
                                                             </div>
-                                                            <div class="form-group">
-                                                                <div class="text-right">
-                                                                    <button class="btn base-color" type="submit">
-                                                                        <i class="fa fa-check-circle"></i> Save
-                                                                    </button>
+                                                            @if($user->role->slug != 'qc_admin')
+                                                                <div class="form-group">
+                                                                    <div class="text-right">
+                                                                        <button class="btn base-color" type="submit">
+                                                                            <i class="fa fa-check-circle"></i> Save
+                                                                        </button>
+                                                                    </div>
                                                                 </div>
-                                                            </div>
+                                                            @endif
                                                         </div>
                                                     </form>
                                                 </div>
@@ -273,6 +279,7 @@
                                                                 </select>
                                                             </div>
                                                         </div>
+                                                        @if($user->role->slug != 'qc_admin')
                                                         <div class="form-group">
                                                             <div class="col-md-11 text-right">
                                                                 <button class="btn base-color" type="submit">
@@ -280,6 +287,7 @@
                                                                 </button>
                                                             </div>
                                                         </div>
+                                                        @endif
                                                     </div>
                                                     </form>
                                                     <div class="form-group">
@@ -453,15 +461,17 @@
                                                             @endif
                                                             @endforeach
                                                             </div>
+                                                            @if($user->role->slug != 'qc_admin')
                                                             <div class="row">
-                                                            <div class="form-group">
-                                                                <div class="col-md-11 text-right">
-                                                                    <button class="btn base-color" type="submit">
-                                                                        <i class="fa fa-check-circle"></i> Save
-                                                                    </button>
+                                                                <div class="form-group">
+                                                                    <div class="col-md-11 text-right">
+                                                                        <button class="btn base-color" type="submit">
+                                                                            <i class="fa fa-check-circle"></i> Save
+                                                                        </button>
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                            </div>
+                                                            @endif
                                                         </form>
                                                     </div>
                                                 </div>
@@ -475,11 +485,13 @@
                                                 <div class="form-body">
                                                     <div class="form-group">
                                                         <label class="col-md-3 control-label"><h3>MY BASIC INFO</h3></label>
+                                                        @if($user->role->slug != 'qc_admin')
                                                         <div class="col-md-8 text-right">
                                                             <button class="btn base-color" type="submit">
                                                                 <i class="fa fa-check-circle"></i> Save
                                                             </button>
                                                         </div>
+                                                        @endif
                                                     </div>
                                                     <div class="form-group">
                                                         <label class="col-md-3 control-label">Gardener Name:
@@ -600,6 +612,7 @@
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    @if($user->role->slug != 'qc_admin')
                                                     <div class="form-group">
                                                         <div class="col-md-11 text-right">
                                                             <button class="btn base-color" type="submit">
@@ -607,6 +620,7 @@
                                                             </button>
                                                         </div>
                                                     </div>
+                                                    @endif
                                                 </div>
                                             </form>
 

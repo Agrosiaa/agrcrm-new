@@ -31,8 +31,8 @@
                                     <thead>
                                     <tr role="row" class="heading">
                                         <th width="30%"> Sales Agent </th>
-                                        <th width="30%"> Mobile </th>
-                                        <th width="30%"> Date </th>
+                                        <th width="30%"> Customer Mobile </th>
+                                        <th width="30%"> Last Updated On </th>
                                         <th width="30%"> View </th>
                                     </tr>
                                     <tr role="row" class="filter">
