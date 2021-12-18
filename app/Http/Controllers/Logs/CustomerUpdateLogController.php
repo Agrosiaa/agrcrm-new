@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Logs;
 use App\CustomerTagRelation;
 use App\CustomerUpdateActionLog;
 use App\TagCloud;
+use App\CrmCustomer;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
@@ -36,37 +37,68 @@ class CustomerUpdateLogController extends Controller
         try{
             $tableData = $request->all();
             $searchData = NULL;
-            $customerLogId = CustomerUpdateActionLog::join('crm_customer','crm_customer.number','=','customer_update_action_log.mobile')
-                        ->lists('crm_customer.id')->toArray();
+            $updateProfileCustIds = CustomerUpdateActionLog::join('crm_customer','crm_customer.number','=','customer_update_action_log.mobile')
+                        ->lists('crm_customer.number')->toArray();
+            $taggedCustIds = CustomerTagRelation::join('crm_customer','crm_customer.id','=','customer_tag_relation.crm_customer_id')
+            ->lists('crm_customer.number')->toArray();
+            $customerLogId = array_unique(array_merge($updateProfileCustIds,$taggedCustIds));
             if($customerLogId != null){
                 $resultFlag = true;
                 // Search with tag name
                 if($resultFlag && $request->has('mobile') && $tableData['mobile']!=""){
-                    $customerLogId = CustomerUpdateActionLog::join('crm_customer','crm_customer.number','=','customer_update_action_log.mobile')
-                        ->whereIn('crm_customer.id',$customerLogId)->where('customer_update_action_log.mobile','like','%'.$tableData['mobile'].'%')->lists('crm_customer.id');
+                    $customerLogId = CrmCustomer::where('number','like','%'.$tableData['mobile'].'%')
+                        ->whereIn('number',$customerLogId)
+                        ->lists('number')->toArray();
                     if(count($customerLogId) <= 0){
                         $resultFlag = false;
                     }
                 }
                 if($resultFlag && $request->has('user_id') && $tableData['user_id']!=""){
-                    $customerLogId = CustomerUpdateActionLog::join('crm_customer','crm_customer.number','=','customer_update_action_log.mobile')
-                            ->whereIn('crm_customer.id',$customerLogId)->where('customer_update_action_log.user_id',$tableData['user_id'])->lists('crm_customer.id');
+                    $taggedCustIds = CustomerTagRelation::join('crm_customer','crm_customer.id','=','customer_tag_relation.crm_customer_id')
+                        ->whereIn('crm_customer.number',$customerLogId)
+                        ->where('customer_tag_relation.user_id',$tableData['user_id'])
+                        ->lists('crm_customer.number')->toArray();
+                    
+                    $updateProfileCustIds = CustomerUpdateActionLog::join('crm_customer','crm_customer.number','=','customer_update_action_log.mobile')
+                        ->whereIn('crm_customer.number',$customerLogId)
+                        ->where('customer_update_action_log.user_id',$tableData['user_id'])
+                        ->lists('crm_customer.number')->toArray();
+                    
+                    $customerLogId = array_unique(array_merge($updateProfileCustIds,$taggedCustIds));
                     if(count($customerLogId) <= 0){
                         $resultFlag = false;
                     }
                 }
 
                 if($resultFlag && $request->has('from_date') && $tableData['from_date']!=""){
-                    $customerLogId = CustomerUpdateActionLog::join('crm_customer','crm_customer.number','=','customer_update_action_log.mobile')
-                        ->whereIn('crm_customer.id',$customerLogId)->where('customer_update_action_log.created_at','>=',$tableData['from_date'])->lists('crm_customer.id');
+                    $taggedCustIds = CustomerTagRelation::join('crm_customer','crm_customer.id','=','customer_tag_relation.crm_customer_id')
+                        ->whereIn('crm_customer.number',$customerLogId)
+                        ->where('customer_tag_relation.updated_at','>=',$tableData['from_date'])
+                        ->lists('crm_customer.number')->toArray();
+                    
+                    $updateProfileCustIds = CustomerUpdateActionLog::join('crm_customer','crm_customer.number','=','customer_update_action_log.mobile')
+                        ->whereIn('crm_customer.number',$customerLogId)
+                        ->where('customer_update_action_log.created_at','>=',$tableData['from_date'])
+                        ->lists('crm_customer.number')->toArray();
+                    
+                    $customerLogId = array_unique(array_merge($updateProfileCustIds,$taggedCustIds));
                     if(count($customerLogId) <= 0){
                         $resultFlag = false;
                     }
                 }
 
                 if($resultFlag && $request->has('to_date') && $tableData['to_date']!=""){
-                    $customerLogId = CustomerUpdateActionLog::join('crm_customer','crm_customer.number','=','customer_update_action_log.mobile')
-                        ->whereIn('crm_customer.id',$customerLogId)->where('customer_update_action_log.created_at','<=',$tableData['to_date'])->lists('crm_customer.id');
+                    $taggedCustIds = CustomerTagRelation::join('crm_customer','crm_customer.id','=','customer_tag_relation.crm_customer_id')
+                        ->whereIn('crm_customer.number',$customerLogId)
+                        ->where('customer_tag_relation.updated_at','<=',$tableData['to_date'])
+                        ->lists('crm_customer.number')->toArray();
+                    
+                    $updateProfileCustIds = CustomerUpdateActionLog::join('crm_customer','crm_customer.number','=','customer_update_action_log.mobile')
+                        ->whereIn('crm_customer.number',$customerLogId)
+                        ->where('customer_update_action_log.created_at','<=',$tableData['to_date'])
+                        ->lists('crm_customer.number')->toArray();
+                    
+                    $customerLogId = array_unique(array_merge($updateProfileCustIds,$taggedCustIds));
                     if(count($customerLogId) <= 0){
                         $resultFlag = false;
                     }
@@ -81,18 +113,56 @@ class CustomerUpdateLogController extends Controller
                 $records["data"] = array();
                 $end = $iDisplayStart + $iDisplayLength;
                 $end = $end > $iTotalRecords ? $iTotalRecords : $end;
-                $limitedProducts = CustomerUpdateActionLog::join('crm_customer','crm_customer.number','=','customer_update_action_log.mobile')
-                            ->join('users','users.id','=','customer_update_action_log.user_id')
-                            ->take($iDisplayLength)->skip($iDisplayStart)
-                            ->orderBy('customer_update_action_log.created_at','desc')
-                            ->select('customer_update_action_log.*','crm_customer.id as cust_id','users.name as csr_name')
-                            ->get()->toArray();
+                $taggedCustomers = CustomerTagRelation::join('crm_customer','crm_customer.id','=','customer_tag_relation.crm_customer_id')
+                        ->whereIn('crm_customer.number',array_unique($taggedCustIds))
+                        ->orderBy('customer_tag_relation.id','DESC')
+                        ->select('customer_tag_relation.*','crm_customer.number')->get()->toArray();
+                    
+                $updateProfileCustomers = CustomerUpdateActionLog::join('crm_customer','crm_customer.number','=','customer_update_action_log.mobile')
+                    ->whereIn('crm_customer.number',array_unique($updateProfileCustIds))
+                    ->orderBy('customer_update_action_log.id','DESC')
+                    ->select('customer_update_action_log.*','crm_customer.number')->get()->toArray();
+
+                $allCustomers = array_merge($taggedCustomers, $updateProfileCustomers);
+                $sortedCustomers = collect($allCustomers)->sortByDesc('created_at');
+                $customerNumbers = array_unique($sortedCustomers->lists('number')->toArray());
+                
+                $i = 0;
+                foreach($customerNumbers as $index => $customerNumber){
+                    if($i < $iDisplayLength && $index >= $iDisplayStart){
+                        $limitedProducts[$i] = CrmCustomer::where('number',$customerNumber)->first();
+                    }
+                    $i++;
+                }
+                // $limitedProducts = CrmCustomer::take($iDisplayLength)->skip($iDisplayStart)
+                //             ->whereIn('number',$customerNumbers)
+                //             ->get()->toArray();
                 for($i=0,$j = $iDisplayStart; $j < $end; $i++,$j++) {
-                    $href = '/customer/customer-details/'.$limitedProducts[$j]['mobile'].'/'.$limitedProducts[$j]['cust_id'];
+                    $href = '/customer/customer-details/'.$limitedProducts[$j]['number'].'/'.$limitedProducts[$j]['id'];
+                    $agent = '';
+                    $latestUpdateDt = null;
+                    
+                    $custCrmIds = CrmCustomer::where('number',$limitedProducts[$j]['number'])->lists('id')->toArray();
+                    $latestTag = CustomerTagRelation::whereIn('crm_customer_id',$custCrmIds)->orderBy('updated_at','DESC')->first();
+                    $latestProfileUpdate = CustomerUpdateActionLog::where('mobile',$limitedProducts[$j]['number'])->orderBy('id','DESC')->first();
+                    
+                    if($latestTag && 
+                        (($latestProfileUpdate && $latestTag['updated_at'] > $latestProfileUpdate['updated_at']) ||
+                        (!$latestProfileUpdate))){
+                        $latestUpdateDt = $latestTag['updated_at'];
+                        $agentId = $latestTag['deleted_tag_user'] ? $latestTag['deleted_tag_user'] : $latestTag['user_id'];
+                        $agent = User::where('id',$agentId)->value('name');
+                    }elseif($latestProfileUpdate && 
+                    (($latestTag && $latestProfileUpdate['updated_at'] > $latestTag['updated_at']) ||
+                    (!$latestTag))){
+                        $latestUpdateDt = $latestProfileUpdate['updated_at'];
+                        $agent = User::where('id',$latestProfileUpdate['user_id'])->value('name');
+                    }
+                    
                     $records["data"][] = array(
-                        $limitedProducts[$j]['csr_name'],
-                        $limitedProducts[$j]['mobile'],
-                        date('d F Y', strtotime($limitedProducts[$j]['created_at'])),
+                        $agent,
+                        $limitedProducts[$j]['number'],
+                        date('d F Y', strtotime($latestUpdateDt)),
                         '<a href="'.$href.'" class="btn btn-sm btn-default btn-circle btn-editable"><i class="fa fa-pencil"></i>View</a>',
                     );
                 }
