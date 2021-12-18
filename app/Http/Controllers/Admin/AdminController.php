@@ -50,6 +50,9 @@ class AdminController extends Controller
     public function home(Request $request){
         try{
             $user = Auth::User();
+            if($user->role->slug == 'qc_admin'){
+                return redirect('/log/manage');
+            }
             $currentDateTime = Carbon::now();
             $response = Curl::to(env('BASE_URL')."/order-detail")
                 ->withData( array( 'role_id' => $user['role_id'] ,'sales_id' => $user['id']) )->asJson()->get();
