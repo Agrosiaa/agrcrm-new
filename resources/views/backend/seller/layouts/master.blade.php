@@ -60,6 +60,7 @@
 <script src="/assets/global/plugins/jquery.blockui.min.js" type="text/javascript"></script>
 <script src="/assets/global/plugins/uniform/jquery.uniform.min.js" type="text/javascript"></script>
 <script src="/assets/global/plugins/bootstrap-switch/js/bootstrap-switch.min.js" type="text/javascript"></script>
+<script src="/assets/frontend/plugin/jquery-loading-overlay/src/loadingoverlay.min.js"></script>
 <!-- END CORE PLUGINS -->
 <!-- BEGIN PAGE LEVEL PLUGINS -->
 <script src="/assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js" type="text/javascript"></script>
@@ -71,11 +72,24 @@
 <script src="/assets/layouts/layout3/scripts/layout.min.js" type="text/javascript"></script>
 <!-- END THEME LAYOUT SCRIPTS -->
 @yield('javascript')
-<script>
-/*$(document).ready(function(){
-    var rememberToken = $('meta[name="csrf_token"]').attr('content');
-    $.ajaxSetup({ headers: { 'X-CSRF-TOKEN' : rememberToken } });
-})*/
-</script>
+<script type="text/javascript">
+    $(document).ajaxStart(function(){
+        $.LoadingOverlay("show",{
+            color:"rgba(255, 255, 255, 0.6)",
+        });
+    });
+    $(document).ajaxStop(function(){
+        setTimeout(function(){
+            $.LoadingOverlay("hide");
+        }, 1000);
+
+    });
+    $(document).ready(function(){
+        setTimeout(function(){
+            $.LoadingOverlay("hide");
+        }, 2000);
+
+    });
+    </script>
 </body>
 </html>
