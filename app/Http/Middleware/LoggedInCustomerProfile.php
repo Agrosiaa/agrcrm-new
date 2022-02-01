@@ -25,7 +25,7 @@ class LoggedInCustomerProfile
         if($user['role_id'] == $csrEmployee){
             $loggedCustomer = LoggedCustomerProfile::where('user_id',$user['id'])->first();
             if($loggedCustomer != null && $loggedCustomer['session_url'] != null){
-                return redirect($loggedCustomer['session_url']);
+                return redirect(env("APP_URL").$loggedCustomer['session_url']);
             }
             return $next($request);
         }

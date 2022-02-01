@@ -521,7 +521,7 @@ class CustomerController extends Controller
             $data = $request->all();
             unset($data['_token']);
             $response = Curl::to(env('BASE_URL')."/generate-order")->withData($data)->asJson()->post();
-            if($response->status == 200){
+            if($response && $response->status == 200){
                 foreach($response->data as $product){
                     $this->createNewCustomerTag($product, $data['crm_customer_id'], $data['customer_mobile'], 'order');
                 }

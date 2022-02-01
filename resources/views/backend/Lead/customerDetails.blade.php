@@ -691,6 +691,17 @@
                                             </div>
                                         </div>
                                     </div>
+				    <br>
+				    <div class="row">
+                                        <div class="row">
+                                            <h4 class="col-md-offset-1"><b>Special Note</b></h4>
+                                        </div>
+                                        <div class="row col-md-offset-1">
+                                            <div class="col-md-5">
+                                                <textarea type="textarea" class="form-control" rows="6" cols="70" id="special_note" name="special_note" placeholder="Enter special note here" style=""></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <br>
                                     <div class="row">
                                         <div class="col-md-11">
